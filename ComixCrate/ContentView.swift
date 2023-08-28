@@ -6,19 +6,26 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct ContentView: View {
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            List {
+                Section("Library") {
+                    NavigationLink {
+                        LibraryView()
+                    } label: {
+                        Label("All Books", systemImage: "books.vertical")
+                    }
+                }
+                .listStyle(.sidebar )
+                .navigationTitle("Menu")
+            }
         }
-        .padding()
     }
 }
-
 #Preview {
     ContentView()
 }

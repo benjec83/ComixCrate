@@ -5,6 +5,8 @@
         <attribute name="coverDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="coverPrice" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
         <attribute name="currentValue" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
+        <attribute name="downloaded" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="fileName" optional="YES" attributeType="String"/>
         <attribute name="gradedBy" optional="YES" attributeType="String"/>
         <attribute name="gradeValue" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
         <attribute name="isFavorite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -15,8 +17,10 @@
         <attribute name="purchaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="purchaseFrom" optional="YES" attributeType="String"/>
         <attribute name="purchasePrice" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
+        <attribute name="read" optional="YES" attributeType="Integer 16" usesScalarValueType="YES"/>
         <attribute name="releaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="sypnosis" optional="YES" attributeType="String"/>
+        <attribute name="thumbnailPath" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="volumeNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="volumeYear" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -84,8 +88,8 @@
         <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book"/>
     </entity>
     <entity name="Publisher" representedClassName="Publisher" syncable="YES" codeGenerationType="class">
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="publisherDescription" optional="YES" attributeType="String"/>
-        <attribute name="publisherName" optional="YES" attributeType="String"/>
         <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="publisher" inverseEntity="Book"/>
         <relationship name="series" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Series" inverseName="publisher" inverseEntity="Series"/>
     </entity>

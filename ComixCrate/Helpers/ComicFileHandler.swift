@@ -26,26 +26,57 @@ class ComicFileHandler {
             if fileManager.fileExists(atPath: comicInfoURL.path) {
                 if let data = try? Data(contentsOf: comicInfoURL), let comicInfo = parseComicInfoXML(data: data) {
                     
-                    let comicFile = ComicFile(context: context)
+                    let comicFile = Book(context: context)
                     comicFile.fileName = url.lastPathComponent
-                    comicFile.series = comicInfo.series
-                    comicFile.publisher = comicInfo.publisher
+                    
+                    // Handling the Series relationship:
+                    let fetchRequest: NSFetchRequest<Series> = Series.fetchRequest()
+                    fetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.series)
+                    
+                    let seriesEntities = try? context.fetch(fetchRequest)
+                    var seriesEntity: Series!
+                    if let existingSeries = seriesEntities?.first {
+                        seriesEntity = existingSeries
+                    } else {
+                        seriesEntity = Series(context: context)
+                        seriesEntity.name = comicInfo.series
+                    }
+                    
+                    comicFile.series = seriesEntity
+                    // End of the Series relationship handling.
+                    
+                    // Handling the Publisher relationship:
+                    let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
+                    publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
+                    
+                    let publisherEntities = try? context.fetch(publisherFetchRequest)
+                    var publisherEntity: Publisher!
+                    if let existingPublisher = publisherEntities?.first {
+                        publisherEntity = existingPublisher
+                    } else {
+                        publisherEntity = Publisher(context: context)
+                        publisherEntity.name = comicInfo.publisher
+                    }
+                    
+                    comicFile.publisher = publisherEntity
+                    // End of the Publisher relationship handling.
+                    
+                    
                     comicFile.sypnosis = comicInfo.summary
                     comicFile.title = comicInfo.title
                     comicFile.issueNumber = comicInfo.number ?? 0
+                    comicFile.volumeYear = comicInfo.year ?? 0
                     
-                    /// Sorts the image files and picks the first one to be the cover thumbnail
+                    // Sorts the image files and picks the first one to be the cover thumbnail
                     if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }), let firstImageName = imageFiles.first {
                         let destinationPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(UUID().uuidString).appendingPathExtension(firstImageName.pathExtension)
                         try fileManager.copyItem(at: firstImageName, to: destinationPath)
                         comicFile.thumbnailPath = destinationPath.path
-                        // Save the Core Data context after setting up the comicFile
                         try context.save()
                     }
-
                     
                     try context.save()
-                    print("Saved Comic File: \(comicFile)")  // Debug statement
+                    print("Saved Comic File: \(comicFile)")
                 } else {
                     print("Failed to read or parse ComicInfo.xml")
                 }
@@ -61,7 +92,7 @@ class ComicFileHandler {
         // Cleanup temp directory
         try? fileManager.removeItem(at: tempDirectory)
     }
-
+    
     private static func parseComicInfoXML(data: Data) -> ComicInfo? {
         let parser = XMLParser(data: data)
         let delegate = ComicInfoXMLParserDelegate()
@@ -81,48 +112,47 @@ struct ComicInfo {
     var publisher: String?
     var title: String?
     var coverImageName: String?
-
-    // ... other properties ...
+    var year: Int16?
 }
 
 // XMLParserDelegate to handle the parsing
 class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
     var comicInfo = ComicInfo(series: "")
     var currentElement: String?
-    var currentText = ""  // This will accumulate the characters for each element
-
+    var currentText = ""
+    
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
         currentElement = elementName
-        currentText = ""  // Reset the accumulated text
+        currentText = ""
     }
-
+    
     func parser(_ parser: XMLParser, foundCharacters string: String) {
-        currentText += string  // Accumulate the characters
+        currentText += string
     }
-
+    
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         switch currentElement {
         case "Series":
             comicInfo.series = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
-        case "Number":
+        case "Title":
+            comicInfo.title = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
+        case "Number": // Updated from "IssueNumber"
             if let number = Int16(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
                 comicInfo.number = number
+            }
+        case "Volume": // Updated from "VolumeYear"
+            if let year = Int16(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
+                comicInfo.year = year
             }
         case "Web":
             comicInfo.web = URL(string: currentText.trimmingCharacters(in: .whitespacesAndNewlines))
         case "Summary":
             comicInfo.summary = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
         case "Publisher":
-            comicInfo.publisher = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
-        case "Title":
-            comicInfo.title = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
-        // ... handle other elements ...
-        default:
+            comicInfo.publisher = currentText
+        case .none, .some(_):
+            // Handle the case where currentElement is nil or any other unexpected value.
             break
         }
-        currentElement = nil  // Reset the current element
-        currentText = ""  // Reset the accumulated text
     }
-
 }
-

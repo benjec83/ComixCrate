@@ -11,6 +11,13 @@
 		4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */; };
 		4AB6E7A12A9BD90A00A8EFA0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */; };
 		4AB6E7A52A9BD90A00A8EFA0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AB6E7A42A9BD90A00A8EFA0 /* Preview Assets.xcassets */; };
+		4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7AB2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld */; };
+		4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B02A9BE0C500A8EFA0 /* Persistence.swift */; };
+		4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B22A9BE0FB00A8EFA0 /* ComicFileHandler.swift */; };
+		4AB6E7B62A9BE13400A8EFA0 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4AB6E7B52A9BE13400A8EFA0 /* ZIPFoundation */; };
+		4AB6E7B82A9BE8F400A8EFA0 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B72A9BE8F400A8EFA0 /* DocumentPicker.swift */; };
+		4AB6E7BA2A9BEB3300A8EFA0 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B92A9BEB3300A8EFA0 /* LibraryView.swift */; };
+		4AB6E7BC2A9BED7D00A8EFA0 /* BookTileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7BB2A9BED7D00A8EFA0 /* BookTileModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +27,12 @@
 		4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4AB6E7A22A9BD90A00A8EFA0 /* ComixCrate.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ComixCrate.entitlements; sourceTree = "<group>"; };
 		4AB6E7A42A9BD90A00A8EFA0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		4AB6E7AC2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LibraryData.xcdatamodel; sourceTree = "<group>"; };
+		4AB6E7B02A9BE0C500A8EFA0 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		4AB6E7B22A9BE0FB00A8EFA0 /* ComicFileHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComicFileHandler.swift; sourceTree = "<group>"; };
+		4AB6E7B72A9BE8F400A8EFA0 /* DocumentPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
+		4AB6E7B92A9BEB3300A8EFA0 /* LibraryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		4AB6E7BB2A9BED7D00A8EFA0 /* BookTileModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookTileModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AB6E7B62A9BE13400A8EFA0 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,7 +66,11 @@
 		4AB6E79B2A9BD90700A8EFA0 /* ComixCrate */ = {
 			isa = PBXGroup;
 			children = (
+				4AB6E7AF2A9BE09300A8EFA0 /* Helpers */,
+				4AB6E7AE2A9BE08100A8EFA0 /* Data */,
 				4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */,
+				4AB6E7BB2A9BED7D00A8EFA0 /* BookTileModel.swift */,
+				4AB6E7B92A9BEB3300A8EFA0 /* LibraryView.swift */,
 				4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */,
 				4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */,
 				4AB6E7A22A9BD90A00A8EFA0 /* ComixCrate.entitlements */,
@@ -67,6 +85,24 @@
 				4AB6E7A42A9BD90A00A8EFA0 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		4AB6E7AE2A9BE08100A8EFA0 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				4AB6E7AB2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		4AB6E7AF2A9BE09300A8EFA0 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				4AB6E7B72A9BE8F400A8EFA0 /* DocumentPicker.swift */,
+				4AB6E7B22A9BE0FB00A8EFA0 /* ComicFileHandler.swift */,
+				4AB6E7B02A9BE0C500A8EFA0 /* Persistence.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -85,6 +121,9 @@
 			dependencies = (
 			);
 			name = ComixCrate;
+			packageProductDependencies = (
+				4AB6E7B52A9BE13400A8EFA0 /* ZIPFoundation */,
+			);
 			productName = ComixCrate;
 			productReference = 4AB6E7992A9BD90700A8EFA0 /* ComixCrate.app */;
 			productType = "com.apple.product-type.application";
@@ -113,6 +152,9 @@
 				Base,
 			);
 			mainGroup = 4AB6E7902A9BD90700A8EFA0;
+			packageReferences = (
+				4AB6E7B42A9BE13400A8EFA0 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+			);
 			productRefGroup = 4AB6E79A2A9BD90700A8EFA0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -139,8 +181,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AB6E7BC2A9BED7D00A8EFA0 /* BookTileModel.swift in Sources */,
+				4AB6E7BA2A9BEB3300A8EFA0 /* LibraryView.swift in Sources */,
 				4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */,
+				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
+				4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */,
 				4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */,
+				4AB6E7B82A9BE8F400A8EFA0 /* DocumentPicker.swift in Sources */,
+				4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,6 +407,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4AB6E7B42A9BE13400A8EFA0 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.16;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4AB6E7B52A9BE13400A8EFA0 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4AB6E7B42A9BE13400A8EFA0 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		4AB6E7AB2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				4AB6E7AC2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodel */,
+			);
+			currentVersion = 4AB6E7AC2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodel */;
+			path = LibraryData.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 4AB6E7912A9BD90700A8EFA0 /* Project object */;
 }

@@ -6,58 +6,54 @@
 //
 
 import SwiftUI
+import CoreData
 
 
 struct BookTileModel: View {
     
-    var book: Book
-
-    
-    var readColor: Color {
-        if book.read ?? 0 >= 100 {
-            return Color.blue
-        } else {
-            return Color("NotTrueColor")
-        }
+//    @Environment(\.managedObjectContext) private var viewContext
+//    @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.fileName, ascending: true)])
+//    private var book: FetchedResults<Book>
+    let book: Book
+    // Computed property to get series name
+    var seriesName: String? {
+        book.series?.name
     }
 
-    var favoriteColor: Color {
-        if book.favorite == true {
-            return Color.blue
-        } else {
-            return Color("NotTrueColor")
-        }
+    // Computed property to get publisher name
+    var publisherName: String? {
+        book.publisher?.name
     }
 
-    var downloadColor: Color {
-        if book.downloaded == true {
-            return Color.blue
-        } else {
-            return Color("NotTrueColor")
-        }
-    }
-    
     var body: some View {
         
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
-                book.image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                if let url = URL(string: book.thumbnailPath ?? ""), let uiImage = UIImage(contentsOfFile: url.path) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    Image("placeholderImageName")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
             }
+            
+
             .shadow(radius: 1)
             .frame(height: 266)
             
             VStack(alignment: .leading) {
                 
-                Text("#" + "\(book.issue)" + " - " + (book.title ?? ""))
+                Text("#" + "\(book.issueNumber)" + " - " + "\(book.title ?? "")")
                     .font(.subheadline)
                     .lineLimit(2)
                 
-                Text(book.series + " (" + "\(book.volume)" + ")")
+                Text("\(seriesName ?? "")" + " (" + "\(book.volumeYear)" + ")")
                     .font(.caption2)
                     .lineLimit(1)
-                BookStatusBar(book: book)
+//                BookStatusBar(book: book)
                 Spacer()
                 
             }
@@ -67,54 +63,14 @@ struct BookTileModel: View {
         .scaledToFit()
         .foregroundColor(.secondary)
         .multilineTextAlignment(.leading)
-        .contextMenu {
-            Button {
-                
-            } label: {
-                Label("Read Now", systemImage: "magazine")
-            }
-            Button {
-
-            } label: {
-                Label("Mark As Read", systemImage: "checkmark.circle")
-            }
-            Button {
-
-            } label: {
-                Label("Add to Favorite", systemImage: "star")
-            }
-            Button {
-
-            } label: {
-                Label("Add to Reading Pile", systemImage: "square.stack.3d.up")
-            }
-            Button {
-
-            } label: {
-                Label("Add to a Reading List", systemImage: "list.bullet.rectangle.portrait")
-            }
-            Divider()
-            Menu("Manage Book") {
-                Button {
-
-                } label: {
-                    Label("Edit", systemImage: "pencil")
-                }
-                Button(role: .destructive) {
-
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-            }
-        }
-        
-    }
-}
-
-
-struct BookTileViewModel_Previews: PreviewProvider {
-    static var previews: some View {
-        BookTileModel(book: books[0])
 
     }
 }
+
+
+//struct BookTileViewModel_Previews: PreviewProvider {
+//    static var previews: some View {
+//        BookTileModel(book: books[0])
+//
+//    }
+//}
