@@ -70,7 +70,6 @@ class ComicFileHandler {
                     comicFile.publisher = publisherEntity
                     // End of the Publisher relationship handling.
                     
-                    
                     comicFile.sypnosis = comicInfo.summary
                     comicFile.title = comicInfo.title
                     comicFile.issueNumber = comicInfo.number ?? 0
