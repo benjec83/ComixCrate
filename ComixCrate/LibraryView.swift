@@ -33,54 +33,6 @@ struct LibraryView: View {
     
     var body: some View {
         VStack {
-            HStack {
-                Spacer()
-                
-                if !isSelecting {
-                    Button {
-                        isGalleryView = true
-                        print("Gallery View")
-                    } label: {
-                        Label("Gallery", systemImage: "square.grid.2x2")
-                    }
-                    Button {
-                        isGalleryView = false
-                        print("List View")
-                    } label: {
-                        Label("List", systemImage: "line.3.horizontal")
-                    }
-                    Button {
-                        print("Filter")
-                    } label: {
-                        Label("Filter", systemImage: "line.3.horizontal.decrease")
-                    }
-                    Button(action: {
-                        showingDocumentPicker.toggle()
-                    }) {
-                        Label("Add Books", systemImage: "plus.app")
-                    }
-                }
-                
-                if isSelecting {
-                    Button(action: {
-                        showingDeleteSelectedConfirmation = true
-                    }) {
-                        Image(systemName: "trash")
-                            .foregroundColor(.red)
-                    }
-                }
-                
-                Button(action: {
-                    isSelecting.toggle()
-                    selectedBooks.removeAll() // Clear selections when toggling
-                }) {
-                    Text(isSelecting ? "Done" : "Select Books")
-                }
-            }
-            .padding(.trailing, 40.0)
-            .padding(.vertical, 10.0)
-            .multilineTextAlignment(.leading)
-            .navigationTitle("Library")
             ScrollView(.vertical) {
                 if book.isEmpty {
                     Text("Please Import Books to Your Library")
@@ -148,15 +100,15 @@ struct LibraryView: View {
                 )
             }
             .alert(isPresented: $showingDeleteSelectedConfirmation) {
-                        Alert(
-                            title: Text("Delete Selected Books"),
-                            message: Text("Are you sure you want to delete the selected books? This action cannot be undone."),
-                            primaryButton: .default(Text("Cancel")),
-                            secondaryButton: .destructive(Text("Delete")) {
-                                deleteSelectedBooks()
-                            }
-                        )
+                Alert(
+                    title: Text("Delete Selected Books"),
+                    message: Text("Are you sure you want to delete the selected books? This action cannot be undone."),
+                    primaryButton: .default(Text("Cancel")),
+                    secondaryButton: .destructive(Text("Delete")) {
+                        deleteSelectedBooks()
                     }
+                )
+            }
             .sheet(item: $selected) { item in
                 NavigationStack {
                     VStack {
@@ -165,6 +117,57 @@ struct LibraryView: View {
                 }
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack {
+                    if !isSelecting {
+                        Button {
+                            isGalleryView = true
+                            print("Gallery View")
+                        } label: {
+                            Label("Gallery", systemImage: "square.grid.2x2")
+                        }
+                        Button {
+                            isGalleryView = false
+                            print("List View")
+                        } label: {
+                            Label("List", systemImage: "line.3.horizontal")
+                        }
+                        Button {
+                            print("Filter")
+                        } label: {
+                            Label("Filter", systemImage: "line.3.horizontal.decrease")
+                        }
+                        Button(action: {
+                            showingDocumentPicker.toggle()
+                        }) {
+                            Label("Add Books", systemImage: "plus.app")
+                        }
+                    }
+                    
+                    if isSelecting {
+                        Button(action: {
+                            showingDeleteSelectedConfirmation = true
+                        }) {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                        }
+                    }
+                    
+                    Button(action: {
+                            isSelecting.toggle()
+                            selectedBooks.removeAll() // Clear selections when toggling
+                        }) {
+                            if isSelecting {
+                                Text("Done")
+                            } else {
+                                Image(systemName: "checkmark.square")
+                            }
+                        }
+                }
+            }
+        }
+        .navigationTitle("Library")
     }
     
     func deleteSelectedBooks() {
@@ -174,6 +177,7 @@ struct LibraryView: View {
         do {
             try viewContext.save()
             selectedBooks.removeAll() // Clear the set after deletion
+            isSelecting = false
         } catch {
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")

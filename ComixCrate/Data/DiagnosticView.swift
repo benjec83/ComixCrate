@@ -31,8 +31,3 @@ struct DiagnosticView: View {
         }
     }
 }
-
-
-#Preview {
-    DiagnosticView()
-}
