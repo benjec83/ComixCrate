@@ -19,6 +19,16 @@ struct ContentView: View {
                     } label: {
                         Label("All Books", systemImage: "books.vertical")
                     }
+                    NavigationLink {
+                        DatabaseInspectorView()
+                    } label: {
+                        Label("Database Inspector", systemImage: "tablecells")
+                    }
+                    NavigationLink {
+                        DiagnosticView()
+                    } label: {
+                        Label("DiagnosticView", systemImage: "gear.badge.questionmark")
+                    }
                 }
                 .listStyle(.sidebar )
                 .navigationTitle("Menu")

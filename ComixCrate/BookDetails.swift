@@ -6,26 +6,34 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct BookMainDetails: View {
+    let book: Book
+    /// Computed property to get series name
+    var seriesName: String? {
+        book.series?.name
+    }
     
-    var book: Book
+    /// Computed property to get publisher name
+    var publisherName: String? {
+        book.publisher?.name
+    }
     
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("#" + "\(book.issue)" + " - " + (book.title ?? ""))
+                Text("#\(String(book.issueNumber)) - \(book.title ?? "")")
                     .font(.body)
                     .fontWeight(.semibold)
                     .lineLimit(2)
-                Text(book.series + " (" + "\(book.volume)" + ")")
+                Text("\(seriesName ?? "")" + " " + "(\(book.volumeYear))")
                     .font(.caption2)
                     .lineLimit(2)
-                Text((book.storyArc ?? ""))
+                Text("Story Arc")
                     .font(.caption2)
                     .fontWeight(.light)
                     .lineLimit(1)
-                
             }
             .multilineTextAlignment(.leading)
             Spacer()
@@ -34,190 +42,109 @@ struct BookMainDetails: View {
     }
 }
 
-
-
 struct BookSecondaryDetails: View {
     var book: Book
     
     var body: some View {
         HStack(alignment: .top) {
-            
-            VStack(alignment: .center) {
-                
-                Text("Publisher")
-                    .font(.subheadline)
-                Spacer()
-                    .frame(height: 1)
-                PublisherLogo(publisherLogo: book.logo)
-                    .scaledToFit()
-                    .frame(height: 40)
-                Spacer()
-            }
-            .frame(width: 120)
-            
+            detailSection(title: "Publisher", image: AnyView(FakePublisherLogo()))
             Divider()
-            
-            //Released
-            VStack {
-                
-                Text("Released")
-                    .font(.subheadline)
-                Spacer()
-                    .frame(height: 1)
-                Text("Year")
-                Spacer()
-                    .frame(height: 1)
-                Text("Month DD")
-                    .font(.caption)
-                Spacer()
-            }
-            .frame(width: 120)
+            detailSection(title: "Released", mainText: "Year", subText: "Month DD")
             Divider()
-            
-            //Pages
-            VStack {
-                
-                Text("Length")
-                    .font(.subheadline)
-                Spacer()
-                    .frame(height: 1)
-                Text("2000")
-                Spacer()
-                    .frame(height: 1)
-                Text("Pages")
-                    .font(.caption)
-                Spacer()
-            }
-            .frame(width: 120)
+            detailSection(title: "Length", mainText: "2000", subText: "Pages")
             Spacer()
         }
         .padding(.top)
         .frame(height: 65)
-        //        Divider()
+    }
+    
+    private func detailSection(title: String, image: AnyView? = nil, mainText: String? = nil, subText: String? = nil) -> some View {
+        VStack {
+            Text(title)
+                .font(.subheadline)
+            Spacer().frame(height: 1)
+            if let imageView = image {
+                imageView
+                    .scaledToFit()
+                    .frame(height: 40)
+            } else {
+                Text(mainText ?? "")
+                Spacer().frame(height: 1)
+                Text(subText ?? "")
+                    .font(.caption)
+            }
+            Spacer()
+        }
+        .frame(width: 120)
     }
 }
 
-
 struct BookActionButtons: View {
-    
     var book: Book
     
     var body: some View {
-        
-        
         VStack {
             Spacer()
-            HStack {
-                Button {
-                    print("Read Now " + (book.title ?? "") + " pressed")
-                } label: {
-                    Label("Read Now", systemImage: "magazine")
-                }
-                .frame(width: 345.0, height: 55.0)
-                .accessibilityAddTraits([.isButton])
-                .accessibilityLabel("Read Now")
-                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color.blue/*@END_MENU_TOKEN@*/)
-                .foregroundColor(/*@START_MENU_TOKEN@*/.white/*@END_MENU_TOKEN@*/)
-                .cornerRadius(/*@START_MENU_TOKEN@*/51.0/*@END_MENU_TOKEN@*/)
-                .font(/*@START_MENU_TOKEN@*/.headline/*@END_MENU_TOKEN@*/)
-            }
-            .frame(width: 345.0, height: 55)
-            .background(Color.blue)
-            
-            .cornerRadius(51.0)
-            .foregroundColor(.white)
-            .font(.headline)
-            
-            HStack {
-                Button {
-                    print("Mark As Read " + (book.title ?? "") + " pressed")
-                } label: {
-                    Label("Mark As Read", systemImage: "checkmark.circle")
-                }
-                .frame(width: 345.0, height: 55.0)
-                .accessibilityAddTraits([.isButton])
-                .accessibilityLabel("Mark As Read")
-                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color.blue/*@END_MENU_TOKEN@*/)
-                .foregroundColor(/*@START_MENU_TOKEN@*/.white/*@END_MENU_TOKEN@*/)
-                .cornerRadius(/*@START_MENU_TOKEN@*/51.0/*@END_MENU_TOKEN@*/)
-                .font(/*@START_MENU_TOKEN@*/.headline/*@END_MENU_TOKEN@*/)
-            }
-            
-            
-            HStack {
-                Button {
-                    print("Add to Reading Pile " + (book.title ?? "") + " pressed")
-                } label: {
-                    Label("Add to Reading Pile", systemImage: "square.stack.3d.up")
-                }
-                .frame(width: 345.0, height: 55.0)
-                .accessibilityAddTraits([.isButton])
-                .accessibilityLabel("Add to Reading Pile")
-                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color.blue/*@END_MENU_TOKEN@*/)
-                .foregroundColor(/*@START_MENU_TOKEN@*/.white/*@END_MENU_TOKEN@*/)
-                .cornerRadius(/*@START_MENU_TOKEN@*/51.0/*@END_MENU_TOKEN@*/)
-                .font(/*@START_MENU_TOKEN@*/.headline/*@END_MENU_TOKEN@*/)
-            }
-            
-            .frame(width: 345.0, height: 55)
-            .background(Color.blue)
-            
-            .cornerRadius(51.0)
-            
-            .foregroundColor(.white)
-            .font(.headline)
+            actionButton(title: "Read Now", icon: "magazine")
+            actionButton(title: "Mark As Read", icon: "checkmark.circle")
+            actionButton(title: "Add to Reading Pile", icon: "square.stack.3d.up")
             Spacer()
-            //Ratings
-            HStack {
-                Spacer()
-                VStack{
-                    Text("Personal Rating")
-                        .font(.caption)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(1)
-                    HStack(spacing: -1.0) {
-                        Image(systemName: "star")
-                        Image(systemName: "star")
-                        Image(systemName: "star")
-                        Image(systemName: "star")
-                        Image(systemName: "star")
-                    }
-                    .foregroundColor(Color.gray)
-                }
-                Spacer()
-                VStack {
-                    Text("Community Rating")
-                        .font(.caption)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(1)
-                    HStack(spacing: -1.0) {
-                        Image(systemName: "star")
-                        Image(systemName: "star")
-                        Image(systemName: "star")
-                        Image(systemName: "star")
-                        Image(systemName: "star")
-                    }
-                    .foregroundColor(Color.gray)
-                }
-                Spacer()
-            }
+            ratingsSection(title: "Personal Rating")
+            ratingsSection(title: "Community Rating")
         }
         .frame(height: 250)
+    }
+    
+    private func actionButton(title: String, icon: String) -> some View {
+        Button {
+            print("\(title) \(book.title ?? "") pressed")
+        } label: {
+            Label(title, systemImage: icon)
+                .frame(width: 345.0, height: 55.0)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(51.0)
+                .font(.headline)
+        }
+    }
+    
+    private func ratingsSection(title: String) -> some View {
+        VStack {
+            Text(title)
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .lineLimit(1)
+            HStack(spacing: -1.0) {
+                ForEach(0..<5) { _ in
+                    Image(systemName: "star")
+                }
+            }
+            .foregroundColor(Color.gray)
+        }
     }
 }
 
 struct BookDetailTabs: View {
-    
-    @EnvironmentObject var modelData: ModelData
-    
-    var bookIndex: Int {
-        modelData.books.firstIndex(where: { $0.id == book.id })!
+    let book: Book
+    @State private var isFavorite: Bool
+
+    public init(book: Book) {
+        self.book = book
+        _isFavorite = State(initialValue: book.isFavorite)
     }
-        
-    var book: Book
+    
+    /// Computed property to get series name
+    var seriesName: String? {
+        book.series?.name
+    }
+    
+    /// Computed property to get publisher name
+    var publisherName: String? {
+        book.publisher?.name
+    }
+    
     
     var body: some View {
-        
         TabView {
             BookDetailsMainView(book: book)
                 .tabItem {
@@ -240,7 +167,7 @@ struct BookDetailTabs: View {
                     Text("Collection")
                 }
         }
-        .navigationTitle("#" + "\(book.issue)" + " - " + (book.title ?? book.series))
+        .navigationTitle("#" + "\(book.issueNumber)" + " - " + "\(book.title ?? seriesName ?? "")")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing:
                                 HStack {
@@ -249,7 +176,8 @@ struct BookDetailTabs: View {
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
-                        FavoriteButton(isSet: $modelData.books[bookIndex].favorite)
+            FavoriteButton(book: book, context: book.managedObjectContext ?? PersistenceController.shared.container.viewContext)
+
             Menu {
                 Button{
                     
@@ -273,5 +201,107 @@ struct BookDetailTabs: View {
         }
         )
     }
-    
 }
+
+
+
+public struct BookDetailsMainView: View {
+    let book: Book
+    
+    public var body: some View {
+        
+        ScrollView {
+            HStack {
+                HStack(alignment: .center) {
+                    ThumbnailProvider(book: book)
+                        .scaledToFit()
+                        .frame(height: 390.0)
+                        .frame(maxWidth: 255)
+                        .padding(.all)
+                        .shadow(radius: 1)
+                }
+                VStack {
+                    //Book Details
+                    
+                    // Main Book Details
+                    HStack {
+                        BookMainDetails(book: book)
+                    }
+                    // Secondary Book Details
+                    BookSecondaryDetails(book: book)
+                    
+                    //Action Buttons
+                    BookActionButtons(book: book)
+                }
+                .padding(.all)
+                .frame(width: 380)
+            }
+            .frame(width: 710)
+            
+            Divider()
+                .padding(.horizontal, 30.0)
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Description:")
+                        .fontWeight(.semibold)
+                        .padding(.bottom, 5.0)
+                    Spacer()
+                }
+                Text(book.sypnosis ?? "")
+            }
+            .font(.subheadline)
+            .padding(.horizontal)
+            .frame(maxWidth: 690)
+            
+        }
+    }
+}
+
+public struct BookDetailsLibraryView: View {
+    
+    let book: Book
+    
+    public var body: some View {
+        VStack {
+            Text(book.title ?? "")
+        }
+    }
+}
+
+public struct BookDetailsDetailsView: View {
+    
+    let book: Book
+    
+    public var body: some View {
+        VStack {
+            Text(book.title ?? "")
+        }
+        
+    }
+}
+
+public struct BookDetailsCreativesView: View {
+    let book: Book
+    
+    public var body: some View {
+        VStack {
+            Text(book.title ?? "")
+        }
+    }
+}
+
+struct FakePublisherLogo: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.gray)
+                .frame(width: 40, height: 40)
+            
+            Text("P")
+                .font(.headline)
+                .foregroundColor(.white)
+        }
+    }
+}
+
+

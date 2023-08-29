@@ -5,6 +5,8 @@
         <attribute name="coverDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="coverPrice" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
         <attribute name="currentValue" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
+        <attribute name="dateAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dateModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="downloaded" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="fileName" optional="YES" attributeType="String"/>
         <attribute name="gradedBy" optional="YES" attributeType="String"/>
@@ -28,7 +30,7 @@
         <relationship name="characters" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Characters" inverseName="books" inverseEntity="Characters"/>
         <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="book" inverseEntity="Event"/>
         <relationship name="formats" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Format" inverseName="book" inverseEntity="Format"/>
-        <relationship name="imprint" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Imprint"/>
+        <relationship name="imprint" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Imprint" inverseName="book" inverseEntity="Imprint"/>
         <relationship name="locations" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Locations" inverseName="book" inverseEntity="Locations"/>
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="book" inverseEntity="Publisher"/>
         <relationship name="series" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Series" inverseName="book" inverseEntity="Series"/>
@@ -76,6 +78,7 @@
     </entity>
     <entity name="Imprint" representedClassName="Imprint" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="imprint" inverseEntity="Book"/>
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher"/>
     </entity>
     <entity name="Locations" representedClassName="Locations" syncable="YES" codeGenerationType="class">

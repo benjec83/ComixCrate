@@ -7,12 +7,21 @@
 
 import ZIPFoundation
 import CoreData
+import UIKit
 
 class ComicFileHandler {
     
     static func handleImportedFile(at url: URL, in context: NSManagedObjectContext) {
         let fileManager = FileManager()
         let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
+        
+        let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .medium // This will include hours, minutes, and seconds
+            return formatter
+        }()
+
         
         do {
             // Ensure directory exists
@@ -66,13 +75,30 @@ class ComicFileHandler {
                     comicFile.title = comicInfo.title
                     comicFile.issueNumber = comicInfo.number ?? 0
                     comicFile.volumeYear = comicInfo.year ?? 0
+                    comicFile.dateAdded = Date()
                     
                     // Sorts the image files and picks the first one to be the cover thumbnail
-                    if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }), let firstImageName = imageFiles.first {
-                        let destinationPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(UUID().uuidString).appendingPathExtension(firstImageName.pathExtension)
-                        try fileManager.copyItem(at: firstImageName, to: destinationPath)
-                        comicFile.thumbnailPath = destinationPath.path
-                        try context.save()
+                    if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }), let firstImageURL = imageFiles.first {
+                        
+                        if let originalImage = UIImage(contentsOfFile: firstImageURL.path),
+                           let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
+                           let imageData = resizedImage.jpegData(compressionQuality: 1) {
+                            
+                            // Store the thumbnail in the app's document directory
+                            let uniqueFilename = "\(UUID().uuidString).\(firstImageURL.pathExtension)"
+                            let destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
+                            
+                            try? imageData.write(to: destinationPath)
+                            comicFile.thumbnailPath = uniqueFilename // Only save the unique filename
+                            print("Saving thumbnail to: \(destinationPath.path)")
+
+                            // Check if the file exists at the saved path
+                            if FileManager.default.fileExists(atPath: destinationPath.path) {
+                                print("Thumbnail successfully saved at: \(destinationPath.path)")
+                            } else {
+                                print("Failed to save thumbnail at: \(destinationPath.path)")
+                            }
+                        }
                     }
                     
                     try context.save()

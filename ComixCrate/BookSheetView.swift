@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct BookSheetView: View {
+    
+    let book: Book
+
     @State private var showingSheet = false
     
     @State var isModalSheetShown: Bool = false
     
-    var book: Book
     @Environment(\.dismiss) var dismiss
     
 
@@ -24,9 +27,9 @@ struct BookSheetView: View {
     }
 }
 
-struct BookSheetView_Previews: PreviewProvider {
-    static var previews: some View {
-        BookSheetView(book: books[0])
-            .environmentObject(ModelData())
-    }
-}
+//struct BookSheetView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        BookSheetView(book: books[0])
+//            .environmentObject(ModelData())
+//    }
+//}
