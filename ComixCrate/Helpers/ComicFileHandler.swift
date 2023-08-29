@@ -70,6 +70,21 @@ class ComicFileHandler {
                     comicFile.publisher = publisherEntity
                     // End of the Publisher relationship handling.
                     
+                    // Handling the StoryArc relationship:
+                    let storyArchFetchRequest: NSFetchRequest<StoryArc> = StoryArc.fetchRequest()
+                    storyArchFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.story ?? "")
+                    
+                    let publisherEntities = try? context.fetch(publisherFetchRequest)
+                    var publisherEntity: Publisher!
+                    if let existingPublisher = publisherEntities?.first {
+                        publisherEntity = existingPublisher
+                    } else {
+                        publisherEntity = Publisher(context: context)
+                        publisherEntity.name = comicInfo.publisher
+                    }
+                    
+                    comicFile.publisher = publisherEntity
+                    // End of the Publisher relationship handling.
                     
                     comicFile.sypnosis = comicInfo.summary
                     comicFile.title = comicInfo.title
