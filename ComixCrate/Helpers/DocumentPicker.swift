@@ -14,6 +14,7 @@ struct DocumentPicker: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
         let picker = UIDocumentPickerViewController(documentTypes: ["public.item"], in: .import)
         picker.delegate = context.coordinator
+        print("DocumentPicker: Starting document picking process.")
         picker.allowsMultipleSelection = true
         return picker
     }
@@ -32,11 +33,15 @@ struct DocumentPicker: UIViewControllerRepresentable {
         }
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            parent.completion(urls)
+            parent.completion(urls)  // Call the completion closure with the picked URLs
+            print("DocumentPicker: Picked documents at URLs: \(urls)")
         }
-        
 
+        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+            print("DocumentPicker: Document picking was cancelled.")
+        }
     }
+
 }
 
 

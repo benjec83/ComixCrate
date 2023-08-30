@@ -15,8 +15,12 @@ struct ComixCrateApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+            
                 // Provide the main context to the SwiftUI environment
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .onAppear {
+                    print("ComixCrateApp started.")
+                }
         }
     }
 }

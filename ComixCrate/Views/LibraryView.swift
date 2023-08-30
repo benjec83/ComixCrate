@@ -65,7 +65,6 @@ struct LibraryView: View {
                             }
                         }
                         .onAppear {
-                            print("Number of books: \(book.count)")
                         }
                     } else {
                         HStack {
@@ -202,9 +201,8 @@ struct LibraryView: View {
         }
         do {
             try viewContext.save()
-        } catch {
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
         }
     }
 }

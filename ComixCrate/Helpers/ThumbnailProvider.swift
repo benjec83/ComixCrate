@@ -11,10 +11,14 @@ import CoreData
 struct ThumbnailProvider: View {
     let book: Book
 
+    init(book: Book) {
+        self.book = book
+        print("ThumbnailProvider: Initialized for book: \(book.title ?? "")")
+    }
+
     var body: some View {
         thumbnailImage
-            .onAppear(perform: cacheThumbnailImage)
-
+            .onAppear(perform: cacheThumbnailImageIfNeeded)
     }
 
     private var thumbnailImage: some View {
@@ -22,35 +26,41 @@ struct ThumbnailProvider: View {
         let fullThumbnailPath = basePath.appendingPathComponent(book.thumbnailPath ?? "").path
 
         if let cachedImage = ImageCache.shared.image(forKey: fullThumbnailPath) {
+            print("ThumbnailProvider: Retrieved thumbnail from cache for path: \(fullThumbnailPath)")
             return Image(uiImage: cachedImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-        } else if FileManager.default.fileExists(atPath: fullThumbnailPath) {
+        } else {
+            print("ThumbnailProvider: Thumbnail not found in cache for path: \(fullThumbnailPath)")
             if let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
-                // Use the image from the path and cache it
-                ImageCache.shared.set(image: uiImage, forKey: fullThumbnailPath)
+                print("ThumbnailProvider: Retrieved thumbnail from file system for path: \(fullThumbnailPath)")
                 return Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             } else {
-                print("Failed to load UIImage from path: \(fullThumbnailPath)")
+                print("ThumbnailProvider: Failed to load UIImage from path: \(fullThumbnailPath). Using placeholder image.")
+                // Use a placeholder image
+                return Image("placeholderCover")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
             }
-        } else {
-            print("File does not exist at path: \(fullThumbnailPath)")
         }
-        // Use a placeholder image
-        return Image("placeholderCover")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
     }
 
-    private func cacheThumbnailImage() {
+    private func cacheThumbnailImageIfNeeded() {
         let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let fullThumbnailPath = basePath.appendingPathComponent(book.thumbnailPath ?? "").path
 
-        if let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
+        if ImageCache.shared.image(forKey: fullThumbnailPath) == nil, let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
+            print("ThumbnailProvider: Caching thumbnail for path: \(fullThumbnailPath)")
             ImageCache.shared.set(image: uiImage, forKey: fullThumbnailPath)
+        } else {
+            print("ThumbnailProvider: Thumbnail already cached for path: \(fullThumbnailPath)")
         }
     }
 }
+
+
+
+
 

@@ -14,12 +14,14 @@ class CoreDataHelper {
     private init() {}
     
     func saveContext(context: NSManagedObjectContext) {
+        print("Attempting to save context...")
         do {
             try context.save()
-        } catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            print("Context saved successfully.")
+        } catch let error as NSError {
+            print("Could not save context. \(error), \(error.userInfo)")
         }
     }
+
 }
 

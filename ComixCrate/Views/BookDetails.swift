@@ -15,11 +15,6 @@ struct BookMainDetails: View {
         book.series?.name
     }
     
-    /// Computed property to get publisher name
-    var publisherName: String? {
-        book.publisher?.name
-    }
-    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -128,6 +123,7 @@ struct BookDetailTabs: View {
     let book: Book
     @State private var isFavorite: Bool
 
+
     public init(book: Book) {
         self.book = book
         _isFavorite = State(initialValue: book.isFavorite)
@@ -137,12 +133,6 @@ struct BookDetailTabs: View {
     var seriesName: String? {
         book.series?.name
     }
-    
-    /// Computed property to get publisher name
-    var publisherName: String? {
-        book.publisher?.name
-    }
-    
     
     var body: some View {
         TabView {
@@ -207,6 +197,10 @@ struct BookDetailTabs: View {
 
 public struct BookDetailsMainView: View {
     let book: Book
+
+    public init(book: Book) {
+        self.book = book
+    }
     
     public var body: some View {
         
@@ -264,6 +258,8 @@ public struct BookDetailsLibraryView: View {
     public var body: some View {
         VStack {
             Text(book.title ?? "")
+            Text("Library View")
+
         }
     }
 }
@@ -275,6 +271,8 @@ public struct BookDetailsDetailsView: View {
     public var body: some View {
         VStack {
             Text(book.title ?? "")
+            Text("Details View")
+
         }
         
     }
@@ -286,6 +284,7 @@ public struct BookDetailsCreativesView: View {
     public var body: some View {
         VStack {
             Text(book.title ?? "")
+            Text("Creatives View")
         }
     }
 }

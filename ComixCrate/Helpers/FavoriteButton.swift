@@ -14,8 +14,10 @@ struct FavoriteButton: View {
 
     var body: some View {
         Button(action: {
+            print("Favorite button pressed.")
             withAnimation {
                 book.isFavorite.toggle()
+                print("Favorite status changed to: \(book.isFavorite)")
                 CoreDataHelper.shared.saveContext(context: context)
             }
         }) {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22203.2" systemVersion="22G90" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="Book" representedClassName="Book" syncable="YES" codeGenerationType="class">
+        <attribute name="cachedThumbnailData" optional="YES" attributeType="Binary"/>
         <attribute name="condition" optional="YES" attributeType="String"/>
         <attribute name="coverDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="coverPrice" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
@@ -11,7 +12,7 @@
         <attribute name="fileName" optional="YES" attributeType="String"/>
         <attribute name="gradedBy" optional="YES" attributeType="String"/>
         <attribute name="gradeValue" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
-        <attribute name="isFavorite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isFavorite" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="issueNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>

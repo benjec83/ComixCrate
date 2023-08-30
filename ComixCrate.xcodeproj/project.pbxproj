@@ -15,7 +15,6 @@
 		4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */; };
 		4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */; };
 		4AB6E7A12A9BD90A00A8EFA0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */; };
-		4AB6E7A52A9BD90A00A8EFA0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AB6E7A42A9BD90A00A8EFA0 /* Preview Assets.xcassets */; };
 		4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7AB2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld */; };
 		4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B02A9BE0C500A8EFA0 /* Persistence.swift */; };
 		4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B22A9BE0FB00A8EFA0 /* ComicFileHandler.swift */; };
@@ -63,6 +62,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A70B9C22A9F8F1F0059AB82 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4AB6E7BF2A9D034E00A8EFA0 /* BookSheetView.swift */,
+				4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */,
+				4A2E60782A9D391D00953337 /* DiagnosticView.swift */,
+				4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */,
+				4AB6E7C12A9D039900A8EFA0 /* BookDetails.swift */,
+				4AB6E7B92A9BEB3300A8EFA0 /* LibraryView.swift */,
+				4AB6E7BB2A9BED7D00A8EFA0 /* BookTileModel.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		4AB6E7902A9BD90700A8EFA0 = {
 			isa = PBXGroup;
 			children = (
@@ -82,14 +95,10 @@
 		4AB6E79B2A9BD90700A8EFA0 /* ComixCrate */ = {
 			isa = PBXGroup;
 			children = (
+				4A70B9C22A9F8F1F0059AB82 /* Views */,
 				4AB6E7AF2A9BE09300A8EFA0 /* Helpers */,
 				4AB6E7AE2A9BE08100A8EFA0 /* Data */,
 				4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */,
-				4AB6E7C12A9D039900A8EFA0 /* BookDetails.swift */,
-				4AB6E7BF2A9D034E00A8EFA0 /* BookSheetView.swift */,
-				4AB6E7BB2A9BED7D00A8EFA0 /* BookTileModel.swift */,
-				4AB6E7B92A9BEB3300A8EFA0 /* LibraryView.swift */,
-				4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */,
 				4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */,
 				4AB6E7A22A9BD90A00A8EFA0 /* ComixCrate.entitlements */,
 				4AB6E7A32A9BD90A00A8EFA0 /* Preview Content */,
@@ -109,8 +118,6 @@
 			isa = PBXGroup;
 			children = (
 				4AB6E7AB2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld */,
-				4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */,
-				4A2E60782A9D391D00953337 /* DiagnosticView.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -193,7 +200,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4AB6E7A52A9BD90A00A8EFA0 /* Preview Assets.xcassets in Resources */,
 				4AB6E7A12A9BD90A00A8EFA0 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

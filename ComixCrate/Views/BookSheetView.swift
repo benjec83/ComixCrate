@@ -17,7 +17,6 @@ struct BookSheetView: View {
     @State var isModalSheetShown: Bool = false
     
     @Environment(\.dismiss) var dismiss
-    
 
     
     var body: some View {
