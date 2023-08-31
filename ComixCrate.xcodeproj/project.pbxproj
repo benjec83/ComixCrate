@@ -13,6 +13,8 @@
 		4A2E60752A9D357400953337 /* DatabaseInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */; };
 		4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60782A9D391D00953337 /* DiagnosticView.swift */; };
 		4A7E7D6C2A9FD42700504BAF /* NewLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6B2A9FD42700504BAF /* NewLibraryView.swift */; };
+		4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6D2AA0582600504BAF /* LRUCache.swift */; };
+		4A7E7D702AA05FB400504BAF /* ProgressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6F2AA05FB400504BAF /* ProgressModel.swift */; };
 		4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */; };
 		4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */; };
 		4AB6E7A12A9BD90A00A8EFA0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */; };
@@ -35,6 +37,8 @@
 		4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseInspectorView.swift; sourceTree = "<group>"; };
 		4A2E60782A9D391D00953337 /* DiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticView.swift; sourceTree = "<group>"; };
 		4A7E7D6B2A9FD42700504BAF /* NewLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLibraryView.swift; sourceTree = "<group>"; };
+		4A7E7D6D2AA0582600504BAF /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
+		4A7E7D6F2AA05FB400504BAF /* ProgressModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressModel.swift; sourceTree = "<group>"; };
 		4AB6E7992A9BD90700A8EFA0 /* ComixCrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComixCrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComixCrateApp.swift; sourceTree = "<group>"; };
 		4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -135,6 +139,8 @@
 				4AB6E7BD2A9C203E00A8EFA0 /* ImageUtilities.swift */,
 				4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */,
 				4A2E60722A9D1F8400953337 /* FavoriteButton.swift */,
+				4A7E7D6D2AA0582600504BAF /* LRUCache.swift */,
+				4A7E7D6F2AA05FB400504BAF /* ProgressModel.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -226,10 +232,12 @@
 				4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */,
 				4AB6E7B82A9BE8F400A8EFA0 /* DocumentPicker.swift in Sources */,
 				4A2E60752A9D357400953337 /* DatabaseInspectorView.swift in Sources */,
+				4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */,
 				4A2E606B2A9D138700953337 /* ThumbnailProvider.swift in Sources */,
 				4A2E60732A9D1F8400953337 /* FavoriteButton.swift in Sources */,
 				4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */,
 				4AB6E7C22A9D039900A8EFA0 /* BookDetails.swift in Sources */,
+				4A7E7D702AA05FB400504BAF /* ProgressModel.swift in Sources */,
 				4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

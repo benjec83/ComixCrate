@@ -196,6 +196,7 @@ struct BookDetailTabs: View {
 
 public struct BookDetailsMainView: View {
     let book: Book
+    @State private var shouldCacheHighQualityThumbnail: Bool = false
 
     public init(book: Book) {
         self.book = book
@@ -206,7 +207,7 @@ public struct BookDetailsMainView: View {
         ScrollView {
             HStack {
                 HStack(alignment: .center) {
-                    ThumbnailProvider(book: book)
+                    ThumbnailProvider(book: book, isHighQuality: true)
                         .scaledToFit()
                         .frame(height: 390.0)
                         .frame(maxWidth: 255)
@@ -247,6 +248,12 @@ public struct BookDetailsMainView: View {
             .frame(maxWidth: 690)
             
         }
+        // When the BookDetailsMainView appears, set the trigger to true
+        .onAppear {
+            shouldCacheHighQualityThumbnail = true
+        }
+
+        ThumbnailProvider(book: book, isHighQuality: true, shouldCacheHighQuality: $shouldCacheHighQualityThumbnail)
     }
 }
 
