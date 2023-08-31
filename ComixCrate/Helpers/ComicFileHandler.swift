@@ -75,6 +75,10 @@ class ComicFileHandler {
                     DispatchQueue.main.async {
                         progressModel.totalFiles = imageFiles?.count ?? 0
                     }
+                    DispatchQueue.main.async {
+                        
+                        progressModel.currentFileNumber += 1
+                    }
 
                     if let firstImageURL = imageFiles?.first {
                         if let originalImage = UIImage(contentsOfFile: firstImageURL.path),
@@ -94,6 +98,8 @@ class ComicFileHandler {
                     }
                     
                     try context.save()
+                    progressModel.finishImporting()
+
                 } else {
                     print("Failed to read or parse ComicInfo.xml")
                 }

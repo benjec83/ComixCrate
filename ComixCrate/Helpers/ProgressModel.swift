@@ -22,7 +22,6 @@ class ProgressModel: ObservableObject {
     @Published var currentFileName: String = ""
     @Published var isComplete: Bool = false
 
-
     var progress: Double {
         guard totalFiles > 0 else { return 0.0 }
         return Double(currentFileNumber) / Double(totalFiles)
@@ -37,7 +36,9 @@ class ProgressModel: ObservableObject {
     func updateProgress(forFile fileName: String) {
         self.currentFileName = fileName
         self.currentFileNumber += 1
+        print("Updated progress for file: \(fileName) - \(currentFileNumber)/\(totalFiles)")
     }
+
 
     func finishImporting() {
         self.isImporting = false

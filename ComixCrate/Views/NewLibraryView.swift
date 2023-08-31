@@ -24,10 +24,16 @@ struct NewLibraryView: View {
     @State private var showingAlert: Bool = false
     @StateObject var progressModel = ProgressModel()
     @State private var showingProgressAlert: Bool = false
+    
+    @State private var forceRefresh: Bool = false
+    @State private var redrawView: Bool = false
+    @State private var lastUpdate = Date()
 
 
+    
+    
     enum ActiveAlert { case deleteSelected, deleteAll, progress }
-
+    
     @State private var activeAlert: ActiveAlert = .deleteSelected
     
     private let spacing: CGFloat = 10
@@ -36,9 +42,15 @@ struct NewLibraryView: View {
     }
     
     var body: some View {
+        let _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            self.lastUpdate = Date()
+        }
+
         VStack {
+            ProgressViewComponent(progressModel: progressModel)
             content
         }
+        .id(redrawView ? UUID() : UUID())
         .overlay(
             Group {
                 if showingProgressAlert && !progressModel.isComplete {
@@ -46,16 +58,21 @@ struct NewLibraryView: View {
                 }
             }
         )
+
         .toolbar {
             toolbarContent
+            Button("Update Progress") {
+                progressModel.currentFileNumber += 1
+            }
+
         }
         .navigationTitle("Library")
         .sheet(isPresented: $showingDocumentPicker) {
             DocumentPicker { urls in
+                showingProgressAlert = true // <-- Add this line
                 for url in urls {
                     ComicFileHandler.handleImportedFile(at: url, in: self.viewContext, progressModel: progressModel)
                 }
-                self.showingProgressAlert = true
             }
         }
         .alert(isPresented: $showingAlert) {
@@ -83,11 +100,20 @@ struct NewLibraryView: View {
             }
         }
         .onChange(of: progressModel.isImporting) { newValue in
+            redrawView.toggle()
             if newValue {
                 showingAlert = true
                 activeAlert = .progress
             } else {
                 showingAlert = false
+            }
+        }
+        .onChange(of: progressModel.progress) { newProgress in
+            print("Progress updated to: \(newProgress)")
+        }
+        .onChange(of: progressModel.isComplete) { isComplete in
+            if isComplete {
+                showingProgressAlert = false
             }
         }
         .sheet(item: $selectedBook) { item in
@@ -171,7 +197,7 @@ struct NewLibraryView: View {
             }
         }
     }
-
+    
     private var selectButton: some View {
         Button(action: {
             isSelecting.toggle()
@@ -179,7 +205,7 @@ struct NewLibraryView: View {
             Text("Select")
         }
     }
-
+    
     private var deleteAllButton: some View {
         Button(action: {
             activeAlert = .deleteAll
@@ -242,25 +268,25 @@ struct NewLibraryView: View {
     }
     
     private func toggleSelection(for book: Book) {
-            if selectedBooks.contains(book) {
-                selectedBooks.remove(book)
-            } else {
-                selectedBooks.insert(book)
-            }
+        if selectedBooks.contains(book) {
+            selectedBooks.remove(book)
+        } else {
+            selectedBooks.insert(book)
         }
-
-        func deleteSelectedBooks() {
-            for bookItem in selectedBooks {
-                viewContext.delete(bookItem)
-            }
-            do {
-                try viewContext.save()
-                selectedBooks.removeAll()
-                isSelecting = false
-            } catch {
-                print("Error deleting selected books:", error.localizedDescription)
-            }
+    }
+    
+    func deleteSelectedBooks() {
+        for bookItem in selectedBooks {
+            viewContext.delete(bookItem)
         }
+        do {
+            try viewContext.save()
+            selectedBooks.removeAll()
+            isSelecting = false
+        } catch {
+            print("Error deleting selected books:", error.localizedDescription)
+        }
+    }
     
     func deleteAll() {
         let fetchRequest = Book.fetchRequest()
@@ -289,9 +315,26 @@ struct NewLibraryView: View {
     }
 }
 
-struct ProgressAlertView: View {
+//Troubleshooting Progress
+struct ProgressViewComponent: View {
     @ObservedObject var progressModel: ProgressModel
 
+    var body: some View {
+        VStack {
+            Text("Is Importing: \(progressModel.isImporting.description)")
+            Text("Total Files: \(progressModel.totalFiles)")
+            Text("Current File Number: \(progressModel.currentFileNumber)")
+            Text("Current File Name: \(progressModel.currentFileName)")
+            Text("Progress: \(progressModel.progress)")
+            ProgressView(value: progressModel.progress, total: 1.0)
+        }
+    }
+}
+
+
+struct ProgressAlertView: View {
+    @ObservedObject var progressModel: ProgressModel
+    
     var body: some View {
         VStack {
             Text("Importing...")
@@ -302,5 +345,8 @@ struct ProgressAlertView: View {
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 10)
+        .onAppear{
+            print("Rendering ProgressAlertView")
+        }
     }
 }
