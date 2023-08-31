@@ -70,35 +70,37 @@ class ComicFileHandler {
                     comicFile.volumeYear = comicInfo.year ?? 0
                     comicFile.dateAdded = Date()
                     
-                    let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
-                    
-                    DispatchQueue.main.async {
-                        progressModel.totalFiles = imageFiles?.count ?? 0
-                    }
-                    DispatchQueue.main.async {
-                        
-                        progressModel.currentFileNumber += 1
-                    }
-
-                    if let firstImageURL = imageFiles?.first {
-                        if let originalImage = UIImage(contentsOfFile: firstImageURL.path),
-                           let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
-                           let imageData = resizedImage.jpegData(compressionQuality: 1) {
-                            
-                            let uniqueFilename = "\(UUID().uuidString).\(firstImageURL.pathExtension)"
-                            let destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
-                            
-                            try? imageData.write(to: destinationPath)
-                            comicFile.thumbnailPath = uniqueFilename
-
-                            DispatchQueue.main.async {
-                                progressModel.updateProgress(forFile: firstImageURL.lastPathComponent)
+                    if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+                                
+                                DispatchQueue.main.async {
+                                    progressModel.totalFiles = imageFiles.count
+                                }
+                                
+                                for imageURL in imageFiles {
+                                    if let originalImage = UIImage(contentsOfFile: imageURL.path),
+                                       let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
+                                       let imageData = resizedImage.jpegData(compressionQuality: 1) {
+                                        
+                                        let uniqueFilename = "\(UUID().uuidString).\(imageURL.pathExtension)"
+                                        let destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
+                                        
+                                        try? imageData.write(to: destinationPath)
+                                        
+                                        if comicFile.thumbnailPath == nil {
+                                            comicFile.thumbnailPath = uniqueFilename
+                                        }
+                                        
+                                        DispatchQueue.main.async {
+                                            progressModel.updateProgress(forFile: imageURL.lastPathComponent)
+                                        }
+                                    }
+                                }
+                                
+                                try context.save()
                             }
-                        }
-                    }
-                    
-                    try context.save()
-                    progressModel.finishImporting()
+                            DispatchQueue.main.async {
+                                progressModel.finishImporting()
+                            }
 
                 } else {
                     print("Failed to read or parse ComicInfo.xml")
