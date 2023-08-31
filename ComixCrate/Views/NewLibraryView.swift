@@ -23,9 +23,10 @@ struct NewLibraryView: View {
     
     @State private var showingAlert: Bool = false
     @StateObject var progressModel = ProgressModel()
+    @State private var showingProgressAlert: Bool = false
 
 
-    enum ActiveAlert { case deleteSelected, deleteAll }
+    enum ActiveAlert { case deleteSelected, deleteAll, progress }
 
     @State private var activeAlert: ActiveAlert = .deleteSelected
     
@@ -35,46 +36,68 @@ struct NewLibraryView: View {
     }
     
     var body: some View {
-            VStack {
-                content
-            }
-            .toolbar {
-                toolbarContent
-            }
-            .navigationTitle("Library")
-            .sheet(isPresented: $showingDocumentPicker) {
-                DocumentPicker { urls in
-                    for url in urls {
-                        ComicFileHandler.handleImportedFile(at: url, in: self.viewContext, progressModel: progressModel)
-                    }
+        VStack {
+            content
+        }
+        .overlay(
+            Group {
+                if showingProgressAlert && !progressModel.isComplete {
+                    ProgressAlertView(progressModel: progressModel)
                 }
             }
-            .alert(isPresented: $showingAlert) {
-                switch activeAlert {
-                case .deleteSelected:
-                    return Alert(
-                        title: Text("Delete Selected Books"),
-                        message: Text("Are you sure you want to delete the selected books? This action cannot be undone."),
-                        primaryButton: .default(Text("Cancel")),
-                        secondaryButton: .destructive(Text("Delete"), action: deleteSelectedBooks)
-                    )
-                case .deleteAll:
-                    return Alert(
-                        title: Text("Delete All Books"),
-                        message: Text("Are you sure you want to delete all books? This action cannot be undone."),
-                        primaryButton: .default(Text("Cancel")),
-                        secondaryButton: .destructive(Text("Delete All"), action: deleteAll)
-                    )
+        )
+        .toolbar {
+            toolbarContent
+        }
+        .navigationTitle("Library")
+        .sheet(isPresented: $showingDocumentPicker) {
+            DocumentPicker { urls in
+                for url in urls {
+                    ComicFileHandler.handleImportedFile(at: url, in: self.viewContext, progressModel: progressModel)
                 }
+                self.showingProgressAlert = true
             }
-            .sheet(item: $selectedBook) { item in
-                NavigationStack {
-                    VStack {
-                        BookSheetView(book: item)
-                    }
+        }
+        .alert(isPresented: $showingAlert) {
+            switch activeAlert {
+            case .deleteSelected:
+                return Alert(
+                    title: Text("Delete Selected Books"),
+                    message: Text("Are you sure you want to delete the selected books? This action cannot be undone."),
+                    primaryButton: .default(Text("Cancel")),
+                    secondaryButton: .destructive(Text("Delete"), action: deleteSelectedBooks)
+                )
+            case .deleteAll:
+                return Alert(
+                    title: Text("Delete All Books"),
+                    message: Text("Are you sure you want to delete all books? This action cannot be undone."),
+                    primaryButton: .default(Text("Cancel")),
+                    secondaryButton: .destructive(Text("Delete All"), action: deleteAll)
+                )
+            case .progress:
+                return Alert(
+                    title: Text("Importing..."),
+                    message: Text("\(progressModel.currentFileName) (\(progressModel.currentFileNumber) of \(progressModel.totalFiles))"),
+                    dismissButton: .cancel()
+                )
+            }
+        }
+        .onChange(of: progressModel.isImporting) { newValue in
+            if newValue {
+                showingAlert = true
+                activeAlert = .progress
+            } else {
+                showingAlert = false
+            }
+        }
+        .sheet(item: $selectedBook) { item in
+            NavigationStack {
+                VStack {
+                    BookSheetView(book: item)
                 }
             }
         }
+    }
     
     @ViewBuilder
     private var content: some View {
@@ -263,5 +286,21 @@ struct NewLibraryView: View {
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
         }
+    }
+}
+
+struct ProgressAlertView: View {
+    @ObservedObject var progressModel: ProgressModel
+
+    var body: some View {
+        VStack {
+            Text("Importing...")
+            ProgressView(value: progressModel.progress, total: 1.0)
+            Text("\(progressModel.currentFileName)")
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 10)
     }
 }

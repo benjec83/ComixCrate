@@ -72,7 +72,9 @@ class ComicFileHandler {
                     
                     let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
                     
-                    progressModel.totalFiles = imageFiles?.count ?? 0
+                    DispatchQueue.main.async {
+                        progressModel.totalFiles = imageFiles?.count ?? 0
+                    }
 
                     if let firstImageURL = imageFiles?.first {
                         if let originalImage = UIImage(contentsOfFile: firstImageURL.path),
@@ -85,7 +87,9 @@ class ComicFileHandler {
                             try? imageData.write(to: destinationPath)
                             comicFile.thumbnailPath = uniqueFilename
 
-                            progressModel.updateProgress(forFile: firstImageURL.lastPathComponent)
+                            DispatchQueue.main.async {
+                                progressModel.updateProgress(forFile: firstImageURL.lastPathComponent)
+                            }
                         }
                     }
                     
