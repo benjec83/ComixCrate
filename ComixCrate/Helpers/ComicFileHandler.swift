@@ -11,7 +11,7 @@ import UIKit
 
 class ComicFileHandler {
     
-    static func handleImportedFile(at url: URL, in context: NSManagedObjectContext, progressModel: ProgressModel) {
+    static func handleImportedFile(at url: URL, in context: NSManagedObjectContext) {
         let fileManager = FileManager()
         let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
         
@@ -72,10 +72,6 @@ class ComicFileHandler {
                     
                     if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
                                 
-                                DispatchQueue.main.async {
-                                    progressModel.totalFiles = imageFiles.count
-                                }
-                                
                                 for imageURL in imageFiles {
                                     if let originalImage = UIImage(contentsOfFile: imageURL.path),
                                        let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
@@ -89,17 +85,11 @@ class ComicFileHandler {
                                         if comicFile.thumbnailPath == nil {
                                             comicFile.thumbnailPath = uniqueFilename
                                         }
-                                        
-                                        DispatchQueue.main.async {
-                                            progressModel.updateProgress(forFile: imageURL.lastPathComponent)
-                                        }
+
                                     }
                                 }
                                 
                                 try context.save()
-                            }
-                            DispatchQueue.main.async {
-                                progressModel.finishImporting()
                             }
 
                 } else {

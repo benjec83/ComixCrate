@@ -22,17 +22,12 @@ struct LibraryView: View {
     @State private var selectedBooks: Set<Book> = []
     
     @State private var showingAlert: Bool = false
-    @StateObject var progressModel = ProgressModel()
-    @State private var showingProgressAlert: Bool = false
     
     @State private var forceRefresh: Bool = false
     @State private var redrawView: Bool = false
     @State private var lastUpdate = Date()
-
-
     
-    
-    enum ActiveAlert { case deleteSelected, deleteAll, progress }
+    enum ActiveAlert { case deleteSelected, deleteAll }
     
     @State private var activeAlert: ActiveAlert = .deleteSelected
     
@@ -42,36 +37,17 @@ struct LibraryView: View {
     }
     
     var body: some View {
-        let _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            self.lastUpdate = Date()
-        }
-
         VStack {
-            ProgressViewComponent(progressModel: progressModel)
             content
         }
-        .id(redrawView ? UUID() : UUID())
-        .overlay(
-            Group {
-                if showingProgressAlert && !progressModel.isComplete {
-                    ProgressAlertView(progressModel: progressModel)
-                }
-            }
-        )
-
         .toolbar {
             toolbarContent
-            Button("Update Progress") {
-                progressModel.currentFileNumber += 1
-            }
-
         }
         .navigationTitle("Library")
         .sheet(isPresented: $showingDocumentPicker) {
             DocumentPicker { urls in
-                showingProgressAlert = true // <-- Add this line
                 for url in urls {
-                    ComicFileHandler.handleImportedFile(at: url, in: self.viewContext, progressModel: progressModel)
+                    ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
                 }
             }
         }
@@ -91,29 +67,6 @@ struct LibraryView: View {
                     primaryButton: .default(Text("Cancel")),
                     secondaryButton: .destructive(Text("Delete All"), action: deleteAll)
                 )
-            case .progress:
-                return Alert(
-                    title: Text("Importing..."),
-                    message: Text("\(progressModel.currentFileName) (\(progressModel.currentFileNumber) of \(progressModel.totalFiles))"),
-                    dismissButton: .cancel()
-                )
-            }
-        }
-        .onChange(of: progressModel.isImporting) { newValue in
-            redrawView.toggle()
-            if newValue {
-                showingAlert = true
-                activeAlert = .progress
-            } else {
-                showingAlert = false
-            }
-        }
-        .onChange(of: progressModel.progress) { newProgress in
-            print("Progress updated to: \(newProgress)")
-        }
-        .onChange(of: progressModel.isComplete) { isComplete in
-            if isComplete {
-                showingProgressAlert = false
             }
         }
         .sheet(item: $selectedBook) { item in
@@ -311,42 +264,6 @@ struct LibraryView: View {
             try viewContext.save()
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
-        }
-    }
-}
-
-//Troubleshooting Progress
-struct ProgressViewComponent: View {
-    @ObservedObject var progressModel: ProgressModel
-
-    var body: some View {
-        VStack {
-            Text("Is Importing: \(progressModel.isImporting.description)")
-            Text("Total Files: \(progressModel.totalFiles)")
-            Text("Current File Number: \(progressModel.currentFileNumber)")
-            Text("Current File Name: \(progressModel.currentFileName)")
-            Text("Progress: \(progressModel.progress)")
-            ProgressView(value: progressModel.progress, total: 1.0)
-        }
-    }
-}
-
-
-struct ProgressAlertView: View {
-    @ObservedObject var progressModel: ProgressModel
-    
-    var body: some View {
-        VStack {
-            Text("Importing...")
-            ProgressView(value: progressModel.progress, total: 1.0)
-            Text("\(progressModel.currentFileName)")
-        }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 10)
-        .onAppear{
-            print("Rendering ProgressAlertView")
         }
     }
 }
