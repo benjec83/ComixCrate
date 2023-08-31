@@ -17,10 +17,13 @@ struct NewLibraryView: View {
     @State private var isGalleryView: Bool = true
     @State private var showingDocumentPicker = false
     @State private var selectedBook: Book? = nil
+    
     @State private var isSelecting: Bool = false
     @State private var selectedBooks: Set<Book> = []
+    
     @State private var showingAlert: Bool = false
     @StateObject var progressModel = ProgressModel()
+
 
     enum ActiveAlert { case deleteSelected, deleteAll }
 
@@ -32,53 +35,47 @@ struct NewLibraryView: View {
     }
     
     var body: some View {
-        VStack {
-            content
-
-            if progressModel.isImporting {
-                ProgressView("Importing \(progressModel.currentFileName)", value: progressModel.progress, total: 1.0)
-                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-                    .padding()
+            VStack {
+                content
             }
-        }
-        .toolbar {
-            toolbarContent
-        }
-        .navigationTitle("Library")
-        .sheet(isPresented: $showingDocumentPicker) {
-            DocumentPicker { urls in
-                for url in urls {
-                    ComicFileHandler.handleImportedFile(at: url, in: self.viewContext, progressModel: progressModel)
+            .toolbar {
+                toolbarContent
+            }
+            .navigationTitle("Library")
+            .sheet(isPresented: $showingDocumentPicker) {
+                DocumentPicker { urls in
+                    for url in urls {
+                        ComicFileHandler.handleImportedFile(at: url, in: self.viewContext, progressModel: progressModel)
+                    }
+                }
+            }
+            .alert(isPresented: $showingAlert) {
+                switch activeAlert {
+                case .deleteSelected:
+                    return Alert(
+                        title: Text("Delete Selected Books"),
+                        message: Text("Are you sure you want to delete the selected books? This action cannot be undone."),
+                        primaryButton: .default(Text("Cancel")),
+                        secondaryButton: .destructive(Text("Delete"), action: deleteSelectedBooks)
+                    )
+                case .deleteAll:
+                    return Alert(
+                        title: Text("Delete All Books"),
+                        message: Text("Are you sure you want to delete all books? This action cannot be undone."),
+                        primaryButton: .default(Text("Cancel")),
+                        secondaryButton: .destructive(Text("Delete All"), action: deleteAll)
+                    )
+                }
+            }
+            .sheet(item: $selectedBook) { item in
+                NavigationStack {
+                    VStack {
+                        BookSheetView(book: item)
+                    }
                 }
             }
         }
-        .alert(isPresented: $showingAlert) {
-            switch activeAlert {
-            case .deleteSelected:
-                return Alert(
-                    title: Text("Delete Selected Books"),
-                    message: Text("Are you sure you want to delete the selected books? This action cannot be undone."),
-                    primaryButton: .default(Text("Cancel")),
-                    secondaryButton: .destructive(Text("Delete"), action: deleteSelectedBooks)
-                )
-            case .deleteAll:
-                return Alert(
-                    title: Text("Delete All Books"),
-                    message: Text("Are you sure you want to delete all books? This action cannot be undone."),
-                    primaryButton: .default(Text("Cancel")),
-                    secondaryButton: .destructive(Text("Delete All"), action: deleteAll)
-                )
-            }
-        }
-        .sheet(item: $selectedBook) { item in
-            NavigationStack {
-                VStack {
-                    BookSheetView(book: item)
-                }
-            }
-        }
-    }
-
+    
     @ViewBuilder
     private var content: some View {
         if books.isEmpty {
@@ -91,7 +88,6 @@ struct NewLibraryView: View {
             }
         }
     }
-
     
     private var emptyLibraryContent: some View {
         VStack {
