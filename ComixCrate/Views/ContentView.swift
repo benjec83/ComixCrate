@@ -29,6 +29,11 @@ struct ContentView: View {
                     } label: {
                         Label("DiagnosticView", systemImage: "gear.badge.questionmark")
                     }
+                    NavigationLink {
+                        NewLibraryView()
+                    } label: {
+                        Label("All Books", systemImage: "books.vertical")
+                    }
                 }
                 .listStyle(.sidebar )
                 .navigationTitle("Menu")

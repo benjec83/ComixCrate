@@ -47,7 +47,6 @@ struct BookSecondaryDetails: View {
             detailSection(title: "Released", mainText: "Year", subText: "Month DD")
             Divider()
             detailSection(title: "Length", mainText: "2000", subText: "Pages")
-            Spacer()
         }
         .padding(.top)
         .frame(height: 65)

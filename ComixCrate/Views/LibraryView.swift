@@ -64,8 +64,6 @@ struct LibraryView: View {
                                 }
                             }
                         }
-                        .onAppear {
-                        }
                     } else {
                         HStack {
                             Text("Text")
@@ -86,18 +84,19 @@ struct LibraryView: View {
                     for url in urls {
                         ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
                     }
+                    
                 }
             }
-            .alert(isPresented: $showingDeleteConfirmation) {
-                Alert(
-                    title: Text("Delete All Books"),
-                    message: Text("Are you sure you want to delete all books? This action cannot be undone."),
-                    primaryButton: .default(Text("Cancel")),
-                    secondaryButton: .destructive(Text("Delete All")) {
-                        deleteAll()
-                    }
-                )
-            }
+//            .alert(isPresented: $showingDeleteConfirmation) {
+//                Alert(
+//                    title: Text("Delete All Books"),
+//                    message: Text("Are you sure you want to delete all books? This action cannot be undone."),
+//                    primaryButton: .default(Text("Cancel")),
+//                    secondaryButton: .destructive(Text("Delete All")) {
+//                        deleteAll()
+//                    }
+//                )
+//            }
             .alert(isPresented: $showingDeleteSelectedConfirmation) {
                 Alert(
                     title: Text("Delete Selected Books"),
