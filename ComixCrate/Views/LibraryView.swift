@@ -21,6 +21,8 @@ struct LibraryView: View {
     
     @State private var isSelecting: Bool = false
     @State private var selectedBooks: Set<Book> = []
+    @StateObject var progressModel = ProgressModel()
+
     
     @State private var showingDeleteSelectedConfirmation = false
     
@@ -82,7 +84,7 @@ struct LibraryView: View {
             .sheet(isPresented: $showingDocumentPicker) {
                 DocumentPicker { urls in
                     for url in urls {
-                        ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
+                        ComicFileHandler.handleImportedFile(at: url, in: self.viewContext, progressModel: progressModel)
                     }
                     
                 }

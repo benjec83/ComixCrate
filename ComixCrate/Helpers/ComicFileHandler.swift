@@ -11,20 +11,18 @@ import UIKit
 
 class ComicFileHandler {
     
-    static func handleImportedFile(at url: URL, in context: NSManagedObjectContext) {
+    static func handleImportedFile(at url: URL, in context: NSManagedObjectContext, progressModel: ProgressModel) {
         let fileManager = FileManager()
         let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
         
         let dateFormatter: DateFormatter = {
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
-            formatter.timeStyle = .medium // This will include hours, minutes, and seconds
+            formatter.timeStyle = .medium
             return formatter
         }()
 
-        
         do {
-            // Ensure directory exists
             if !fileManager.fileExists(atPath: tempDirectory.path) {
                 try fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true, attributes: nil)
             }
@@ -38,7 +36,6 @@ class ComicFileHandler {
                     let comicFile = Book(context: context)
                     comicFile.fileName = url.lastPathComponent
                     
-                    // Handling the Series relationship:
                     let fetchRequest: NSFetchRequest<Series> = Series.fetchRequest()
                     fetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.series)
                     
@@ -52,9 +49,7 @@ class ComicFileHandler {
                     }
                     
                     comicFile.series = seriesEntity
-                    // End of the Series relationship handling.
                     
-                    // Handling the Publisher relationship:
                     let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
                     publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
                     
@@ -68,7 +63,6 @@ class ComicFileHandler {
                     }
                     
                     comicFile.publisher = publisherEntity
-                    // End of the Publisher relationship handling.
                     
                     comicFile.sypnosis = comicInfo.summary
                     comicFile.title = comicInfo.title
@@ -76,32 +70,26 @@ class ComicFileHandler {
                     comicFile.volumeYear = comicInfo.year ?? 0
                     comicFile.dateAdded = Date()
                     
-                    // Sorts the image files and picks the first one to be the cover thumbnail
-                    if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }), let firstImageURL = imageFiles.first {
-                        
+                    let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
+                    
+                    progressModel.totalFiles = imageFiles?.count ?? 0
+
+                    if let firstImageURL = imageFiles?.first {
                         if let originalImage = UIImage(contentsOfFile: firstImageURL.path),
                            let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
                            let imageData = resizedImage.jpegData(compressionQuality: 1) {
                             
-                            // Store the thumbnail in the app's document directory
                             let uniqueFilename = "\(UUID().uuidString).\(firstImageURL.pathExtension)"
                             let destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
                             
                             try? imageData.write(to: destinationPath)
-                            comicFile.thumbnailPath = uniqueFilename // Only save the unique filename
-                            print("Saving thumbnail to: \(destinationPath.path)")
+                            comicFile.thumbnailPath = uniqueFilename
 
-                            // Check if the file exists at the saved path
-                            if FileManager.default.fileExists(atPath: destinationPath.path) {
-                                print("Thumbnail successfully saved at: \(destinationPath.path)")
-                            } else {
-                                print("Failed to save thumbnail at: \(destinationPath.path)")
-                            }
+                            progressModel.updateProgress(forFile: firstImageURL.lastPathComponent)
                         }
                     }
                     
                     try context.save()
-                    print("Saved Comic File: \(comicFile)")
                 } else {
                     print("Failed to read or parse ComicInfo.xml")
                 }
@@ -114,7 +102,6 @@ class ComicFileHandler {
             print("Unknown error: \(error.localizedDescription)")
         }
         
-        // Cleanup temp directory
         try? fileManager.removeItem(at: tempDirectory)
     }
     
@@ -140,7 +127,6 @@ struct ComicInfo {
     var year: Int16?
 }
 
-// XMLParserDelegate to handle the parsing
 class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
     var comicInfo = ComicInfo(series: "")
     var currentElement: String?
@@ -161,11 +147,11 @@ class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
             comicInfo.series = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
         case "Title":
             comicInfo.title = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
-        case "Number": // Updated from "IssueNumber"
+        case "Number":
             if let number = Int16(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
                 comicInfo.number = number
             }
-        case "Volume": // Updated from "VolumeYear"
+        case "Volume":
             if let year = Int16(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
                 comicInfo.year = year
             }
@@ -176,7 +162,6 @@ class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
         case "Publisher":
             comicInfo.publisher = currentText
         case .none, .some(_):
-            // Handle the case where currentElement is nil or any other unexpected value.
             break
         }
     }

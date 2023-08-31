@@ -15,6 +15,7 @@
 		4A7E7D6C2A9FD42700504BAF /* NewLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6B2A9FD42700504BAF /* NewLibraryView.swift */; };
 		4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6D2AA0582600504BAF /* LRUCache.swift */; };
 		4A7E7D702AA05FB400504BAF /* ProgressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6F2AA05FB400504BAF /* ProgressModel.swift */; };
+		4A7E7D722AA060D600504BAF /* ProgressDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D712AA060D600504BAF /* ProgressDialogView.swift */; };
 		4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */; };
 		4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */; };
 		4AB6E7A12A9BD90A00A8EFA0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */; };
@@ -39,6 +40,7 @@
 		4A7E7D6B2A9FD42700504BAF /* NewLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLibraryView.swift; sourceTree = "<group>"; };
 		4A7E7D6D2AA0582600504BAF /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		4A7E7D6F2AA05FB400504BAF /* ProgressModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressModel.swift; sourceTree = "<group>"; };
+		4A7E7D712AA060D600504BAF /* ProgressDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressDialogView.swift; sourceTree = "<group>"; };
 		4AB6E7992A9BD90700A8EFA0 /* ComixCrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComixCrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComixCrateApp.swift; sourceTree = "<group>"; };
 		4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				4A2E60722A9D1F8400953337 /* FavoriteButton.swift */,
 				4A7E7D6D2AA0582600504BAF /* LRUCache.swift */,
 				4A7E7D6F2AA05FB400504BAF /* ProgressModel.swift */,
+				4A7E7D712AA060D600504BAF /* ProgressDialogView.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -227,6 +230,7 @@
 				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
 				4A7E7D6C2A9FD42700504BAF /* NewLibraryView.swift in Sources */,
 				4AB6E7BE2A9C203E00A8EFA0 /* ImageUtilities.swift in Sources */,
+				4A7E7D722AA060D600504BAF /* ProgressDialogView.swift in Sources */,
 				4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */,
 				4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */,
 				4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */,
