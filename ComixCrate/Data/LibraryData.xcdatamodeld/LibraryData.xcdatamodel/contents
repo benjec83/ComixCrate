@@ -2,6 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22203.2" systemVersion="22G90" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="Book" representedClassName="Book" syncable="YES" codeGenerationType="class">
         <attribute name="cachedThumbnailData" optional="YES" attributeType="Binary"/>
+        <attribute name="communityRating" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="condition" optional="YES" attributeType="String"/>
         <attribute name="coverDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="coverPrice" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
@@ -17,6 +18,7 @@
         <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
         <attribute name="pageCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="personalRating" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="purchaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="purchaseFrom" optional="YES" attributeType="String"/>
         <attribute name="purchasePrice" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>

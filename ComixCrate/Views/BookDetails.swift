@@ -8,23 +8,27 @@
 import SwiftUI
 import CoreData
 
+// MARK: - BookMainDetails
+
 struct BookMainDetails: View {
     let book: Book
-    /// Computed property to get series name
-    var seriesName: String? {
+    
+    private var seriesName: String? {
         book.series?.name
     }
     
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("#\(String(book.issueNumber)) - \(book.title ?? "")")
+                Text("#\(book.issueNumber) - \(book.title ?? "")")
                     .font(.body)
                     .fontWeight(.semibold)
                     .lineLimit(2)
-                Text("\(seriesName ?? "")" + " " + "(\(book.volumeYear))")
+                
+                Text("\(seriesName ?? "") (\(book.volumeYear))")
                     .font(.caption2)
                     .lineLimit(2)
+                
                 Text("Story Arc")
                     .font(.caption2)
                     .fontWeight(.light)
@@ -37,6 +41,8 @@ struct BookMainDetails: View {
     }
 }
 
+// MARK: - BookSecondaryDetails
+
 struct BookSecondaryDetails: View {
     var book: Book
     
@@ -44,9 +50,9 @@ struct BookSecondaryDetails: View {
         HStack(alignment: .top) {
             detailSection(title: "Publisher", image: AnyView(FakePublisherLogo()))
             Divider()
-            detailSection(title: "Released", mainText: "Year", subText: "Month DD")
+            detailSection(title: "Released", mainText: book.releaseDate?.yearString, subText: book.releaseDate?.formattedString)
             Divider()
-            detailSection(title: "Length", mainText: "2000", subText: "Pages")
+            detailSection(title: "Length", mainText: "\(book.pageCount)", subText: "Pages")
         }
         .padding(.top)
         .frame(height: 65)
@@ -73,27 +79,56 @@ struct BookSecondaryDetails: View {
     }
 }
 
+// MARK: - BookActionButtons
+
 struct BookActionButtons: View {
-    var book: Book
+    @ObservedObject var book: Book
+    @State private var userRating: Double
+    @Environment(\.managedObjectContext) private var viewContext
     
-    var body: some View {
-        VStack {
-            Spacer()
-            actionButton(title: "Read Now", icon: "magazine")
-            actionButton(title: "Mark As Read", icon: "checkmark.circle")
-            actionButton(title: "Add to Reading Pile", icon: "square.stack.3d.up")
-            Spacer()
-            ratingsSection(title: "Personal Rating")
-            ratingsSection(title: "Community Rating")
-        }
-        .frame(height: 250)
+    enum ActionTitle: String {
+        case readNow = "Read Now"
+        case markAsRead = "Mark As Read"
+        case markAsUnread = "Mark As Unread"
+        case addToReadingPile = "Add to Reading Pile"
     }
     
-    private func actionButton(title: String, icon: String) -> some View {
+    init(book: Book) {
+        self.book = book
+        _userRating = State(initialValue: Double(book.personalRating) / 2.0)
+    }
+    
+    var body: some View {
+            VStack {
+                Spacer()
+                actionButton(title: .readNow, icon: "magazine")
+                actionButton(title: bookIsRead ? .markAsUnread : .markAsRead, icon: "checkmark.circle")
+                actionButton(title: .addToReadingPile, icon: "square.stack.3d.up")
+                Spacer()
+                ratingsSection(title: "Personal Rating", rating: userRating)
+            }
+            .frame(height: 250)
+            .onAppear {
+                userRating = book.personalRating
+            }
+        }
+    
+    private var bookIsRead: Bool {
+        book.read == 1
+    }
+    
+    private func actionButton(title: ActionTitle, icon: String) -> some View {
         Button {
-            print("\(title) \(book.title ?? "") pressed")
+            switch title {
+            case .markAsRead:
+                markBookAsRead()
+            case .markAsUnread:
+                markBookAsUnread()
+            default:
+                print("\(title.rawValue) \(book.title ?? "") pressed")
+            }
         } label: {
-            Label(title, systemImage: icon)
+            Label(title.rawValue, systemImage: icon)
                 .frame(width: 345.0, height: 55.0)
                 .background(Color.blue)
                 .foregroundColor(.white)
@@ -102,34 +137,78 @@ struct BookActionButtons: View {
         }
     }
     
-    private func ratingsSection(title: String) -> some View {
+    private func markBookAsRead() {
+        book.read = 1
+        saveContext()
+    }
+    
+    private func markBookAsUnread() {
+        book.read = 0
+        saveContext()
+    }
+    
+    private func saveContext() {
+        do {
+            try viewContext.save()
+        } catch {
+            print("Failed to update read status: \(error)")
+        }
+    }
+    
+    private func ratingsSection(title: String, rating: Double) -> some View {
         VStack {
             Text(title)
                 .font(.caption)
                 .multilineTextAlignment(.center)
                 .lineLimit(1)
             HStack(spacing: -1.0) {
-                ForEach(0..<5) { _ in
-                    Image(systemName: "star")
+                ForEach(0..<5) { index in
+                    starImage(for: index, in: rating)
+                        .onTapGesture {
+                            updateUserRating(to: Double(index) + 0.5)
+                        }
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    let width = value.location.x
+                                    let computedRating = Double(width / 30)
+                                    updateUserRating(to: min(max(computedRating, 0.5), 5))
+                                }
+                        )
                 }
             }
-            .foregroundColor(Color.gray)
         }
     }
+    
+    private func starImage(for index: Int, in rating: Double) -> some View {
+        if rating > Double(index) + 0.5 {
+            return Image(systemName: "star.fill").foregroundColor(Color.yellow)
+        } else if rating > Double(index) {
+            return Image(systemName: "star.leadinghalf.fill").foregroundColor(Color.yellow)
+        } else {
+            return Image(systemName: "star").foregroundColor(Color.gray)
+        }
+    }
+    
+    private func updateUserRating(to newRating: Double) {
+        userRating = newRating
+        book.personalRating = newRating
+        saveContext()
+    }
 }
+
+// MARK: - BookDetailTabs
 
 struct BookDetailTabs: View {
     let book: Book
     @State private var isFavorite: Bool
-
-
+    
     public init(book: Book) {
         self.book = book
         _isFavorite = State(initialValue: book.isFavorite)
     }
     
-    /// Computed property to get series name
-    var seriesName: String? {
+    private var seriesName: String? {
         book.series?.name
     }
     
@@ -166,22 +245,16 @@ struct BookDetailTabs: View {
                 Label("Edit", systemImage: "pencil")
             }
             FavoriteButton(book: book, context: book.managedObjectContext ?? PersistenceController.shared.container.viewContext)
-
+            
             Menu {
-                Button{
-                    
-                } label: {
+                Button(action: {}) {
                     Label("Button 1", systemImage: "pencil")
                 }
-                Button{
-                    
-                } label: {
+                Button(action: {}) {
                     Label("Button 2", systemImage: "pencil")
                 }
                 Divider()
-                Button{
-                    
-                } label: {
+                Button(action: {}) {
                     Label("Button 3", systemImage: "pencil")
                 }
             } label: {
@@ -192,12 +265,12 @@ struct BookDetailTabs: View {
     }
 }
 
+// MARK: - BookDetails Views
 
-
-public struct BookDetailsMainView: View {
+struct BookDetailsMainView: View {
     let book: Book
     @State private var shouldCacheHighQualityThumbnail: Bool = false
-
+    
     public init(book: Book) {
         self.book = book
     }
@@ -215,16 +288,8 @@ public struct BookDetailsMainView: View {
                         .shadow(radius: 1)
                 }
                 VStack {
-                    //Book Details
-                    
-                    // Main Book Details
-                    HStack {
-                        BookMainDetails(book: book)
-                    }
-                    // Secondary Book Details
+                    BookMainDetails(book: book)
                     BookSecondaryDetails(book: book)
-                    
-                    //Action Buttons
                     BookActionButtons(book: book)
                 }
                 .padding(.all)
@@ -248,43 +313,37 @@ public struct BookDetailsMainView: View {
             .frame(maxWidth: 690)
             
         }
-        // When the BookDetailsMainView appears, set the trigger to true
         .onAppear {
             shouldCacheHighQualityThumbnail = true
         }
-
+        
         ThumbnailProvider(book: book, isHighQuality: true, shouldCacheHighQuality: $shouldCacheHighQualityThumbnail)
     }
 }
 
-public struct BookDetailsLibraryView: View {
-    
+struct BookDetailsLibraryView: View {
     let book: Book
     
     public var body: some View {
         VStack {
             Text(book.title ?? "")
             Text("Library View")
-
         }
     }
 }
 
-public struct BookDetailsDetailsView: View {
-    
+struct BookDetailsDetailsView: View {
     let book: Book
     
     public var body: some View {
         VStack {
             Text(book.title ?? "")
             Text("Details View")
-
         }
-        
     }
 }
 
-public struct BookDetailsCreativesView: View {
+struct BookDetailsCreativesView: View {
     let book: Book
     
     public var body: some View {
@@ -308,5 +367,3 @@ struct FakePublisherLogo: View {
         }
     }
 }
-
-

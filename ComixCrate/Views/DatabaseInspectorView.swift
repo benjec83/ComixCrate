@@ -33,6 +33,8 @@ struct DatabaseInspectorView: View {
                     Text("Volume Year: \(String(book.volumeYear))")
                     Text("Volume Number: \(String(book.volumeNumber))")
                     Text("Date Added: \(dateFormatter.string(from: book.dateAdded ?? Date()))")
+                    Text("Read: \(String(book.read))")
+                    Text("Personal Rating: \(String(book.personalRating))")
 
                     // Add any other attributes you want to inspect here
                 }

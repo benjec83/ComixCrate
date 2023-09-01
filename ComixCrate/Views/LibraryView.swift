@@ -10,6 +10,8 @@ import Foundation
 
 struct LibraryView: View {
     
+    // MARK: - Properties
+    
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)])
     private var books: FetchedResults<Book>
@@ -17,24 +19,19 @@ struct LibraryView: View {
     @State private var isGalleryView: Bool = true
     @State private var showingDocumentPicker = false
     @State private var selectedBook: Book? = nil
-    
     @State private var isSelecting: Bool = false
     @State private var selectedBooks: Set<Book> = []
-    
     @State private var showingAlert: Bool = false
-    
-    @State private var forceRefresh: Bool = false
-    @State private var redrawView: Bool = false
-    @State private var lastUpdate = Date()
-    
-    enum ActiveAlert { case deleteSelected, deleteAll }
-    
     @State private var activeAlert: ActiveAlert = .deleteSelected
     
     private let spacing: CGFloat = 10
     private var gridItems: [GridItem] {
         [GridItem(.adaptive(minimum: 180, maximum: 180))]
     }
+    
+    enum ActiveAlert { case deleteSelected, deleteAll }
+    
+    // MARK: - Body
     
     var body: some View {
         VStack {
@@ -46,27 +43,15 @@ struct LibraryView: View {
         .navigationTitle("Library")
         .sheet(isPresented: $showingDocumentPicker) {
             DocumentPicker { urls in
-                for url in urls {
-                    ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
-                }
+                handleImportedFiles(urls: urls)
             }
         }
         .alert(isPresented: $showingAlert) {
             switch activeAlert {
             case .deleteSelected:
-                return Alert(
-                    title: Text("Delete Selected Books"),
-                    message: Text("Are you sure you want to delete the selected books? This action cannot be undone."),
-                    primaryButton: .default(Text("Cancel")),
-                    secondaryButton: .destructive(Text("Delete"), action: deleteSelectedBooks)
-                )
+                return deletionAlert(title: "Delete Selected Books", message: "Are you sure you want to delete the selected books?", action: deleteSelectedBooks)
             case .deleteAll:
-                return Alert(
-                    title: Text("Delete All Books"),
-                    message: Text("Are you sure you want to delete all books? This action cannot be undone."),
-                    primaryButton: .default(Text("Cancel")),
-                    secondaryButton: .destructive(Text("Delete All"), action: deleteAll)
-                )
+                return deletionAlert(title: "Delete All Books", message: "Are you sure you want to delete all books?", action: deleteAll)
             }
         }
         .sheet(item: $selectedBook) { item in
@@ -78,16 +63,14 @@ struct LibraryView: View {
         }
     }
     
+    // MARK: - Content Views
+    
     @ViewBuilder
     private var content: some View {
         if books.isEmpty {
             emptyLibraryContent
         } else {
-            if isGalleryView {
-                galleryViewContent
-            } else {
-                listViewContent
-            }
+            isGalleryView ? AnyView(galleryViewContent) : AnyView(listViewContent)
         }
     }
     
@@ -124,11 +107,7 @@ struct LibraryView: View {
     
     private func bookTile(for book: Book) -> some View {
         Button {
-            if isSelecting {
-                toggleSelection(for: book)
-            } else {
-                selectedBook = book
-            }
+            handleBookSelection(book: book)
         } label: {
             BookTileModel(book: book)
                 .opacity(isSelecting && !selectedBooks.contains(book) ? 0.5 : 1.0)
@@ -220,6 +199,31 @@ struct LibraryView: View {
         }
     }
     
+    // MARK: - Helper Functions
+    
+    private func handleImportedFiles(urls: [URL]) {
+        for url in urls {
+            ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
+        }
+    }
+    
+    private func handleBookSelection(book: Book) {
+        if isSelecting {
+            toggleSelection(for: book)
+        } else {
+            selectedBook = book
+        }
+    }
+    
+    private func deletionAlert(title: String, message: String, action: @escaping () -> Void) -> Alert {
+        Alert(
+            title: Text(title),
+            message: Text(message),
+            primaryButton: .default(Text("Cancel")),
+            secondaryButton: .destructive(Text("Delete"), action: action)
+        )
+    }
+    
     private func toggleSelection(for book: Book) {
         if selectedBooks.contains(book) {
             selectedBooks.remove(book)
@@ -228,42 +232,35 @@ struct LibraryView: View {
         }
     }
     
+    // MARK: - CRUD Operations
+    
     func deleteSelectedBooks() {
         for bookItem in selectedBooks {
             viewContext.delete(bookItem)
         }
-        do {
-            try viewContext.save()
-            selectedBooks.removeAll()
-            isSelecting = false
-        } catch {
-            print("Error deleting selected books:", error.localizedDescription)
-        }
+        saveContext()
+        selectedBooks.removeAll()
+        isSelecting = false
     }
     
     func deleteAll() {
         let fetchRequest = Book.fetchRequest()
-        do {
-            let items = try? viewContext.fetch(fetchRequest)
-            for item in items ?? [] {
+        if let items = try? viewContext.fetch(fetchRequest) as? [Book] {
+            for item in items {
                 viewContext.delete(item)
             }
-            try? viewContext.save()
+            saveContext()
             isSelecting = false
-        } catch {
-            print("Error deleting all books:", error.localizedDescription)
+        } else {
+            print("Error fetching books for deletion.")
         }
     }
     
-    private func deleteComicFile(at offsets: IndexSet) {
-        for index in offsets {
-            let book = books[index]
-            viewContext.delete(book)
-        }
+    private func saveContext() {
         do {
             try viewContext.save()
-        } catch let error as NSError {
-            print("Could not save. \(error), \(error.userInfo)")
+        } catch {
+            print("Error saving context:", error.localizedDescription)
         }
     }
 }

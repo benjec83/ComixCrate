@@ -13,6 +13,7 @@
 		4A2E60752A9D357400953337 /* DatabaseInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */; };
 		4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60782A9D391D00953337 /* DiagnosticView.swift */; };
 		4A6C7E6F2AA14B4400FF95FB /* AppOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E6E2AA14B4400FF95FB /* AppOverview.swift */; };
+		4A6C7E712AA1B80800FF95FB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E702AA1B80800FF95FB /* Extensions.swift */; };
 		4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6D2AA0582600504BAF /* LRUCache.swift */; };
 		4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */; };
 		4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */; };
@@ -36,6 +37,7 @@
 		4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseInspectorView.swift; sourceTree = "<group>"; };
 		4A2E60782A9D391D00953337 /* DiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticView.swift; sourceTree = "<group>"; };
 		4A6C7E6E2AA14B4400FF95FB /* AppOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverview.swift; sourceTree = "<group>"; };
+		4A6C7E702AA1B80800FF95FB /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		4A7E7D6D2AA0582600504BAF /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		4AB6E7992A9BD90700A8EFA0 /* ComixCrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComixCrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComixCrateApp.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 				4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */,
 				4A2E60722A9D1F8400953337 /* FavoriteButton.swift */,
 				4A7E7D6D2AA0582600504BAF /* LRUCache.swift */,
+				4A6C7E702AA1B80800FF95FB /* Extensions.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
 				4AB6E7BE2A9C203E00A8EFA0 /* ImageUtilities.swift in Sources */,
 				4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */,
+				4A6C7E712AA1B80800FF95FB /* Extensions.swift in Sources */,
 				4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */,
 				4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */,
 				4AB6E7B82A9BE8F400A8EFA0 /* DocumentPicker.swift in Sources */,
