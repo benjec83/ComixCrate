@@ -17,9 +17,11 @@ struct BookMainDetails: View {
         book.series?.name
     }
     
-    private var storyArcName: String? {
-        book.storyArc?.storyArcName
+    private var storyArcNames: [String] {
+        (book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName } ?? []
     }
+    
+
     
     var body: some View {
         HStack {
@@ -29,11 +31,11 @@ struct BookMainDetails: View {
                     .fontWeight(.semibold)
                     .lineLimit(2)
                 
-                Text("\(seriesName ?? "") (\(book.volumeYear))")
+                Text("\(seriesName ?? "") (\(String(book.volumeYear)))")
                     .font(.caption2)
                     .lineLimit(2)
                 
-                Text("\(String(storyArcName ?? ""))")
+                Text("Story Arcs: \((book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName }.joined(separator: ", ") ?? "Unknown")")
                     .font(.caption2)
                     .fontWeight(.light)
                     .lineLimit(1)
@@ -396,12 +398,18 @@ struct EditBookView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var showAlert: Bool = false
     
+    @State private var chips: [String] = []
+    private var storyArcNames: [String] {
+        (book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName } ?? []
+    }
+
+    
     init(book: Book) {
         _book = .constant(book)
         _editedTitle = State(initialValue: book.title ?? "")
         _editedIssueNumber = State(initialValue: "\(book.issueNumber)")
-        _editedStoryArcName = State(initialValue: book.storyArc?.storyArcName ?? "")
-        
+        _editedStoryArcName = State(initialValue: (book.storyArc as? Set<StoryArc>)?.first?.storyArcName ?? "")
+        _chips = State(initialValue: (book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName } ?? [])
     }
     
     var body: some View {
@@ -413,6 +421,8 @@ struct EditBookView: View {
                     TextField("Story Arc", text: $editedStoryArcName, onEditingChanged: { isEditing in
                         self.isShowingSuggestions = isEditing
                     })
+                    ChipsView(chips: chips)
+                    
                     .gesture(
                         TapGesture()
                             .onEnded {
@@ -490,12 +500,22 @@ struct EditBookView: View {
         book.title = editedTitle
         book.issueNumber = Int16(editedIssueNumber) ?? 0
         
-        if let existingStoryArc = allStoryArcs.first(where: { $0.storyArcName?.lowercased() == editedStoryArcName.lowercased() }) {
-            book.storyArc = existingStoryArc
+        // Check if a StoryArc with the edited name already exists in the book's storyArc relationship
+        if let existingStoryArc = (book.storyArc as? Set<StoryArc>)?.first(where: { $0.storyArcName?.lowercased() == editedStoryArcName.lowercased() }) {
+            // ... (You can add further logic here if needed)
         } else {
+            // If the StoryArc doesn't exist, create a new one
             let newStoryArc = StoryArc(context: viewContext)
             newStoryArc.storyArcName = editedStoryArcName
-            book.storyArc = newStoryArc
+            
+            // Add the new StoryArc to the book's storyArc relationship
+            if let existingSet = book.storyArc as? NSMutableSet {
+                existingSet.add(newStoryArc)
+            } else {
+                book.storyArc = NSMutableSet(object: newStoryArc)
+            }
+            
+            chips.append(editedStoryArcName)
         }
         
         do {
@@ -504,6 +524,11 @@ struct EditBookView: View {
             print("Error saving edited book: \(error)")
         }
     }
-    
-}
 
+}
+    
+    
+    
+    
+    
+    

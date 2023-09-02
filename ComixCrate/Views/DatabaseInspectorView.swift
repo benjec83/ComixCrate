@@ -28,7 +28,7 @@ struct DatabaseInspectorView: View {
                     Text("Title: \(book.title ?? "Unknown")")
                     Text("Issue Number: \(String(book.issueNumber))")
                     Text("Series: \(book.series?.name ?? "Unknown")")
-                    Text("Story Arc: \(book.storyArc?.storyArcName ?? "Unknown")")
+                    Text("Story Arcs: \((book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName }.joined(separator: ", ") ?? "Unknown")")
                     Text("Publisher: \(book.publisher?.name ?? "Unknown")")
                     Text("Favorite: \(book.isFavorite ? "Yes" : "No")")
                     Text("Volume Year: \(String(book.volumeYear))")

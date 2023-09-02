@@ -21,9 +21,10 @@ struct BookTileModel: View {
         book.publisher?.name
     }
     
-    private var storyArc: String? {
-        book.storyArc?.storyArcName
+    private var storyArcNames: [String] {
+        (book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName } ?? []
     }
+
     
     private var bookTitle: String {
         if let title = book.title, !title.isEmpty {

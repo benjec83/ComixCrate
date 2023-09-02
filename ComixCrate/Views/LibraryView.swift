@@ -299,9 +299,12 @@ struct LibraryView: View {
         if let series = book.series {
             checkAndDeleteEntity(entity: series, relatedTo: book, byKey: "series", in: context)
         }
-        if let storyArc = book.storyArc {
-            checkAndDeleteEntity(entity: storyArc, relatedTo: book, byKey: "storyArc", in: context)
+        if let storyArcs = book.storyArc as? Set<StoryArc> {
+            for storyArc in storyArcs {
+                checkAndDeleteEntity(entity: storyArc, relatedTo: book, byKey: "storyArc", in: context)
+            }
         }
+        
         if let publisher = book.publisher {
             checkAndDeleteEntity(entity: publisher, relatedTo: book, byKey: "publisher", in: context)
         }
