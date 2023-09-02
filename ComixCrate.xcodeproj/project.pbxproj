@@ -12,6 +12,10 @@
 		4A2E60732A9D1F8400953337 /* FavoriteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60722A9D1F8400953337 /* FavoriteButton.swift */; };
 		4A2E60752A9D357400953337 /* DatabaseInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */; };
 		4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60782A9D391D00953337 /* DiagnosticView.swift */; };
+		4A4EFD4D2AA3852D00B7E4C8 /* ComicFileUnzipper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4EFD4C2AA3852D00B7E4C8 /* ComicFileUnzipper.swift */; };
+		4A4EFD4F2AA385BC00B7E4C8 /* ComicXMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4EFD4E2AA385BC00B7E4C8 /* ComicXMLParser.swift */; };
+		4A4EFD512AA385D700B7E4C8 /* ComicImageResizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4EFD502AA385D700B7E4C8 /* ComicImageResizer.swift */; };
+		4A4EFD532AA385F100B7E4C8 /* ComicDataWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4EFD522AA385F100B7E4C8 /* ComicDataWriter.swift */; };
 		4A6C7E6F2AA14B4400FF95FB /* AppOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E6E2AA14B4400FF95FB /* AppOverview.swift */; };
 		4A6C7E712AA1B80800FF95FB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E702AA1B80800FF95FB /* Extensions.swift */; };
 		4A6C7E7C2AA25AE500FF95FB /* RelatedBooksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E7B2AA25AE500FF95FB /* RelatedBooksView.swift */; };
@@ -39,6 +43,10 @@
 		4A2E60722A9D1F8400953337 /* FavoriteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteButton.swift; sourceTree = "<group>"; };
 		4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseInspectorView.swift; sourceTree = "<group>"; };
 		4A2E60782A9D391D00953337 /* DiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticView.swift; sourceTree = "<group>"; };
+		4A4EFD4C2AA3852D00B7E4C8 /* ComicFileUnzipper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicFileUnzipper.swift; sourceTree = "<group>"; };
+		4A4EFD4E2AA385BC00B7E4C8 /* ComicXMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicXMLParser.swift; sourceTree = "<group>"; };
+		4A4EFD502AA385D700B7E4C8 /* ComicImageResizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicImageResizer.swift; sourceTree = "<group>"; };
+		4A4EFD522AA385F100B7E4C8 /* ComicDataWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicDataWriter.swift; sourceTree = "<group>"; };
 		4A6C7E6E2AA14B4400FF95FB /* AppOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverview.swift; sourceTree = "<group>"; };
 		4A6C7E702AA1B80800FF95FB /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		4A6C7E7B2AA25AE500FF95FB /* RelatedBooksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelatedBooksView.swift; sourceTree = "<group>"; };
@@ -158,6 +166,10 @@
 				4A7E7D6D2AA0582600504BAF /* LRUCache.swift */,
 				4A6C7E702AA1B80800FF95FB /* Extensions.swift */,
 				4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */,
+				4A4EFD4C2AA3852D00B7E4C8 /* ComicFileUnzipper.swift */,
+				4A4EFD4E2AA385BC00B7E4C8 /* ComicXMLParser.swift */,
+				4A4EFD502AA385D700B7E4C8 /* ComicImageResizer.swift */,
+				4A4EFD522AA385F100B7E4C8 /* ComicDataWriter.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -237,13 +249,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A4EFD4F2AA385BC00B7E4C8 /* ComicXMLParser.swift in Sources */,
 				4AB6E7BC2A9BED7D00A8EFA0 /* BookTileModel.swift in Sources */,
 				4AB6E7C02A9D034E00A8EFA0 /* BookSheetView.swift in Sources */,
 				4AB6E7BA2A9BEB3300A8EFA0 /* LibraryView.swift in Sources */,
 				4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */,
 				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
+				4A4EFD532AA385F100B7E4C8 /* ComicDataWriter.swift in Sources */,
 				4A6C7E802AA2E91A00FF95FB /* SharedViews.swift in Sources */,
 				4AB6E7BE2A9C203E00A8EFA0 /* ImageUtilities.swift in Sources */,
+				4A4EFD4D2AA3852D00B7E4C8 /* ComicFileUnzipper.swift in Sources */,
 				4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */,
 				4A6C7E712AA1B80800FF95FB /* Extensions.swift in Sources */,
 				4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */,
@@ -259,6 +274,7 @@
 				4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */,
 				4AB6E7C22A9D039900A8EFA0 /* BookDetails.swift in Sources */,
 				4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */,
+				4A4EFD512AA385D700B7E4C8 /* ComicImageResizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
