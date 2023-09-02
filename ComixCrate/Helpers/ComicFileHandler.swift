@@ -21,7 +21,7 @@ class ComicFileHandler {
             formatter.timeStyle = .medium
             return formatter
         }()
-
+        
         do {
             if !fileManager.fileExists(atPath: tempDirectory.path) {
                 try fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true, attributes: nil)
@@ -72,27 +72,29 @@ class ComicFileHandler {
                     comicFile.dateAdded = Date()
                     
                     if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+                        
+                        for imageURL in imageFiles {
+                            if let originalImage = UIImage(contentsOfFile: imageURL.path),
+                               let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
+                               let imageData = resizedImage.jpegData(compressionQuality: 1) {
                                 
-                                for imageURL in imageFiles {
-                                    if let originalImage = UIImage(contentsOfFile: imageURL.path),
-                                       let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
-                                       let imageData = resizedImage.jpegData(compressionQuality: 1) {
-                                        
-                                        let uniqueFilename = "\(UUID().uuidString).\(imageURL.pathExtension)"
-                                        let destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
-                                        
-                                        try? imageData.write(to: destinationPath)
-                                        
-                                        if comicFile.thumbnailPath == nil {
-                                            comicFile.thumbnailPath = uniqueFilename
-                                        }
-
-                                    }
+                                let uniqueFilename = "\(UUID().uuidString).\(imageURL.pathExtension)"
+                                let destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
+                                
+                                try? imageData.write(to: destinationPath)
+                                
+                                if comicFile.thumbnailPath == nil {
+                                    comicFile.thumbnailPath = uniqueFilename
                                 }
                                 
-                                try context.save()
                             }
-
+                        }
+                        
+                        DispatchQueue.main.async {
+                            try? context.save()
+                        }
+                    }
+                    
                 } else {
                     print("Failed to read or parse ComicInfo.xml")
                 }

@@ -48,8 +48,9 @@ struct LibraryView: View {
             content
         }
         .overlay(
-            isImporting ? AnyView(ImportProgressView(progress: $importProgress, currentFilename: $currentImportingFilename)) : AnyView(EmptyView())
+            isImporting ? AnyView(ImportProgressView(progress: $importProgress, currentFilename: $currentImportingFilename, currentBookNumber: $importingState.currentBookNumber, totalBooks: $importingState.totalBooks)) : AnyView(EmptyView())
         )
+
         .toolbar {
             toolbarContent
         }
@@ -234,6 +235,8 @@ struct LibraryView: View {
                 DispatchQueue.main.async {
                     importingState.importProgress = currentProgress
                     importingState.currentImportingFilename = filename
+                    importingState.currentBookNumber = index + 1
+                    importingState.totalBooks = urls.count
                 }
             }
             
@@ -280,6 +283,7 @@ struct LibraryView: View {
         }
         CoreDataHelper.shared.saveContext(context: viewContext)
         selectedBooks.removeAll()
+        isSelecting = false
     }
     
     func deleteAll() {

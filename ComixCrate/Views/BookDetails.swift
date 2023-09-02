@@ -17,6 +17,10 @@ struct BookMainDetails: View {
         book.series?.name
     }
     
+    private var storyArcName: String? {
+        book.storyArc?.storyArcName
+    }
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -29,7 +33,7 @@ struct BookMainDetails: View {
                     .font(.caption2)
                     .lineLimit(2)
                 
-                Text("Story Arc")
+                Text("\(String(storyArcName ?? ""))")
                     .font(.caption2)
                     .fontWeight(.light)
                     .lineLimit(1)

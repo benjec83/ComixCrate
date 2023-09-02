@@ -21,6 +21,10 @@ struct BookTileModel: View {
         book.publisher?.name
     }
     
+    private var storyArc: String? {
+        book.storyArc?.storyArcName
+    }
+    
     private var bookTitle: String {
         if let title = book.title, !title.isEmpty {
             return "#\(String(book.issueNumber)) - \(title)"

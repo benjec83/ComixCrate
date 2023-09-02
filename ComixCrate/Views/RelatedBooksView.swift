@@ -16,17 +16,16 @@ struct RelatedBooksView: View {
 
 
     var body: some View {
-        NavigationView{
         List {
             ForEach(relatedBookIDs, id: \.self) { bookID in
                 if let book = viewContext.object(with: bookID) as? Book {
                     NavigationLink(destination: BookDetailTabs(book: book)) {
-                        Text(book.title ?? "Unknown Book")
+                        Text("#\(String(book.issueNumber)) - \(book.title ?? "No Title")")
                     }
                 }
             }
             
-        }
+        
     }
         .navigationTitle(relatedObjectName)
     }

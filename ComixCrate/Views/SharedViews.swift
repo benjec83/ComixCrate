@@ -10,17 +10,21 @@ import SwiftUI
 struct ImportProgressView: View {
     @Binding var progress: Double
     @Binding var currentFilename: String
+    @Binding var currentBookNumber: Int
+    @Binding var totalBooks: Int
     
     var body: some View {
         ZStack {
-            // This captures all touch events and blocks interaction with underlying views
-            Color.black.opacity(0.00)
-                .edgesIgnoringSafeArea(.all)
-                .onTapGesture {} // This prevents taps from passing through
+//            // This captures all touch events and blocks interaction with underlying views
+//            Color.black.opacity(0.00)
+//                .edgesIgnoringSafeArea(.all)
+//                .onTapGesture {} // This prevents taps from passing through
             
             VStack(spacing: 20) {
                 Text("Importing: \(currentFilename)")
                 ProgressView(value: progress)
+                Text("\(currentBookNumber)/\(totalBooks)")
+                    .font(.caption2)
             }
             .font(.caption)
             .padding()
@@ -31,3 +35,4 @@ struct ImportProgressView: View {
         }
     }
 }
+

@@ -48,7 +48,7 @@ struct ContentView: View {
             
             // Progress bar
             if importingState.isImporting {
-                ImportProgressView(progress: $importingState.importProgress, currentFilename: $importingState.currentImportingFilename)
+                ImportProgressView(progress: $importingState.importProgress, currentFilename: $importingState.currentImportingFilename, currentBookNumber: $importingState.currentBookNumber, totalBooks: $importingState.totalBooks)
             }
         }
     }
