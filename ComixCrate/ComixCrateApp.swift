@@ -11,17 +11,15 @@ import SwiftUI
 struct ComixCrateApp: App {
     // Initialize the Core Data stack
     let persistenceController = PersistenceController.shared
+    let importingState = ImportingState() // Create an instance of ImportingState
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-            
-                // Provide the main context to the SwiftUI environment
+                .environmentObject(importingState) // Provide the ImportingState to the environment
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                .onAppear {
-                    print("ComixCrateApp started.")
-                }
         }
     }
 }
+
 

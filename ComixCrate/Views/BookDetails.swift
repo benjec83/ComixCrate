@@ -11,7 +11,7 @@ import CoreData
 // MARK: - BookMainDetails
 
 struct BookMainDetails: View {
-    let book: Book
+    @ObservedObject var book: Book
     
     private var seriesName: String? {
         book.series?.name
@@ -20,7 +20,7 @@ struct BookMainDetails: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("#\(book.issueNumber) - \(book.title ?? "")")
+                Text("#\(String(book.issueNumber)) - \(book.title ?? "")")
                     .font(.body)
                     .fontWeight(.semibold)
                     .lineLimit(2)
@@ -99,19 +99,19 @@ struct BookActionButtons: View {
     }
     
     var body: some View {
-            VStack {
-                Spacer()
-                actionButton(title: .readNow, icon: "magazine")
-                actionButton(title: bookIsRead ? .markAsUnread : .markAsRead, icon: "checkmark.circle")
-                actionButton(title: .addToReadingPile, icon: "square.stack.3d.up")
-                Spacer()
-                ratingsSection(title: "Personal Rating", rating: userRating)
-            }
-            .frame(height: 250)
-            .onAppear {
-                userRating = book.personalRating
-            }
+        VStack {
+            Spacer()
+            actionButton(title: .readNow, icon: "magazine")
+            actionButton(title: bookIsRead ? .markAsUnread : .markAsRead, icon: "checkmark.circle")
+            actionButton(title: .addToReadingPile, icon: "square.stack.3d.up")
+            Spacer()
+            ratingsSection(title: "Personal Rating", rating: userRating)
         }
+        .frame(height: 250)
+        .onAppear {
+            userRating = book.personalRating
+        }
+    }
     
     private var bookIsRead: Bool {
         book.read == 1
@@ -200,8 +200,12 @@ struct BookActionButtons: View {
 // MARK: - BookDetailTabs
 
 struct BookDetailTabs: View {
-    let book: Book
     @State private var isFavorite: Bool
+    @State private var isEditing: Bool = false
+    
+    @ObservedObject var book: Book
+    
+    
     
     public init(book: Book) {
         self.book = book
@@ -235,14 +239,17 @@ struct BookDetailTabs: View {
                     Text("Collection")
                 }
         }
-        .navigationTitle("#" + "\(book.issueNumber)" + " - " + "\(book.title ?? seriesName ?? "")")
+        .navigationTitle("#" + "\(String(book.issueNumber))" + " - " + "\(book.title ?? seriesName ?? "")")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing:
                                 HStack {
-            Button{
-                print("Edit " + (book.title ?? "") + " pressed")
+            Button {
+                isEditing = true
             } label: {
                 Label("Edit", systemImage: "pencil")
+            }
+            .sheet(isPresented: $isEditing) {
+                EditBookView(book: book)
             }
             FavoriteButton(book: book, context: book.managedObjectContext ?? PersistenceController.shared.container.viewContext)
             
@@ -268,7 +275,7 @@ struct BookDetailTabs: View {
 // MARK: - BookDetails Views
 
 struct BookDetailsMainView: View {
-    let book: Book
+    @ObservedObject var book: Book
     @State private var shouldCacheHighQualityThumbnail: Bool = false
     
     public init(book: Book) {
@@ -322,7 +329,7 @@ struct BookDetailsMainView: View {
 }
 
 struct BookDetailsLibraryView: View {
-    let book: Book
+    @ObservedObject var book: Book
     
     public var body: some View {
         VStack {
@@ -333,7 +340,7 @@ struct BookDetailsLibraryView: View {
 }
 
 struct BookDetailsDetailsView: View {
-    let book: Book
+    @ObservedObject var book: Book
     
     public var body: some View {
         VStack {
@@ -344,7 +351,7 @@ struct BookDetailsDetailsView: View {
 }
 
 struct BookDetailsCreativesView: View {
-    let book: Book
+    @ObservedObject var book: Book
     
     public var body: some View {
         VStack {
@@ -367,3 +374,132 @@ struct FakePublisherLogo: View {
         }
     }
 }
+
+struct EditBookView: View {
+    @Binding var book: Book
+    @State private var editedTitle: String
+    @State private var editedIssueNumber: String
+    @State private var editedStoryArcName: String
+    
+    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
+    private var allStoryArcs: FetchedResults<StoryArc>
+    
+    
+    @State private var isShowingSuggestions: Bool = false
+    @State private var showAllSuggestionsSheet: Bool = false
+    
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.presentationMode) var presentationMode
+    @State private var showAlert: Bool = false
+    
+    init(book: Book) {
+        _book = .constant(book)
+        _editedTitle = State(initialValue: book.title ?? "")
+        _editedIssueNumber = State(initialValue: "\(book.issueNumber)")
+        _editedStoryArcName = State(initialValue: book.storyArc?.storyArcName ?? "")
+        
+    }
+    
+    var body: some View {
+        VStack {
+            Form {
+                TextField("Title", text: $editedTitle)
+                TextField("Issue Number", text: $editedIssueNumber)
+                VStack {
+                    TextField("Story Arc", text: $editedStoryArcName, onEditingChanged: { isEditing in
+                        self.isShowingSuggestions = isEditing
+                    })
+                    .gesture(
+                        TapGesture()
+                            .onEnded {
+                                UIApplication.shared.sendAction(#selector(UIResponder.becomeFirstResponder), to: nil, from: nil, for: nil)
+                            }
+                    )
+                    
+                    if isShowingSuggestions {
+                        List(filterStoryArcs().prefix(3), id: \.self) { storyArc in
+                            Button(action: {
+                                self.editedStoryArcName = storyArc.storyArcName ?? ""
+                                self.isShowingSuggestions = false
+                            }) {
+                                Text(storyArc.storyArcName ?? "")
+                                    .font(.subheadline) // Adjust the font size if needed
+                            }
+                            .padding(.vertical, 6) // Adjust vertical padding
+                        }
+                        .frame(height: 15) // Adjust the total height of the List
+                        Spacer(minLength: 50)
+                        Button("See All") {
+                            showAllSuggestionsSheet = true
+                        }
+                        
+                    }
+                    
+                }
+                .sheet(isPresented: $showAllSuggestionsSheet) {
+                    List(filterStoryArcs(), id: \.self) { storyArc in
+                        Button(action: {
+                            self.editedStoryArcName = storyArc.storyArcName ?? ""
+                            self.showAllSuggestionsSheet = false
+                        }) {
+                            Text(storyArc.storyArcName ?? "")
+                        }
+                    }
+                }
+            }
+            
+            Spacer()
+            
+            HStack {
+                Spacer()
+                Button("Save") {
+                    saveChanges()
+                    presentationMode.wrappedValue.dismiss()
+                }
+                Button("Cancel") {
+                    showAlert = true
+                }
+                .alert(isPresented: $showAlert) {
+                    Alert(title: Text("Are you sure?"),
+                          message: Text("Any changes will not be saved."),
+                          primaryButton: .destructive(Text("Don't Save")) {
+                        presentationMode.wrappedValue.dismiss()
+                    },
+                          secondaryButton: .cancel())
+                }
+                .foregroundColor(.gray)
+                
+                Spacer()
+                
+                
+            }
+            .padding()
+        }
+    }
+    
+    func filterStoryArcs() -> [StoryArc] {
+        let query = editedStoryArcName.lowercased()
+        return allStoryArcs.filter { ($0.storyArcName?.lowercased().contains(query) ?? false) }
+    }
+    
+    func saveChanges() {
+        book.title = editedTitle
+        book.issueNumber = Int16(editedIssueNumber) ?? 0
+        
+        if let existingStoryArc = allStoryArcs.first(where: { $0.storyArcName?.lowercased() == editedStoryArcName.lowercased() }) {
+            book.storyArc = existingStoryArc
+        } else {
+            let newStoryArc = StoryArc(context: viewContext)
+            newStoryArc.storyArcName = editedStoryArcName
+            book.storyArc = newStoryArc
+        }
+        
+        do {
+            try viewContext.save()
+        } catch {
+            print("Error saving edited book: \(error)")
+        }
+    }
+    
+}
+

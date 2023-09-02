@@ -11,6 +11,7 @@
         <attribute name="dateModified" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="downloaded" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="fileName" optional="YES" attributeType="String"/>
+        <attribute name="filePath" optional="YES" attributeType="String"/>
         <attribute name="gradedBy" optional="YES" attributeType="String"/>
         <attribute name="gradeValue" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
         <attribute name="isFavorite" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
@@ -115,6 +116,6 @@
     <entity name="StoryArc" representedClassName="StoryArc" syncable="YES" codeGenerationType="class">
         <attribute name="storyArcDescription" optional="YES" attributeType="String"/>
         <attribute name="storyArcName" optional="YES" attributeType="String"/>
-        <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="storyArc" inverseEntity="Book"/>
+        <relationship name="book" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="storyArc" inverseEntity="Book"/>
     </entity>
 </model>

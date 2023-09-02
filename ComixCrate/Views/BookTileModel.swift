@@ -9,8 +9,8 @@ import SwiftUI
 import CoreData
 
 struct BookTileModel: View {
-    let book: Book
-    
+    @ObservedObject var book: Book
+
     // MARK: - Computed Properties
     
     private var seriesName: String? {
@@ -25,7 +25,7 @@ struct BookTileModel: View {
         if let title = book.title, !title.isEmpty {
             return "#\(String(book.issueNumber)) - \(title)"
         } else {
-            return "#\(book.issueNumber)"
+            return "#\(String(book.issueNumber))"
         }
     }
     

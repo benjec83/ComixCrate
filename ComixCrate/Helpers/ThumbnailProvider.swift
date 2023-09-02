@@ -9,7 +9,7 @@ import SwiftUI
 import CoreData
 
 struct ThumbnailProvider: View {
-    let book: Book
+    @ObservedObject var book: Book
     let isHighQuality: Bool  // Property to determine if we need a high-quality image
     @Binding var shouldCacheHighQuality: Bool  // Binding to determine if we should cache the high-quality image
 

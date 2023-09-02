@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Foundation
+import CoreData
 
 struct LibraryView: View {
     
@@ -14,7 +15,7 @@ struct LibraryView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)])
-    private var books: FetchedResults<Book>
+    private var allBooks: FetchedResults<Book>
     
     @State private var isGalleryView: Bool = true
     @State private var showingDocumentPicker = false
@@ -23,6 +24,15 @@ struct LibraryView: View {
     @State private var selectedBooks: Set<Book> = []
     @State private var showingAlert: Bool = false
     @State private var activeAlert: ActiveAlert = .deleteSelected
+    
+    // Progress View properties
+    @Binding var isImporting: Bool
+    @State private var importProgress: Double = 0.0
+    @State private var currentImportingFilename: String = ""
+    @EnvironmentObject var importingState: ImportingState
+
+    
+    
     
     private let spacing: CGFloat = 10
     private var gridItems: [GridItem] {
@@ -37,6 +47,9 @@ struct LibraryView: View {
         VStack {
             content
         }
+        .overlay(
+            isImporting ? AnyView(ImportProgressView(progress: $importProgress, currentFilename: $currentImportingFilename)) : AnyView(EmptyView())
+        )
         .toolbar {
             toolbarContent
         }
@@ -67,7 +80,7 @@ struct LibraryView: View {
     
     @ViewBuilder
     private var content: some View {
-        if books.isEmpty {
+        if allBooks.isEmpty {
             emptyLibraryContent
         } else {
             isGalleryView ? AnyView(galleryViewContent) : AnyView(listViewContent)
@@ -92,7 +105,7 @@ struct LibraryView: View {
     private var galleryViewContent: some View {
         ScrollView(.vertical) {
             LazyVGrid(columns: gridItems, spacing: spacing) {
-                ForEach(books, id: \.self) { book in
+                ForEach(allBooks, id: \.self) { book in
                     bookTile(for: book)
                 }
             }
@@ -100,7 +113,7 @@ struct LibraryView: View {
     }
     
     private var listViewContent: some View {
-        List(books, id: \.self) { book in
+        List(allBooks, id: \.self) { book in
             bookTile(for: book)
         }
     }
@@ -201,11 +214,36 @@ struct LibraryView: View {
     
     // MARK: - Helper Functions
     
+    //    private func handleImportedFiles(urls: [URL]) {
+    //        for url in urls {
+    //            ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
+    //        }
+    //    }
+    // Over written for progress view
+    
     private func handleImportedFiles(urls: [URL]) {
-        for url in urls {
-            ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
+        importingState.isImporting = true
+        let totalFiles = Double(urls.count)
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            for (index, url) in urls.enumerated() {
+                let filename = url.lastPathComponent
+                ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
+                let currentProgress = Double(index + 1) / totalFiles
+                
+                DispatchQueue.main.async {
+                    importingState.importProgress = currentProgress
+                    importingState.currentImportingFilename = filename
+                }
+            }
+            
+            DispatchQueue.main.async {
+                importingState.isImporting = false
+            }
         }
     }
+
+
     
     private func handleBookSelection(book: Book) {
         if isSelecting {
@@ -214,6 +252,7 @@ struct LibraryView: View {
             selectedBook = book
         }
     }
+    
     
     private func deletionAlert(title: String, message: String, action: @escaping () -> Void) -> Alert {
         Alert(
@@ -235,26 +274,54 @@ struct LibraryView: View {
     // MARK: - CRUD Operations
     
     func deleteSelectedBooks() {
-        for bookItem in selectedBooks {
-            viewContext.delete(bookItem)
+        for book in selectedBooks {
+            deleteRelatedEntitiesIfOrphaned(book: book, in: viewContext)
+            viewContext.delete(book)
         }
-        saveContext()
+        CoreDataHelper.shared.saveContext(context: viewContext)
         selectedBooks.removeAll()
-        isSelecting = false
     }
     
     func deleteAll() {
-        let fetchRequest = Book.fetchRequest()
-        if let items = try? viewContext.fetch(fetchRequest) as? [Book] {
-            for item in items {
-                viewContext.delete(item)
+        for book in allBooks {
+            deleteRelatedEntitiesIfOrphaned(book: book, in: viewContext)
+            viewContext.delete(book)
+        }
+        CoreDataHelper.shared.saveContext(context: viewContext)
+    }
+    
+    func deleteRelatedEntitiesIfOrphaned(book: Book, in context: NSManagedObjectContext) {
+        // Check Series
+        if let series = book.series {
+            checkAndDeleteEntity(entity: series, relatedTo: book, byKey: "series", in: context)
+        }
+        if let storyArc = book.storyArc {
+            checkAndDeleteEntity(entity: storyArc, relatedTo: book, byKey: "storyArc", in: context)
+        }
+        if let publisher = book.publisher {
+            checkAndDeleteEntity(entity: publisher, relatedTo: book, byKey: "publisher", in: context)
+        }
+        // Add similar checks for other relationships like Publisher, Author, etc.
+        // Example:
+        // if let publisher = book.publisher {
+        //     checkAndDeleteEntity(entity: publisher, relatedTo: book, byKey: "publisher", in: context)
+        // }
+    }
+    
+    func checkAndDeleteEntity<T: NSManagedObject>(entity: T, relatedTo book: Book, byKey key: String, in context: NSManagedObjectContext) {
+        let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "\(key) == %@", entity)
+        
+        do {
+            let relatedBooks = try context.fetch(fetchRequest)
+            if relatedBooks.count == 1 {
+                context.delete(entity)
             }
-            saveContext()
-            isSelecting = false
-        } else {
-            print("Error fetching books for deletion.")
+        } catch {
+            print("Error fetching related books for \(key): \(error)")
         }
     }
+    
     
     private func saveContext() {
         do {

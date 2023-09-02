@@ -28,6 +28,7 @@ struct DatabaseInspectorView: View {
                     Text("Title: \(book.title ?? "Unknown")")
                     Text("Issue Number: \(String(book.issueNumber))")
                     Text("Series: \(book.series?.name ?? "Unknown")")
+                    Text("Story Arc: \(book.storyArc?.storyArcName ?? "Unknown")")
                     Text("Publisher: \(book.publisher?.name ?? "Unknown")")
                     Text("Favorite: \(book.isFavorite ? "Yes" : "No")")
                     Text("Volume Year: \(String(book.volumeYear))")
@@ -35,6 +36,8 @@ struct DatabaseInspectorView: View {
                     Text("Date Added: \(dateFormatter.string(from: book.dateAdded ?? Date()))")
                     Text("Read: \(String(book.read))")
                     Text("Personal Rating: \(String(book.personalRating))")
+                    Text("File Name: \(book.fileName ?? "Unknown")")
+                    Text("File Location: \(book.filePath ?? "Unkown")")
 
                     // Add any other attributes you want to inspect here
                 }

@@ -9,23 +9,40 @@ import SwiftUI
 
 struct DiagnosticView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    
     @FetchRequest(entity: Series.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Series.name, ascending: true)])
     private var allSeries: FetchedResults<Series>
     
     @FetchRequest(entity: Publisher.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Publisher.name, ascending: true)])
     private var allPublishers: FetchedResults<Publisher>
+    
+    // FetchRequest for StoryArc
+    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
+    private var allStoryArcs: FetchedResults<StoryArc>
 
     var body: some View {
         List {
             Section(header: Text("All Series")) {
                 ForEach(allSeries, id: \.self) { series in
-                    Text(series.name ?? "Unknown Series")
+                    NavigationLink(destination: RelatedBooksView(relatedObject: series)) {
+                        Text(series.name ?? "Unknown Series")
+                    }
                 }
             }
             
             Section(header: Text("All Publishers")) {
                 ForEach(allPublishers, id: \.self) { publisher in
-                    Text(publisher.name ?? "Unknown Publisher")
+                    NavigationLink(destination: RelatedBooksView(relatedObject: publisher)) {
+                        Text(publisher.name ?? "Unknown Publisher")
+                    }
+                }
+            }
+            
+            Section(header: Text("All Story Arcs")) {
+                ForEach(allStoryArcs, id: \.self) { storyArc in
+                    NavigationLink(destination: RelatedBooksView(relatedObject: storyArc)) {
+                        Text(storyArc.storyArcName ?? "Unknown Story Arc")
+                    }
                 }
             }
         }

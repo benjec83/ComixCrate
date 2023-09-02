@@ -10,7 +10,7 @@ import CoreData
 
 struct BookSheetView: View {
     
-    let book: Book
+    @ObservedObject var book: Book
 
     @State private var showingSheet = false
     

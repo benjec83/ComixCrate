@@ -14,6 +14,9 @@
 		4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60782A9D391D00953337 /* DiagnosticView.swift */; };
 		4A6C7E6F2AA14B4400FF95FB /* AppOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E6E2AA14B4400FF95FB /* AppOverview.swift */; };
 		4A6C7E712AA1B80800FF95FB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E702AA1B80800FF95FB /* Extensions.swift */; };
+		4A6C7E7C2AA25AE500FF95FB /* RelatedBooksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E7B2AA25AE500FF95FB /* RelatedBooksView.swift */; };
+		4A6C7E7E2AA2E80A00FF95FB /* ImportingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */; };
+		4A6C7E802AA2E91A00FF95FB /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E7F2AA2E91A00FF95FB /* SharedViews.swift */; };
 		4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6D2AA0582600504BAF /* LRUCache.swift */; };
 		4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */; };
 		4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */; };
@@ -38,6 +41,9 @@
 		4A2E60782A9D391D00953337 /* DiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticView.swift; sourceTree = "<group>"; };
 		4A6C7E6E2AA14B4400FF95FB /* AppOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverview.swift; sourceTree = "<group>"; };
 		4A6C7E702AA1B80800FF95FB /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		4A6C7E7B2AA25AE500FF95FB /* RelatedBooksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelatedBooksView.swift; sourceTree = "<group>"; };
+		4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportingState.swift; sourceTree = "<group>"; };
+		4A6C7E7F2AA2E91A00FF95FB /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
 		4A7E7D6D2AA0582600504BAF /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		4AB6E7992A9BD90700A8EFA0 /* ComixCrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComixCrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComixCrateApp.swift; sourceTree = "<group>"; };
@@ -68,6 +74,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A6C7E762AA250F200FF95FB /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		4A70B9C22A9F8F1F0059AB82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -78,6 +91,8 @@
 				4AB6E7C12A9D039900A8EFA0 /* BookDetails.swift */,
 				4AB6E7B92A9BEB3300A8EFA0 /* LibraryView.swift */,
 				4AB6E7BB2A9BED7D00A8EFA0 /* BookTileModel.swift */,
+				4A6C7E7B2AA25AE500FF95FB /* RelatedBooksView.swift */,
+				4A6C7E7F2AA2E91A00FF95FB /* SharedViews.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -101,6 +116,7 @@
 		4AB6E79B2A9BD90700A8EFA0 /* ComixCrate */ = {
 			isa = PBXGroup;
 			children = (
+				4A6C7E762AA250F200FF95FB /* ViewModels */,
 				4A70B9C22A9F8F1F0059AB82 /* Views */,
 				4AB6E7AF2A9BE09300A8EFA0 /* Helpers */,
 				4AB6E7AE2A9BE08100A8EFA0 /* Data */,
@@ -141,6 +157,7 @@
 				4A2E60722A9D1F8400953337 /* FavoriteButton.swift */,
 				4A7E7D6D2AA0582600504BAF /* LRUCache.swift */,
 				4A6C7E702AA1B80800FF95FB /* Extensions.swift */,
+				4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -225,12 +242,15 @@
 				4AB6E7BA2A9BEB3300A8EFA0 /* LibraryView.swift in Sources */,
 				4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */,
 				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
+				4A6C7E802AA2E91A00FF95FB /* SharedViews.swift in Sources */,
 				4AB6E7BE2A9C203E00A8EFA0 /* ImageUtilities.swift in Sources */,
 				4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */,
 				4A6C7E712AA1B80800FF95FB /* Extensions.swift in Sources */,
 				4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */,
 				4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */,
 				4AB6E7B82A9BE8F400A8EFA0 /* DocumentPicker.swift in Sources */,
+				4A6C7E7E2AA2E80A00FF95FB /* ImportingState.swift in Sources */,
+				4A6C7E7C2AA25AE500FF95FB /* RelatedBooksView.swift in Sources */,
 				4A2E60752A9D357400953337 /* DatabaseInspectorView.swift in Sources */,
 				4A6C7E6F2AA14B4400FF95FB /* AppOverview.swift in Sources */,
 				4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */,

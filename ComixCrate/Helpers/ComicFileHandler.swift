@@ -35,6 +35,7 @@ class ComicFileHandler {
                     
                     let comicFile = Book(context: context)
                     comicFile.fileName = url.lastPathComponent
+                    comicFile.filePath = url.path
                     
                     let fetchRequest: NSFetchRequest<Series> = Series.fetchRequest()
                     fetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.series)
