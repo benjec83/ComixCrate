@@ -422,7 +422,6 @@ struct EditBookView: View {
                         self.isShowingSuggestions = isEditing
                     })
                     ChipsView(chips: chips)
-                    
                     .gesture(
                         TapGesture()
                             .onEnded {

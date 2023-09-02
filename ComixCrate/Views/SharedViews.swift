@@ -71,6 +71,8 @@ struct Chip: View {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.white)
                 }
+                .buttonStyle(PlainButtonStyle())
+
             }
         }
         .padding(.horizontal, 10)
