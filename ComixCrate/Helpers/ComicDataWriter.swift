@@ -6,6 +6,7 @@
 //
 
 import CoreData
+import UIKit
 
 class ComicDataWriter {
     let context: NSManagedObjectContext
@@ -53,6 +54,31 @@ class ComicDataWriter {
         comicFile.volumeYear = comicInfo.year ?? 0
         comicFile.dateAdded = Date()
         
-        try context.save()
+        if let imageFiles = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            
+            for imageURL in imageFiles {
+                if let originalImage = UIImage(contentsOfFile: imageURL.path),
+                   let resizedImage = UIImage(data: originalImage.jpegData(compressionQuality: 1.0)!),
+                   let imageData = resizedImage.jpegData(compressionQuality: 1) {
+                    
+                    var uniqueFilename = "\(UUID().uuidString).\(imageURL.pathExtension)"
+                    var destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
+                    
+                    while FileManager.default.fileExists(atPath: destinationPath.path) {
+                        print("File already exists. Generating a new UUID.")
+                        uniqueFilename = "\(UUID().uuidString).\(imageURL.pathExtension)"
+                        destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
+                    }
+                    
+                    try? imageData.write(to: destinationPath)
+                    
+                    if comicFile.thumbnailPath == nil {
+                        comicFile.thumbnailPath = uniqueFilename
+                    }
+                }
+            }
+            
+            try context.save()
+        }
     }
 }

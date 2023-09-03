@@ -82,6 +82,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A4EFD542AA3E79700B7E4C8 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */,
+				4AB6E7B02A9BE0C500A8EFA0 /* Persistence.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		4A4EFD552AA3E7A700B7E4C8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4A2E60722A9D1F8400953337 /* FavoriteButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		4A4EFD562AA3E87E00B7E4C8 /* Importing */ = {
+			isa = PBXGroup;
+			children = (
+				4AB6E7B72A9BE8F400A8EFA0 /* DocumentPicker.swift */,
+				4AB6E7B22A9BE0FB00A8EFA0 /* ComicFileHandler.swift */,
+				4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */,
+				4A4EFD4C2AA3852D00B7E4C8 /* ComicFileUnzipper.swift */,
+				4A4EFD4E2AA385BC00B7E4C8 /* ComicXMLParser.swift */,
+			);
+			path = Importing;
+			sourceTree = "<group>";
+		};
 		4A6C7E762AA250F200FF95FB /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -156,19 +185,14 @@
 		4AB6E7AF2A9BE09300A8EFA0 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				4AB6E7B72A9BE8F400A8EFA0 /* DocumentPicker.swift */,
-				4AB6E7B22A9BE0FB00A8EFA0 /* ComicFileHandler.swift */,
-				4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */,
-				4AB6E7B02A9BE0C500A8EFA0 /* Persistence.swift */,
+				4A4EFD562AA3E87E00B7E4C8 /* Importing */,
+				4A4EFD552AA3E7A700B7E4C8 /* Views */,
+				4A4EFD542AA3E79700B7E4C8 /* Data */,
 				4AB6E7BD2A9C203E00A8EFA0 /* ImageUtilities.swift */,
+				4A4EFD502AA385D700B7E4C8 /* ComicImageResizer.swift */,
 				4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */,
-				4A2E60722A9D1F8400953337 /* FavoriteButton.swift */,
 				4A7E7D6D2AA0582600504BAF /* LRUCache.swift */,
 				4A6C7E702AA1B80800FF95FB /* Extensions.swift */,
-				4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */,
-				4A4EFD4C2AA3852D00B7E4C8 /* ComicFileUnzipper.swift */,
-				4A4EFD4E2AA385BC00B7E4C8 /* ComicXMLParser.swift */,
-				4A4EFD502AA385D700B7E4C8 /* ComicImageResizer.swift */,
 				4A4EFD522AA385F100B7E4C8 /* ComicDataWriter.swift */,
 			);
 			path = Helpers;
