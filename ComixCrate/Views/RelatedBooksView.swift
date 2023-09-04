@@ -39,11 +39,13 @@ struct RelatedBooksView: View {
         case let publisher as Publisher:
             return publisher.book?.allObjects.compactMap { ($0 as? Book)?.objectID } ?? []
         case let storyArc as StoryArc:
-            return storyArc.book?.allObjects.compactMap { ($0 as? Book)?.objectID } ?? []
+            // Fetch the related books through the BookStoryArcs entity
+            return storyArc.booksInArc?.allObjects.compactMap { ($0 as? BookStoryArcs)?.book?.objectID } ?? []
         default:
             return []
         }
     }
+
 
     var relatedObjectName: String {
         switch relatedObject {

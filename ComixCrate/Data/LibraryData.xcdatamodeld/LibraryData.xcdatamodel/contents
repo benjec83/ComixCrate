@@ -31,6 +31,7 @@
         <attribute name="volumeNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="volumeYear" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="bookCreatorRoles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookCreatorRole" inverseName="book" inverseEntity="BookCreatorRole"/>
+        <relationship name="bookEvents" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BookEvents"/>
         <relationship name="bookStoryArcs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookStoryArcs" inverseName="book" inverseEntity="BookStoryArcs"/>
         <relationship name="characters" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Characters" inverseName="books" inverseEntity="Characters"/>
         <relationship name="event" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="book" inverseEntity="Event"/>
@@ -45,6 +46,11 @@
         <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="bookCreatorRoles" inverseEntity="Book"/>
         <relationship name="creator" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Creator"/>
         <relationship name="creatorRole" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CreatorRole"/>
+    </entity>
+    <entity name="BookEvents" representedClassName="BookEvents" syncable="YES" codeGenerationType="class">
+        <attribute name="eventPart" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="books" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book"/>
+        <relationship name="events" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="events" inverseEntity="Event"/>
     </entity>
     <entity name="BookOrdering" representedClassName="BookOrdering" syncable="YES" codeGenerationType="class">
         <attribute name="order" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -74,11 +80,11 @@
     <entity name="CreatorRole" representedClassName="CreatorRole" syncable="YES" codeGenerationType="class">
         <attribute name="creatorRole" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="Entity1" representedClassName="Entity1" syncable="YES" codeGenerationType="class"/>
     <entity name="Event" representedClassName="Event" syncable="YES" codeGenerationType="class">
         <attribute name="eventDescription" optional="YES" attributeType="String"/>
         <attribute name="eventName" optional="YES" attributeType="String"/>
-        <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="event" inverseEntity="Book"/>
+        <relationship name="book" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="event" inverseEntity="Book"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BookEvents" inverseName="events" inverseEntity="BookEvents"/>
     </entity>
     <entity name="Format" representedClassName="Format" syncable="YES" codeGenerationType="class">
         <attribute name="filePath" optional="YES" attributeType="String"/>

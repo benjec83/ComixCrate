@@ -18,11 +18,16 @@ struct BookMainDetails: View {
     }
     
     private var storyArcNames: [String] {
-        (book.bookStoryArcs as? Set<BookStoryArc>)?.compactMap { $0.storyArcName } ?? []
+        guard let bookStoryArcsSet = book.bookStoryArcs as? Set<BookStoryArcs> else {
+            return []
+        }
+        
+        return bookStoryArcsSet.compactMap { bookStoryArc in
+            return bookStoryArc.storyArcName?.storyArcName
+        }
     }
-    
 
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -35,7 +40,7 @@ struct BookMainDetails: View {
                     .font(.caption2)
                     .lineLimit(2)
                 
-                Text("Story Arcs: \((book.bookStoryArcs as? Set<StoryArc>)?.compactMap { $0.storyArcName }.joined(separator: ", ") ?? "Unknown")")
+                Text("Story Arcs: \(storyArcNames.joined(separator: ", ").isEmpty ? "Unknown" : storyArcNames.joined(separator: ", "))")
 
                     .font(.caption2)
                     .fontWeight(.light)
