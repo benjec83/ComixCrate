@@ -19,6 +19,11 @@ struct DiagnosticView: View {
     // FetchRequest for StoryArc
     @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
     private var allStoryArcs: FetchedResults<StoryArc>
+    
+    var deleter: CoreDataDeleter {
+        CoreDataDeleter(context: viewContext)
+    }
+
 
     var body: some View {
         List {
@@ -28,6 +33,9 @@ struct DiagnosticView: View {
                         Text(series.name ?? "Unknown Series")
                     }
                 }
+                .onDelete(perform: { offsets in
+                    deleter.deleteObject(from: allSeries, at: offsets)
+                })
             }
             
             Section(header: Text("All Publishers")) {
@@ -36,6 +44,9 @@ struct DiagnosticView: View {
                         Text(publisher.name ?? "Unknown Publisher")
                     }
                 }
+                .onDelete(perform: { offsets in
+                    deleter.deleteObject(from: allPublishers, at: offsets)
+                })
             }
             
             Section(header: Text("All Story Arcs")) {
@@ -44,6 +55,9 @@ struct DiagnosticView: View {
                         Text(storyArc.storyArcName ?? "Unknown Story Arc")
                     }
                 }
+                .onDelete(perform: { offsets in
+                    deleter.deleteObject(from: allStoryArcs, at: offsets)
+                })
             }
         }
     }

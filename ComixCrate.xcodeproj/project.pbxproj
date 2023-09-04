@@ -35,6 +35,9 @@
 		4AB6E7BE2A9C203E00A8EFA0 /* ImageUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7BD2A9C203E00A8EFA0 /* ImageUtilities.swift */; };
 		4AB6E7C02A9D034E00A8EFA0 /* BookSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7BF2A9D034E00A8EFA0 /* BookSheetView.swift */; };
 		4AB6E7C22A9D039900A8EFA0 /* BookDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7C12A9D039900A8EFA0 /* BookDetails.swift */; };
+		4AEAB4602AA68FCB00B88723 /* ChipUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */; };
+		4AEAB4622AA68FF500B88723 /* SpecializedTextBoxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */; };
+		4AEAB4642AA6902900B88723 /* EditBookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB4632AA6902900B88723 /* EditBookView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +71,9 @@
 		4AB6E7BD2A9C203E00A8EFA0 /* ImageUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUtilities.swift; sourceTree = "<group>"; };
 		4AB6E7BF2A9D034E00A8EFA0 /* BookSheetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookSheetView.swift; sourceTree = "<group>"; };
 		4AB6E7C12A9D039900A8EFA0 /* BookDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookDetails.swift; sourceTree = "<group>"; };
+		4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChipUtilities.swift; sourceTree = "<group>"; };
+		4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecializedTextBoxes.swift; sourceTree = "<group>"; };
+		4AEAB4632AA6902900B88723 /* EditBookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBookView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +136,9 @@
 				4AB6E7BB2A9BED7D00A8EFA0 /* BookTileModel.swift */,
 				4A6C7E7B2AA25AE500FF95FB /* RelatedBooksView.swift */,
 				4A6C7E7F2AA2E91A00FF95FB /* SharedViews.swift */,
+				4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */,
+				4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */,
+				4AEAB4632AA6902900B88723 /* EditBookView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -281,6 +290,7 @@
 				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
 				4A4EFD532AA385F100B7E4C8 /* ComicDataWriter.swift in Sources */,
 				4A6C7E802AA2E91A00FF95FB /* SharedViews.swift in Sources */,
+				4AEAB4642AA6902900B88723 /* EditBookView.swift in Sources */,
 				4AB6E7BE2A9C203E00A8EFA0 /* ImageUtilities.swift in Sources */,
 				4A4EFD4D2AA3852D00B7E4C8 /* ComicFileUnzipper.swift in Sources */,
 				4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */,
@@ -291,6 +301,8 @@
 				4A6C7E7E2AA2E80A00FF95FB /* ImportingState.swift in Sources */,
 				4A6C7E7C2AA25AE500FF95FB /* RelatedBooksView.swift in Sources */,
 				4A2E60752A9D357400953337 /* DatabaseInspectorView.swift in Sources */,
+				4AEAB4602AA68FCB00B88723 /* ChipUtilities.swift in Sources */,
+				4AEAB4622AA68FF500B88723 /* SpecializedTextBoxes.swift in Sources */,
 				4A6C7E6F2AA14B4400FF95FB /* AppOverview.swift in Sources */,
 				4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */,
 				4A2E606B2A9D138700953337 /* ThumbnailProvider.swift in Sources */,

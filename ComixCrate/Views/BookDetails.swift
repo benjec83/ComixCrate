@@ -18,7 +18,7 @@ struct BookMainDetails: View {
     }
     
     private var storyArcNames: [String] {
-        (book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName } ?? []
+        (book.bookStoryArcs as? Set<BookStoryArc>)?.compactMap { $0.storyArcName } ?? []
     }
     
 
@@ -35,7 +35,8 @@ struct BookMainDetails: View {
                     .font(.caption2)
                     .lineLimit(2)
                 
-                Text("Story Arcs: \((book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName }.joined(separator: ", ") ?? "Unknown")")
+                Text("Story Arcs: \((book.bookStoryArcs as? Set<StoryArc>)?.compactMap { $0.storyArcName }.joined(separator: ", ") ?? "Unknown")")
+
                     .font(.caption2)
                     .fontWeight(.light)
                     .lineLimit(1)
@@ -380,154 +381,3 @@ struct FakePublisherLogo: View {
         }
     }
 }
-
-struct EditBookView: View {
-    @Binding var book: Book
-    @State private var editedTitle: String
-    @State private var editedIssueNumber: String
-    @State private var editedStoryArcName: String
-    
-    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
-    private var allStoryArcs: FetchedResults<StoryArc>
-    
-    
-    @State private var isShowingSuggestions: Bool = false
-    @State private var showAllSuggestionsSheet: Bool = false
-    
-    @Environment(\.managedObjectContext) private var viewContext
-    @Environment(\.presentationMode) var presentationMode
-    @State private var showAlert: Bool = false
-    
-    @State private var chips: [String] = []
-    private var storyArcNames: [String] {
-        (book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName } ?? []
-    }
-
-    
-    init(book: Book) {
-        _book = .constant(book)
-        _editedTitle = State(initialValue: book.title ?? "")
-        _editedIssueNumber = State(initialValue: "\(book.issueNumber)")
-        _editedStoryArcName = State(initialValue: (book.storyArc as? Set<StoryArc>)?.first?.storyArcName ?? "")
-        _chips = State(initialValue: (book.storyArc as? Set<StoryArc>)?.compactMap { $0.storyArcName } ?? [])
-    }
-    
-    var body: some View {
-        VStack {
-            Form {
-                TextField("Title", text: $editedTitle)
-                TextField("Issue Number", text: $editedIssueNumber)
-                VStack {
-                    TextField("Story Arc", text: $editedStoryArcName, onEditingChanged: { isEditing in
-                        self.isShowingSuggestions = isEditing
-                    })
-                    ChipsView(chips: chips)
-                    .gesture(
-                        TapGesture()
-                            .onEnded {
-                                UIApplication.shared.sendAction(#selector(UIResponder.becomeFirstResponder), to: nil, from: nil, for: nil)
-                            }
-                    )
-                    
-                    if isShowingSuggestions {
-                        List(filterStoryArcs().prefix(3), id: \.self) { storyArc in
-                            Button(action: {
-                                self.editedStoryArcName = storyArc.storyArcName ?? ""
-                                self.isShowingSuggestions = false
-                            }) {
-                                Text(storyArc.storyArcName ?? "")
-                                    .font(.subheadline) // Adjust the font size if needed
-                            }
-                            .padding(.vertical, 6) // Adjust vertical padding
-                        }
-                        .frame(height: 15) // Adjust the total height of the List
-                        Spacer(minLength: 50)
-                        Button("See All") {
-                            showAllSuggestionsSheet = true
-                        }
-                        
-                    }
-                    
-                }
-                .sheet(isPresented: $showAllSuggestionsSheet) {
-                    List(filterStoryArcs(), id: \.self) { storyArc in
-                        Button(action: {
-                            self.editedStoryArcName = storyArc.storyArcName ?? ""
-                            self.showAllSuggestionsSheet = false
-                        }) {
-                            Text(storyArc.storyArcName ?? "")
-                        }
-                    }
-                }
-            }
-            
-            Spacer()
-            
-            HStack {
-                Spacer()
-                Button("Save") {
-                    saveChanges()
-                    presentationMode.wrappedValue.dismiss()
-                }
-                Button("Cancel") {
-                    showAlert = true
-                }
-                .alert(isPresented: $showAlert) {
-                    Alert(title: Text("Are you sure?"),
-                          message: Text("Any changes will not be saved."),
-                          primaryButton: .destructive(Text("Don't Save")) {
-                        presentationMode.wrappedValue.dismiss()
-                    },
-                          secondaryButton: .cancel())
-                }
-                .foregroundColor(.gray)
-                
-                Spacer()
-                
-                
-            }
-            .padding()
-        }
-    }
-    
-    func filterStoryArcs() -> [StoryArc] {
-        let query = editedStoryArcName.lowercased()
-        return allStoryArcs.filter { ($0.storyArcName?.lowercased().contains(query) ?? false) }
-    }
-    
-    func saveChanges() {
-        book.title = editedTitle
-        book.issueNumber = Int16(editedIssueNumber) ?? 0
-        
-        // Check if a StoryArc with the edited name already exists in the book's storyArc relationship
-        if let existingStoryArc = (book.storyArc as? Set<StoryArc>)?.first(where: { $0.storyArcName?.lowercased() == editedStoryArcName.lowercased() }) {
-            // ... (You can add further logic here if needed)
-        } else {
-            // If the StoryArc doesn't exist, create a new one
-            let newStoryArc = StoryArc(context: viewContext)
-            newStoryArc.storyArcName = editedStoryArcName
-            
-            // Add the new StoryArc to the book's storyArc relationship
-            if let existingSet = book.storyArc as? NSMutableSet {
-                existingSet.add(newStoryArc)
-            } else {
-                book.storyArc = NSMutableSet(object: newStoryArc)
-            }
-            
-            chips.append(editedStoryArcName)
-        }
-        
-        do {
-            try viewContext.save()
-        } catch {
-            print("Error saving edited book: \(error)")
-        }
-    }
-
-}
-    
-    
-    
-    
-    
-    
