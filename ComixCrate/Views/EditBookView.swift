@@ -18,21 +18,25 @@ import SwiftUI
 import CoreData
 
 struct EditBookView: View {
+
     @Binding var book: Book
     @State private var editedTitle: String
     @State private var editedIssueNumber: String
     @State private var editedStoryArcName: String
-    
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.presentationMode) var presentationMode
+
+
     @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
     private var allStoryArcs: FetchedResults<StoryArc>
     
-    @Environment(\.managedObjectContext) private var viewContext
-    @Environment(\.presentationMode) var presentationMode
+    
+
     @State private var showAlert: Bool = false
     
     @State private var chips: [TempChipData] = []
     private var bookStoryArcNames: [String] {
-        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArcName?.storyArcName  } ?? []
+        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.storyArcName  } ?? []
     }
     @State private var editedStoryArcPart: String = ""
     
@@ -51,10 +55,10 @@ struct EditBookView: View {
         let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.storyArcName ?? ""
         _editedStoryArcName = State(initialValue: firstStoryArcName)
         
-        // Populate the chips array with existing story arcs from the book
+//         Populate the chips array with existing story arcs from the book
         let existingStoryArcs: [TempChipData] = (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap {
             let entityType = String(describing: type(of: $0).self) // This will give "BookStoryArcs"
-            return TempChipData(entity: entityType, value1: $0.storyArcName?.storyArcName ?? "", value2: ValueData.int16($0.storyArcPart))
+            return TempChipData(entity: entityType, value1: $0.storyArc?.storyArcName ?? "", value2: ValueData.int16($0.storyArcPart))
         } ?? []
 
         _chips = State(initialValue: existingStoryArcs)
@@ -124,6 +128,7 @@ extension EditBookView {
 
         book.title = editedTitle
         book.issueNumber = Int16(editedIssueNumber) ?? 0
+
         
         // Clear existing BookStoryArcs for the book
         if let existingBookStoryArcs = book.bookStoryArcs as? Set<BookStoryArcs> {
@@ -156,7 +161,7 @@ extension EditBookView {
             // Create a new BookStoryArcs record to associate the book with the story arc
             let bookStoryArc = BookStoryArcs(context: viewContext)
             bookStoryArc.book = book
-            bookStoryArc.storyArcName = storyArc  // Assign the StoryArc object, not the name
+            bookStoryArc.storyArc = storyArc  // Assign the StoryArc object, not the name
             if let validPartNumber = partNumber {
                 bookStoryArc.storyArcPart = validPartNumber
             } else {

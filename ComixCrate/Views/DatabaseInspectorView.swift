@@ -12,7 +12,7 @@ struct DatabaseInspectorView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)])
     private var books: FetchedResults<Book>
-    @FetchRequest(entity: BookStoryArcs.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \BookStoryArcs.storyArcName, ascending: true)])
+    @FetchRequest(entity: BookStoryArcs.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \BookStoryArcs.storyArc, ascending: true)])
     private var arcs: FetchedResults<BookStoryArcs>
     
     let dateFormatter: DateFormatter = {
@@ -30,7 +30,7 @@ struct DatabaseInspectorView: View {
                     Text("Title: \(book.title ?? "Unknown")")
                     Text("Issue Number: \(String(book.issueNumber))")
                     Text("Series: \(book.series?.name ?? "Unknown")")
-                    Text("Story Arcs: \((book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArcName?.storyArcName }.joined(separator: ", ") ?? "Unknown")")
+                    Text("Story Arcs: \((book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.storyArcName }.joined(separator: ", ") ?? "Unknown")")
                     Text("Publisher: \(book.publisher?.name ?? "Unknown")")
                     Text("Favorite: \(book.isFavorite ? "Yes" : "No")")
                     Text("Volume Year: \(String(book.volumeYear))")
@@ -48,7 +48,7 @@ struct DatabaseInspectorView: View {
         List {
             ForEach(arcs, id: \.self) { arc in
                 VStack(alignment: .leading) {
-                    Text("Story Arc: \(arc.storyArcName?.storyArcName ?? "N/A")")
+                    Text("Story Arc: \(arc.storyArc?.storyArcName ?? "N/A")")
                     Text("Part: \(String(arc.storyArcPart))")
                     Text("Book: \(arc.book?.title ?? "N/A")")
 

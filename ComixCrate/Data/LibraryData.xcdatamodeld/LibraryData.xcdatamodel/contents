@@ -62,7 +62,7 @@
     <entity name="BookStoryArcs" representedClassName="BookStoryArcs" syncable="YES" codeGenerationType="class">
         <attribute name="storyArcPart" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="bookStoryArcs" inverseEntity="Book"/>
-        <relationship name="storyArcName" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryArc" inverseName="booksInArc" inverseEntity="StoryArc"/>
+        <relationship name="storyArc" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryArc" inverseName="booksInArc" inverseEntity="StoryArc"/>
     </entity>
     <entity name="Characters" representedClassName="Characters" syncable="YES" codeGenerationType="class">
         <attribute name="characterName" optional="YES" attributeType="String"/>
@@ -131,6 +131,6 @@
         <attribute name="storyArcName" optional="YES" attributeType="String"/>
         <attribute name="storyArcPart" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="book" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="storyArc" inverseEntity="Book"/>
-        <relationship name="booksInArc" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BookStoryArcs" inverseName="storyArcName" inverseEntity="BookStoryArcs"/>
+        <relationship name="booksInArc" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BookStoryArcs" inverseName="storyArc" inverseEntity="BookStoryArcs"/>
     </entity>
 </model>
