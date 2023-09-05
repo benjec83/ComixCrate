@@ -121,6 +121,7 @@ struct EntityTextFieldView: View {
                 .padding(.top, 10)
             }
             .sheet(isPresented: $showAllSuggestionsSheet) {  // Attach the .sheet modifier here
+                Section(header: Text("Add an existing Story Arc")) {
                 List {
                     ForEach(allEntities.objects, id: \.objectID) { entity in
                         Button(action: {
@@ -133,6 +134,7 @@ struct EntityTextFieldView: View {
                         }
                     }
                 }
+            }
             }
 
         }
@@ -210,7 +212,5 @@ enum TextFieldEntities {
         }
     }
 }
-
-
 
 

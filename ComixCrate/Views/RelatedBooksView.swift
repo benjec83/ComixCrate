@@ -13,6 +13,8 @@ struct RelatedBooksView: View {
     
     @State private var showBookDetails: Bool = false
     @State private var selectedBook: Book? = nil
+    
+    
 
 
     var body: some View {
@@ -35,16 +37,31 @@ struct RelatedBooksView: View {
     var relatedBookIDs: [NSManagedObjectID] {
         switch relatedObject {
         case let series as Series:
-            return series.book?.allObjects.compactMap { ($0 as? Book)?.objectID } ?? []
+            return (series.book?.allObjects as? [Book] ?? [])
+            .sorted { $0.issueNumber < $1.issueNumber }
+            .compactMap { $0.objectID }
         case let publisher as Publisher:
-            return publisher.book?.allObjects.compactMap { ($0 as? Book)?.objectID } ?? []
+            // First, sort by series name, then by issue number
+            return (publisher.book?.allObjects as? [Book] ?? [])
+            .sorted(by: {
+                if $0.series?.name == $1.series?.name {
+                    return $0.issueNumber < $1.issueNumber
+                }
+                return $0.series?.name ?? "" < $1.series?.name ?? ""
+            }).compactMap { $0.objectID }
         case let storyArc as StoryArc:
-            // Fetch the related books through the BookStoryArcs entity
-            return storyArc.booksInArc?.allObjects.compactMap { ($0 as? BookStoryArcs)?.book?.objectID } ?? []
+            // Fetch the related books through the BookStoryArcs entity and sort by storyArcPart
+            return storyArc.booksInArc?.allObjects.sorted(by: {
+                let bookArc1 = $0 as! BookStoryArcs
+                let bookArc2 = $1 as! BookStoryArcs
+                return bookArc1.storyArcPart < bookArc2.storyArcPart
+            }).compactMap { ($0 as? BookStoryArcs)?.book?.objectID } ?? []
         default:
             return []
         }
     }
+
+
 
 
     var relatedObjectName: String {
