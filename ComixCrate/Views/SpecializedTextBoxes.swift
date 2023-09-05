@@ -6,21 +6,38 @@
 //
 
 import SwiftUI
+import CoreData
 
-struct StoryArcTextFieldView: View {
-    @Binding var storyArcName: String
-    @Binding var storyArcPart: String
-    @Binding var chips: [TempChipData]
-    var allStoryArcs: FetchedResults<StoryArc>
-    var placeholder: String = "Enter item..."
+protocol EntityProtocol: NSManagedObject { }
+
+extension StoryArc: EntityProtocol { }
+// Add other entities as needed
+
+struct AnyFetchedResults {
+    private let _objects: () -> [EntityProtocol]
     
+    init<T: EntityProtocol>(_ results: FetchedResults<T>) {
+        _objects = { results.map { $0 } }
+    }
+    
+    var objects: [EntityProtocol] {
+        _objects()
+    }
+}
+struct EntityTextFieldView: View {
+    var entityType: TextFieldEntities
+    @Binding var chips: [TempChipData]
+    var allEntities: AnyFetchedResults
+    var placeholder: String = "Enter item..."
+
     @FocusState private var isTextFieldFocused: Bool
     @State private var showAllSuggestionsSheet: Bool = false
-    
-    // Computed property to get filtered story arcs based on the current input
-    var filteredStoryArcs: [StoryArc] {
-        let lowercasedInput = storyArcName.lowercased()
-        return allStoryArcs.filter { $0.storyArcName!.lowercased().contains(lowercasedInput) }
+
+    // Computed property to get filtered entities based on the current input
+    var filteredEntities: [NSManagedObject] {
+        let lowercasedInput = entityType.bindings.0.wrappedValue.lowercased()
+        // This filtering logic might need to be updated based on the actual attribute you're filtering on
+        return allEntities.objects.filter { ($0.value(forKey: entityType.attributes.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true }
             .prefix(5)  // Take only the first 5 results
             .map { $0 }
     }
@@ -28,37 +45,50 @@ struct StoryArcTextFieldView: View {
     var body: some View {
         VStack {
             HStack {
-                // TextField for Story Arc Name
-                TextField("Story Arc Name", text: $storyArcName, onCommit: {
-                    if let firstSuggestion = filteredStoryArcs.first {
-                        storyArcName = firstSuggestion.storyArcName!
+                // TextField for the first attribute (e.g., storyArcName, bookCreatorName, etc.)
+                TextField(entityType.attributes.field1.displayName, text: entityType.bindings.0, onCommit: {
+                    if let firstSuggestion = filteredEntities.first {
+                        entityType.bindings.0.wrappedValue = firstSuggestion.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
                     }
                 })
                 .textFieldStyle(PlainTextFieldStyle())
                 .multilineTextAlignment(.leading)
                 .focused($isTextFieldFocused)
                 
-                // TextField for Story Arc Part
-                TextField("Part #", text: $storyArcPart)
+                // TextField for the second attribute (e.g., storyArcPart, bookCreatorRole, etc.)
+                TextField(entityType.attributes.field2.displayName, text: entityType.bindings.1)
                     .textFieldStyle(PlainTextFieldStyle())
                     .multilineTextAlignment(.leading)
-                    .keyboardType(.numberPad) // Since it's a part number, we can use a number pad
-                
-                // "+" Button to add the new story arc and part #
+                    .keyboardType(entityType.keyboardTypeForField2)  // Use the computed property here
+
+                // "+" Button to add the new entity
                 Button(action: {
-                    // Check if storyArcName is not empty
-                    guard !storyArcName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    // Check if the first attribute is not empty
+                    guard !entityType.bindings.0.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         return
                     }
                     
-                    let partNumber = Int16(storyArcPart)
-                    let newArc = TempChipData(type: "StoryArc", name: storyArcName, part: partNumber == 0 ? nil : partNumber)
-                    if !chips.contains(where: { $0.name == newArc.name && $0.part == newArc.part }) {
-                        chips.append(newArc)
+                    let valueData: ValueData
+                    switch entityType.fieldTypes.1 {
+                    case .string:
+                        valueData = .string(entityType.bindings.1.wrappedValue)
+                    case .int16:
+                        if let intValue = Int16(entityType.bindings.1.wrappedValue) {
+                            valueData = .int16(intValue)
+                        } else {
+                            valueData = .int16(0) // or any default value you want
+                        }
                     }
-                    storyArcName = ""
-                    storyArcPart = ""
-                    print("Adding new chip: \(newArc)")
+
+                    let newEntity = TempChipData(entity: entityType.attributes.field1.attribute, value1: entityType.bindings.0.wrappedValue, value2: valueData)
+                    if !chips.contains(where: {
+                        $0.value1 == newEntity.value1 && $0.value2 == newEntity.value2
+                    }) {
+                        chips.append(newEntity)
+                    }
+                    entityType.bindings.0.wrappedValue = ""
+                    entityType.bindings.1.wrappedValue = ""
+                    print("Adding new chip: \(newEntity)")
                     
                 }) {
                     Image(systemName: "plus.circle.fill")
@@ -66,18 +96,17 @@ struct StoryArcTextFieldView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .frame(width: 30, height: 30) // Limit the button size
-                
             }
             // Displaying filtered results
             VStack(alignment: .leading) {
                 // Displaying filtered results
-                if isTextFieldFocused && !filteredStoryArcs.isEmpty {
-                    ForEach(filteredStoryArcs.indices, id: \.self) { index in
-                        let arc = filteredStoryArcs[index]
-                        Text(arc.storyArcName!)  // Use the unwrapped storyArcName
+                if isTextFieldFocused && !filteredEntities.isEmpty {
+                    ForEach(filteredEntities.indices, id: \.self) { index in
+                        let entity = filteredEntities[index]
+                        Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")  // Use the unwrapped attribute value
                             .padding(.vertical, 5)
                             .onTapGesture {
-                                storyArcName = arc.storyArcName!
+                                entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
                                 isTextFieldFocused = false
                             }
                     }
@@ -92,18 +121,93 @@ struct StoryArcTextFieldView: View {
                 .padding(.top, 10)
             }
             .sheet(isPresented: $showAllSuggestionsSheet) {  // Attach the .sheet modifier here
-                List(allStoryArcs, id: \.self) { storyArc in
+                List(filteredEntities, id: \.self) { entity in
                     Button(action: {
                         // Update the text fields
-                        storyArcName = storyArc.storyArcName ?? ""
+                        entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
                         // Dismiss the sheet
                         showAllSuggestionsSheet = false
                     }) {
-                        Text(storyArc.storyArcName ?? "")
+                        Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")
                     }
                 }
             }
         }
     }
+
 }
+
+enum ValueData: Hashable {
+    case string(String)
+    case int16(Int16)
+}
+
+extension ValueData: Equatable {
+    static func == (lhs: ValueData, rhs: ValueData) -> Bool {
+        switch (lhs, rhs) {
+        case (.string(let lhsString), .string(let rhsString)):
+            return lhsString == rhsString
+        case (.int16(let lhsInt), .int16(let rhsInt)):
+            return lhsInt == rhsInt
+        default:
+            return false
+        }
+    }
+}
+
+enum FieldType {
+    case string
+    case int16
+}
+
+
+enum TextFieldEntities {
+    case bookStoryArc(Binding<String>, Binding<String>, FieldType, FieldType)
+    case bookCreatorRole(Binding<String>, Binding<String>, FieldType, FieldType)
+    case bookEvent(Binding<String>, Binding<String>, FieldType, FieldType)
+    
+    var attributes: (field1: (attribute: String, displayName: String), field2: (attribute: String, displayName: String)) {
+        switch self {
+        case .bookStoryArc:
+            return (field1: ("storyArcName", "Add Story Arc"), field2: ("storyArcPart", "Add Story Arc Part"))
+        case .bookCreatorRole:
+            return (field1: ("bookCreatorName", "Creator Name"), field2: ("bookCreatorRole", "Role"))
+        case .bookEvent:
+            return (field1: ("bookEventName", "Event Name"), field2: ("bookEventPart", "Part"))
+        }
+    }
+    
+    var bindings: (Binding<String>, Binding<String>) {
+        switch self {
+        case .bookStoryArc(let binding1, let binding2, _, _):
+            return (binding1, binding2)
+        case .bookCreatorRole(let binding1, let binding2, _, _):
+            return (binding1, binding2)
+        case .bookEvent(let binding1, let binding2, _, _):
+            return (binding1, binding2)
+        }
+    }
+    
+    var fieldTypes: (FieldType, FieldType) {
+        switch self {
+        case .bookStoryArc(_, _, let type1, let type2):
+            return (type1, type2)
+        case .bookCreatorRole(_, _, let type1, let type2):
+            return (type1, type2)
+        case .bookEvent(_, _, let type1, let type2):
+            return (type1, type2)
+        }
+    }
+    var keyboardTypeForField2: UIKeyboardType {
+        switch fieldTypes.1 {
+        case .string:
+            return .default
+        case .int16:
+            return .numberPad
+        }
+    }
+}
+
+
+
 

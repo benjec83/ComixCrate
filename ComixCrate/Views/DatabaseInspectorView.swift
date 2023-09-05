@@ -12,6 +12,8 @@ struct DatabaseInspectorView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)])
     private var books: FetchedResults<Book>
+    @FetchRequest(entity: BookStoryArcs.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \BookStoryArcs.storyArcName, ascending: true)])
+    private var arcs: FetchedResults<BookStoryArcs>
     
     let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -38,6 +40,17 @@ struct DatabaseInspectorView: View {
                     Text("Personal Rating: \(String(book.personalRating))")
                     Text("File Name: \(book.fileName ?? "Unknown")")
                     Text("File Location: \(book.filePath ?? "Unkown")")
+
+                    // Add any other attributes you want to inspect here
+                }
+            }
+        }
+        List {
+            ForEach(arcs, id: \.self) { arc in
+                VStack(alignment: .leading) {
+                    Text("Story Arc: \(arc.storyArcName?.storyArcName ?? "N/A")")
+                    Text("Part: \(String(arc.storyArcPart))")
+                    Text("Book: \(arc.book?.title ?? "N/A")")
 
                     // Add any other attributes you want to inspect here
                 }

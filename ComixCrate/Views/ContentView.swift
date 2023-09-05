@@ -12,8 +12,6 @@ struct ContentView: View {
     @State private var isImporting: Bool = false
     @EnvironmentObject var importingState: ImportingState
     
-    
-    
     var body: some View {
         ZStack {
             NavigationView {

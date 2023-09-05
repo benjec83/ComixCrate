@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "A18E1D71-E888-44B7-925B-C994167DB8FC"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "69B57D2E-8358-418F-9187-F78CF827ACC6"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComixCrate/Views/EditBookView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "125"
+            endingLineNumber = "125"
+            landmarkName = "saveChanges()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "69B57D2E-8358-418F-9187-F78CF827ACC6 - f047ebac69cc8d46"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "126"
+                  endingLineNumber = "126"
+                  offsetFromSymbolStart = "2624">
+               </Location>
+               <Location
+                  uuid = "69B57D2E-8358-418F-9187-F78CF827ACC6 - f047ebac69cc8d69"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "125"
+                  endingLineNumber = "125"
+                  offsetFromSymbolStart = "3060">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1FDCD0DC-5ECA-454B-9BF2-6CF22FF1FB61"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComixCrate/Views/EditBookView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "129"
+            endingLineNumber = "129"
+            landmarkName = "saveChanges()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "1FDCD0DC-5ECA-454B-9BF2-6CF22FF1FB61 - f047ebac69cc8de5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "129"
+                  endingLineNumber = "129"
+                  offsetFromSymbolStart = "3316">
+               </Location>
+               <Location
+                  uuid = "1FDCD0DC-5ECA-454B-9BF2-6CF22FF1FB61 - f047ebac69cc8de5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "129"
+                  endingLineNumber = "129"
+                  offsetFromSymbolStart = "3748">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "539EC00B-4976-4721-BBBD-CBBB1BA2C64A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComixCrate/Views/EditBookView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
+            landmarkName = "saveChanges()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "539EC00B-4976-4721-BBBD-CBBB1BA2C64A - f047ebac69cc929c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "136"
+                  endingLineNumber = "136"
+                  offsetFromSymbolStart = "3784">
+               </Location>
+               <Location
+                  uuid = "539EC00B-4976-4721-BBBD-CBBB1BA2C64A - f047ebac69cc929c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "136"
+                  endingLineNumber = "136"
+                  offsetFromSymbolStart = "4528">
+               </Location>
+               <Location
+                  uuid = "539EC00B-4976-4721-BBBD-CBBB1BA2C64A - f047ebac69cc929c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "136"
+                  endingLineNumber = "136"
+                  offsetFromSymbolStart = "4844">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "75B6FC8F-CBCD-45F1-AF31-E01E2C8FF850"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComixCrate/Views/EditBookView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "148"
+            endingLineNumber = "148"
+            landmarkName = "saveChanges()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "75B6FC8F-CBCD-45F1-AF31-E01E2C8FF850 - f047ebac69cc9071"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "149"
+                  endingLineNumber = "149"
+                  offsetFromSymbolStart = "4292">
+               </Location>
+               <Location
+                  uuid = "75B6FC8F-CBCD-45F1-AF31-E01E2C8FF850 - f047ebac69cc9010"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "148"
+                  endingLineNumber = "148"
+                  offsetFromSymbolStart = "5064">
+               </Location>
+               <Location
+                  uuid = "75B6FC8F-CBCD-45F1-AF31-E01E2C8FF850 - 3c3442b94604a0f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (ComixCrate.StoryArc) -&gt; Swift.Bool in ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "148"
+                  endingLineNumber = "148"
+                  offsetFromSymbolStart = "60">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "946E7E63-4F4D-4B2E-A09E-20FB5A9C5645"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComixCrate/Views/EditBookView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "157"
+            endingLineNumber = "157"
+            landmarkName = "saveChanges()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "946E7E63-4F4D-4B2E-A09E-20FB5A9C5645 - f047ebac69cc91a6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "158"
+                  endingLineNumber = "158"
+                  offsetFromSymbolStart = "5024">
+               </Location>
+               <Location
+                  uuid = "946E7E63-4F4D-4B2E-A09E-20FB5A9C5645 - f047ebac69cc9149"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "157"
+                  endingLineNumber = "157"
+                  offsetFromSymbolStart = "5748">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3B317847-59D8-47ED-A981-A4381C7D18BC"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComixCrate/Views/EditBookView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "170"
+            endingLineNumber = "170"
+            landmarkName = "saveChanges()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "3B317847-59D8-47ED-A981-A4381C7D18BC - f047ebac69cc971b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "171"
+                  endingLineNumber = "171"
+                  offsetFromSymbolStart = "5436">
+               </Location>
+               <Location
+                  uuid = "3B317847-59D8-47ED-A981-A4381C7D18BC - f047ebac69cc973a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EditBookView.saveChanges() -&gt; ()"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/EditBookView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "170"
+                  endingLineNumber = "170"
+                  offsetFromSymbolStart = "6252">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

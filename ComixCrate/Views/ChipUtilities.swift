@@ -105,11 +105,24 @@ struct ChipView: View {
         }
     }
     
+    func createLabel(for chip: TempChipData) -> String {
+        switch chip.value2 {
+        case .string:
+            return chip.value1
+        case .int16(let intValue):
+            return (intValue != 0) ? "\(chip.value1) - Part \(intValue)" : chip.value1
+        }
+    }
+
     @ViewBuilder
     func RowView(chip: TempChipData) -> some View {
-        let label = chip.part != nil ? "\(chip.name) - Part \(chip.part!)" : chip.name
+        let label = createLabel(for: chip)
+
         Chip(label: label, onDelete: {
-            if let index = chips.firstIndex(where: { $0.name == chip.name && $0.part == chip.part }) {
+            if let index = chips.firstIndex(where: {
+                $0.value1 == chip.value1 &&
+                (String(describing: $0.value2) == String(describing: chip.value2))
+            }) {
                 chips.remove(at: index)
             }
         }, type: .storyArc, showIcon: true, showDeleteButton: true)
@@ -119,13 +132,22 @@ struct ChipView: View {
         .frame(maxWidth: 300)
         .matchedGeometryEffect(id: chip.id, in: animation)
         .onTapGesture {
-            if let index = chips.firstIndex(where: { $0.name == chip.name && $0.part == chip.part }) {
-                editedStoryArcName = chip.name
-                editedStoryArcPart = chip.part != nil ? "\(chip.part!)" : ""
+            if let index = chips.firstIndex(where: {
+                $0.value1 == chip.value1 &&
+                (String(describing: $0.value2) == String(describing: chip.value2))
+            }) {
+                editedStoryArcName = chip.value1
+                switch chip.value2 {
+                case .string(let stringValue):
+                    editedStoryArcPart = stringValue
+                case .int16(let intValue):
+                    editedStoryArcPart = "\(intValue)"
+                }
                 chips.remove(at: index) // Remove the old chip
             }
         }
     }
+
     
     func getRows(containerWidth: CGFloat) -> [[TempChipData]] {
         var rows: [[TempChipData]] = []
@@ -134,7 +156,13 @@ struct ChipView: View {
         var totalWidth: CGFloat = 0
         
         chips.forEach { chip in
-            let label = chip.part != nil ? "\(chip.name) - Part \(chip.part!)" : chip.name
+            let label: String
+            switch chip.value2 {
+            case .string(_):
+                label = chip.value1
+            case .int16(let intValue):
+                label = intValue != 0 ? "\(chip.value1) - Part \(intValue)" : chip.value1
+            }
             let font = UIFont.systemFont(ofSize: fontSize)
             let attributes = [NSAttributedString.Key.font: font]
             let size = (label as NSString).size(withAttributes: attributes)

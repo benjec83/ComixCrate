@@ -40,7 +40,7 @@ struct BookMainDetails: View {
                     .font(.caption2)
                     .lineLimit(2)
                 
-                Text("Story Arcs: \(storyArcNames.joined(separator: ", ").isEmpty ? "Unknown" : storyArcNames.joined(separator: ", "))")
+                Text("Story Arcs: \(storyArcNames.joined(separator: ", ").isEmpty ? "" : storyArcNames.joined(separator: ", "))")
 
                     .font(.caption2)
                     .fontWeight(.light)
@@ -299,7 +299,7 @@ struct BookDetailsMainView: View {
         ScrollView {
             HStack {
                 HStack(alignment: .center) {
-                    ThumbnailProvider(book: book, isHighQuality: true)
+                    ThumbnailProvider(book: book, isHighQuality: true, shouldCacheHighQuality: $shouldCacheHighQualityThumbnail)
                         .scaledToFit()
                         .frame(height: 390.0)
                         .frame(maxWidth: 255)
@@ -335,8 +335,6 @@ struct BookDetailsMainView: View {
         .onAppear {
             shouldCacheHighQualityThumbnail = true
         }
-        
-        ThumbnailProvider(book: book, isHighQuality: true, shouldCacheHighQuality: $shouldCacheHighQualityThumbnail)
     }
 }
 

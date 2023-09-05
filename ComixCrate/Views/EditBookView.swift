@@ -31,14 +31,18 @@ struct EditBookView: View {
     @State private var showAlert: Bool = false
     
     @State private var chips: [TempChipData] = []
-    private var storyArcNames: [String] {
-        (book.bookStoryArcs as? Set<StoryArc>)?.compactMap { $0.storyArcName } ?? []
+    private var bookStoryArcNames: [String] {
+        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArcName?.storyArcName  } ?? []
     }
     @State private var editedStoryArcPart: String = ""
     
     @State private var chipViewHeight: CGFloat = 10  // Initial value, can be adjusted
     
     var onDelete: (() -> Void)? = nil
+    
+    //Bindings for EntityTextFieldView
+    @State private var attribute1: String = ""
+    @State private var attribute2: String = ""
     
     init(book: Book) {
         _book = .constant(book)
@@ -50,7 +54,7 @@ struct EditBookView: View {
         // Populate the chips array with existing story arcs from the book
         let existingStoryArcs: [TempChipData] = (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap {
             let entityType = String(describing: type(of: $0).self) // This will give "BookStoryArcs"
-            return TempChipData(type: entityType, name: $0.storyArcName?.storyArcName ?? "", part: $0.storyArcPart)
+            return TempChipData(entity: entityType, value1: $0.storyArcName?.storyArcName ?? "", value2: ValueData.int16($0.storyArcPart))
         } ?? []
 
         _chips = State(initialValue: existingStoryArcs)
@@ -69,7 +73,8 @@ struct EditBookView: View {
                         .padding(.vertical, 15)
                         .frame(height: chipViewHeight)
                         
-                    StoryArcTextFieldView(storyArcName: $editedStoryArcName, storyArcPart: $editedStoryArcPart, chips: $chips, allStoryArcs: allStoryArcs)
+                    EntityTextFieldView(entityType: .bookStoryArc($editedStoryArcName, $editedStoryArcPart, .string, .int16), chips: $chips, allEntities: AnyFetchedResults(allStoryArcs))
+
                 }
             }
             
@@ -111,6 +116,12 @@ extension EditBookView {
     }
     
     func saveChanges() {
+        print("Current book title: \(book.title ?? "nil")")
+        print("Edited title: \(editedTitle)")
+        if book.title != editedTitle {
+            book.title = editedTitle
+        }
+
         book.title = editedTitle
         book.issueNumber = Int16(editedIssueNumber) ?? 0
         
@@ -123,8 +134,14 @@ extension EditBookView {
         
         // For each chip in the chips array
         for chip in chips {
-            let storyArcName = chip.name
-            let partNumber = chip.part ?? 0
+            let storyArcName = chip.value1
+            let partNumber: Int16?
+            switch chip.value2 {
+            case .string(_):
+                partNumber = nil
+            case .int16(let intValue):
+                partNumber = intValue
+            }
             
             // Check if a StoryArc with the story arc name already exists globally
             let storyArc: StoryArc
@@ -140,7 +157,13 @@ extension EditBookView {
             let bookStoryArc = BookStoryArcs(context: viewContext)
             bookStoryArc.book = book
             bookStoryArc.storyArcName = storyArc  // Assign the StoryArc object, not the name
-            bookStoryArc.storyArcPart = partNumber
+            if let validPartNumber = partNumber {
+                bookStoryArc.storyArcPart = validPartNumber
+            } else {
+                // Handle the case where partNumber is nil
+                bookStoryArc.storyArcPart = 0 // or any default value you want
+            }
+
         }
         
         do {
@@ -162,9 +185,24 @@ struct EditBookView_Previews: PreviewProvider {
     }
 }
 
-struct TempChipData: Hashable, Identifiable {
+struct TempChipData: Identifiable {
     var id: UUID = UUID()
-    var type: String
-    var name: String
-    var part: Int16?
+    var entity: String
+    var value1: String
+    var value2: ValueData
 }
+
+extension TempChipData: Equatable {
+    static func == (lhs: TempChipData, rhs: TempChipData) -> Bool {
+        return lhs.id == rhs.id && lhs.value1 == rhs.value1 && lhs.value2 == rhs.value2
+    }
+}
+extension TempChipData: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(value1)
+        hasher.combine(value2)
+    }
+}
+
+
