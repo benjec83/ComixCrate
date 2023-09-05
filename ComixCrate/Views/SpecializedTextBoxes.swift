@@ -121,17 +121,20 @@ struct EntityTextFieldView: View {
                 .padding(.top, 10)
             }
             .sheet(isPresented: $showAllSuggestionsSheet) {  // Attach the .sheet modifier here
-                List(filteredEntities, id: \.self) { entity in
-                    Button(action: {
-                        // Update the text fields
-                        entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
-                        // Dismiss the sheet
-                        showAllSuggestionsSheet = false
-                    }) {
-                        Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")
+                List {
+                    ForEach(allEntities.objects, id: \.objectID) { entity in
+                        Button(action: {
+                            // Update the text fields
+                            entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
+                            // Dismiss the sheet
+                            showAllSuggestionsSheet = false
+                        }) {
+                            Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")
+                        }
                     }
                 }
             }
+
         }
     }
 
