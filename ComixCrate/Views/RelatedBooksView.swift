@@ -15,8 +15,8 @@ struct RelatedBooksView: View {
     @State private var selectedBook: Book? = nil
     
     
-
-
+    
+    
     var body: some View {
         List {
             ForEach(relatedBookIDs, id: \.self) { bookID in
@@ -27,28 +27,28 @@ struct RelatedBooksView: View {
                 }
             }
             
-        
-    }
+            
+        }
         .navigationTitle(relatedObjectName)
     }
-
+    
     @Environment(\.managedObjectContext) private var viewContext
-
+    
     var relatedBookIDs: [NSManagedObjectID] {
         switch relatedObject {
         case let series as Series:
             return (series.book?.allObjects as? [Book] ?? [])
-            .sorted { $0.issueNumber < $1.issueNumber }
-            .compactMap { $0.objectID }
+                .sorted { $0.issueNumber < $1.issueNumber }
+                .compactMap { $0.objectID }
         case let publisher as Publisher:
             // First, sort by series name, then by issue number
             return (publisher.book?.allObjects as? [Book] ?? [])
-            .sorted(by: {
-                if $0.series?.name == $1.series?.name {
-                    return $0.issueNumber < $1.issueNumber
-                }
-                return $0.series?.name ?? "" < $1.series?.name ?? ""
-            }).compactMap { $0.objectID }
+                .sorted(by: {
+                    if $0.series?.name == $1.series?.name {
+                        return $0.issueNumber < $1.issueNumber
+                    }
+                    return $0.series?.name ?? "" < $1.series?.name ?? ""
+                }).compactMap { $0.objectID }
         case let storyArc as StoryArc:
             // Fetch the related books through the BookStoryArcs entity and sort by storyArcPart
             return storyArc.booksInArc?.allObjects.sorted(by: {
@@ -60,10 +60,10 @@ struct RelatedBooksView: View {
             return []
         }
     }
-
-
-
-
+    
+    
+    
+    
     var relatedObjectName: String {
         switch relatedObject {
         case let series as Series:

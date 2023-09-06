@@ -83,9 +83,9 @@ struct EntityTextFieldView: View {
                         }
                     }
 
-                    let newEntity = TempChipData(entity: entityType.attributes.field1.attribute, value1: entityType.bindings.0.wrappedValue, value2: valueData)
+                    let newEntity = TempChipData(entity: entityType.attributes.field1.attribute, tempAttribute1: entityType.bindings.0.wrappedValue, tempAttribute2: valueData)
                     if !chips.contains(where: {
-                        $0.value1 == newEntity.value1 && $0.value2 == newEntity.value2
+                        $0.tempAttribute1 == newEntity.tempAttribute1 && $0.tempAttribute2 == newEntity.tempAttribute2
                     }) {
                         chips.append(newEntity)
                     }
