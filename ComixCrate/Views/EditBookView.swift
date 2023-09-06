@@ -64,13 +64,13 @@ struct EditBookView: View {
         // Populate the chips array with existing story arcs from the book
         let existingStoryArcs: [TempChipData] = (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap {
             let entityType = String(describing: type(of: $0).self) // This will give "BookStoryArcs"
-            return TempChipData(entity: entityType, value1: $0.storyArc?.storyArcName ?? "", value2: ValueData.int16($0.storyArcPart))
+            return TempChipData(entity: entityType, tempAttribute1: $0.storyArc?.storyArcName ?? "", tempAttribute2: ValueData.int16($0.storyArcPart))
         } ?? []
 
         // Populate the chips array with existing events from the book
         let existingEvents: [TempChipData] = (book.bookEvents as? Set<BookEvents>)?.compactMap {
             let entityType = String(describing: type(of: $0).self) // This will give "BookEvents"
-            return TempChipData(entity: entityType, value1: $0.events?.eventName ?? "", value2: ValueData.int16($0.eventPart))
+            return TempChipData(entity: entityType, tempAttribute1: $0.events?.eventName ?? "", tempAttribute2: ValueData.int16($0.eventPart))
         } ?? []
 
         _chips = State(initialValue: existingStoryArcs + existingEvents) // Combine both arrays
@@ -149,7 +149,7 @@ extension EditBookView {
     
     func printAllTempChipData() {
         for chip in chips {
-            print("Entity: \(chip.entity), Value1: \(chip.value1), Value2: \(chip.value2)")
+            print("Entity: \(chip.entity), Value1: \(chip.tempAttribute1), Value2: \(chip.tempAttribute2)")
         }
     }
 
@@ -190,30 +190,30 @@ extension EditBookView {
         
         // For each story arc chip in the chips array
         for chip in chips {
-            let storyArcName = chip.value1
-            let partNumber: Int16?
-            switch chip.value2 {
+            let attribute1 = chip.tempAttribute1
+            let attribute2: Int16?
+            switch chip.tempAttribute2 {
             case .string(_):
-                partNumber = nil
+                attribute2 = nil
             case .int16(let intValue):
-                partNumber = intValue
+                attribute2 = intValue
             }
             
             // Check if a StoryArc with the story arc name already exists globally
             let storyArc: StoryArc
-            if let existingStoryArc = allStoryArcs.first(where: { $0.storyArcName?.lowercased() == storyArcName.lowercased() }) {
+            if let existingStoryArc = allStoryArcs.first(where: { $0.storyArcName?.lowercased() == attribute1.lowercased() }) {
                 storyArc = existingStoryArc
             } else {
                 // If the StoryArc doesn't exist, create a new one
                 storyArc = StoryArc(context: viewContext)
-                storyArc.storyArcName = storyArcName
+                storyArc.storyArcName = attribute1
             }
             
             // Create a new BookStoryArcs record to associate the book with the story arc
             let bookStoryArc = BookStoryArcs(context: viewContext)
             bookStoryArc.book = book
             bookStoryArc.storyArc = storyArc  // Assign the StoryArc object, not the name
-            if let validPartNumber = partNumber {
+            if let validPartNumber = attribute2 {
                 bookStoryArc.storyArcPart = validPartNumber
             } else {
                 // Handle the case where partNumber is nil
@@ -231,9 +231,9 @@ extension EditBookView {
         
         // For each chip in the eventChips array
         for chip in chips {
-            let eventName = chip.value1
+            let eventName = chip.tempAttribute1
             let partNumber: Int16?
-            switch chip.value2 {
+            switch chip.tempAttribute2 {
             case .string(_):
                 partNumber = nil
             case .int16(let intValue):
@@ -285,20 +285,20 @@ struct EditBookView_Previews: PreviewProvider {
 struct TempChipData: Identifiable {
     var id: UUID = UUID()
     var entity: String
-    var value1: String
-    var value2: ValueData
+    var tempAttribute1: String
+    var tempAttribute2: ValueData
 }
 
 extension TempChipData: Equatable {
     static func == (lhs: TempChipData, rhs: TempChipData) -> Bool {
-        return lhs.id == rhs.id && lhs.value1 == rhs.value1 && lhs.value2 == rhs.value2
+        return lhs.id == rhs.id && lhs.tempAttribute1 == rhs.tempAttribute1 && lhs.tempAttribute2 == rhs.tempAttribute2
     }
 }
 extension TempChipData: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-        hasher.combine(value1)
-        hasher.combine(value2)
+        hasher.combine(tempAttribute1)
+        hasher.combine(tempAttribute2)
     }
 }
 

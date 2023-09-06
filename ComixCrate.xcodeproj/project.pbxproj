@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4A072FD42AA7DEA100A2E049 /* ReadingListsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */; };
+		4A10A5FD2AA8F12D009735C4 /* NewList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10A5FC2AA8F12D009735C4 /* NewList.swift */; };
 		4A2E606B2A9D138700953337 /* ThumbnailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */; };
 		4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */; };
 		4A2E60732A9D1F8400953337 /* FavoriteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60722A9D1F8400953337 /* FavoriteButton.swift */; };
@@ -23,6 +24,7 @@
 		4A6C7E7E2AA2E80A00FF95FB /* ImportingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */; };
 		4A6C7E802AA2E91A00FF95FB /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E7F2AA2E91A00FF95FB /* SharedViews.swift */; };
 		4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6D2AA0582600504BAF /* LRUCache.swift */; };
+		4AA660E52AA8E9FC007BDB50 /* OldCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA660E42AA8E9FC007BDB50 /* OldCode.swift */; };
 		4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */; };
 		4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */; };
 		4AB6E7A12A9BD90A00A8EFA0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */; };
@@ -44,6 +46,7 @@
 
 /* Begin PBXFileReference section */
 		4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingListsView.swift; sourceTree = "<group>"; };
+		4A10A5FC2AA8F12D009735C4 /* NewList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewList.swift; sourceTree = "<group>"; };
 		4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailProvider.swift; sourceTree = "<group>"; };
 		4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
 		4A2E60722A9D1F8400953337 /* FavoriteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteButton.swift; sourceTree = "<group>"; };
@@ -59,6 +62,7 @@
 		4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportingState.swift; sourceTree = "<group>"; };
 		4A6C7E7F2AA2E91A00FF95FB /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
 		4A7E7D6D2AA0582600504BAF /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
+		4AA660E42AA8E9FC007BDB50 /* OldCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldCode.swift; sourceTree = "<group>"; };
 		4AB6E7992A9BD90700A8EFA0 /* ComixCrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComixCrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComixCrateApp.swift; sourceTree = "<group>"; };
 		4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -145,6 +149,8 @@
 				4AEAB4632AA6902900B88723 /* EditBookView.swift */,
 				4AE0DF152AA7A31B006DFFF1 /* HomeView.swift */,
 				4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */,
+				4AA660E42AA8E9FC007BDB50 /* OldCode.swift */,
+				4A10A5FC2AA8F12D009735C4 /* NewList.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -290,10 +296,12 @@
 			files = (
 				4A4EFD4F2AA385BC00B7E4C8 /* ComicXMLParser.swift in Sources */,
 				4AB6E7BC2A9BED7D00A8EFA0 /* BookTileModel.swift in Sources */,
+				4AA660E52AA8E9FC007BDB50 /* OldCode.swift in Sources */,
 				4AB6E7C02A9D034E00A8EFA0 /* BookSheetView.swift in Sources */,
 				4AE0DF162AA7A31B006DFFF1 /* HomeView.swift in Sources */,
 				4AB6E7BA2A9BEB3300A8EFA0 /* LibraryView.swift in Sources */,
 				4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */,
+				4A10A5FD2AA8F12D009735C4 /* NewList.swift in Sources */,
 				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
 				4A072FD42AA7DEA100A2E049 /* ReadingListsView.swift in Sources */,
 				4A4EFD532AA385F100B7E4C8 /* ComicDataWriter.swift in Sources */,

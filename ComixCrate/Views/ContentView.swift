@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var isImporting: Bool = false
     @EnvironmentObject var importingState: ImportingState
     @FetchRequest(sortDescriptors: []) private var bookItems: FetchedResults<Book>
+
     
     
     var body: some View {
@@ -43,7 +44,9 @@ struct ContentView: View {
                         } label: {
                             Label("Favorites", systemImage: "star")
                         }
-                        
+                        NavigationLink(destination: NewList(entityType: .storyArc(storyArcName: "Sample Arc", bookTitles: ["Sample Book 1", "Sample Book 2"]))) {
+                            Label("New List", systemImage: "list.bullet.rectangle.portrait")
+                        }
                     }
                     Section("Reading Lists", content: {
                         NavigationLink {Text("All Reading Lists")} label: {

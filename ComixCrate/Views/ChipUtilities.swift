@@ -109,16 +109,16 @@ struct ChipView: View {
     }
     
     func createLabel(for chip: TempChipData) -> String {
-        switch chip.value2 {
+        switch chip.tempAttribute2 {
         case .string:
-            return chip.value1
+            return chip.tempAttribute1
         case .int16(let intValue):
             if chip.entity == "BookStoryArcs" {
-                return (intValue != 0) ? "\(chip.value1) - Part \(intValue)" : chip.value1
+                return (intValue != 0) ? "\(chip.tempAttribute1) - Part \(intValue)" : chip.tempAttribute1
             } else if chip.entity == "BookEvents" { // Handle events
-                return (intValue != 0) ? "\(chip.value1) - \(intValue)" : chip.value1
+                return (intValue != 0) ? "\(chip.tempAttribute1) - \(intValue)" : chip.tempAttribute1
             } else {
-                return chip.value1
+                return chip.tempAttribute1
             }
         }
     }
@@ -132,11 +132,11 @@ struct ChipView: View {
 
         Chip(label: label, onDelete: {
             if let index = chips.firstIndex(where: {
-                $0.value1 == chip.value1 &&
-                (String(describing: $0.value2) == String(describing: chip.value2))
+                $0.tempAttribute1 == chip.tempAttribute1 &&
+                (String(describing: $0.tempAttribute2) == String(describing: chip.tempAttribute2))
             }) {
-                editedAttribute1 = chip.value1
-                switch chip.value2 {
+                editedAttribute1 = chip.tempAttribute1
+                switch chip.tempAttribute2 {
                 case .string(let stringValue):
                     editedAttribute2 = stringValue
                 case .int16(let intValue):
@@ -161,11 +161,11 @@ struct ChipView: View {
         
         chips.forEach { chip in
             let label: String
-            switch chip.value2 {
+            switch chip.tempAttribute2 {
             case .string(_):
-                label = chip.value1
+                label = chip.tempAttribute1
             case .int16(let intValue):
-                label = intValue != 0 ? "\(chip.value1) - Part \(intValue)" : chip.value1
+                label = intValue != 0 ? "\(chip.tempAttribute1) - Part \(intValue)" : chip.tempAttribute1
             }
             let font = UIFont.systemFont(ofSize: fontSize)
             let attributes = [NSAttributedString.Key.font: font]
