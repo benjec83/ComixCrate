@@ -14,8 +14,22 @@ struct LibraryView: View {
     // MARK: - Properties
     
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)])
-    private var allBooks: FetchedResults<Book>
+    @FetchRequest(
+        entity: Book.entity(),
+        sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)]
+    ) private var allBooks: FetchedResults<Book>
+
+    var filteredBooks: [Book] {
+        switch filter {
+        case .all:
+            return allBooks.map { $0 }
+        case .favorites:
+            return allBooks.filter { $0.isFavorite }
+        case .currentlyReading:
+            return allBooks.filter { $0.read > 0.0 && $0.read < 100.0 }
+        }
+    }
+
     
     @State private var isGalleryView: Bool = true
     @State private var showingDocumentPicker = false
@@ -32,8 +46,6 @@ struct LibraryView: View {
     @EnvironmentObject var importingState: ImportingState
 
     
-    
-    
     private let spacing: CGFloat = 10
     private var gridItems: [GridItem] {
         [GridItem(.adaptive(minimum: 180, maximum: 180))]
@@ -41,6 +53,32 @@ struct LibraryView: View {
     
     enum ActiveAlert { case deleteSelected, deleteAll }
     
+    var filter: LibraryFilter
+    private func filterPredicate(for filter: LibraryFilter) -> NSPredicate? {
+        switch filter {
+        case .all:
+            return nil
+        case .favorites:
+            return NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
+        case .currentlyReading:
+            return NSPredicate(format: "read > 0.0 AND read < 100.0")
+
+        }
+    }
+    
+    private func navigationTitle(for filter: LibraryFilter) -> String {
+        switch filter {
+        case .all:
+            return "Library"
+        case .favorites:
+            return "Favorites"
+        case .currentlyReading:
+            return "Currently Reading"
+        }
+    }
+
+
+
     // MARK: - Body
     
     var body: some View {
@@ -54,7 +92,7 @@ struct LibraryView: View {
         .toolbar {
             toolbarContent
         }
-        .navigationTitle("Library")
+        .navigationTitle(navigationTitle(for: filter))
         .sheet(isPresented: $showingDocumentPicker) {
             DocumentPicker { urls in
                 handleImportedFiles(urls: urls)
@@ -81,12 +119,17 @@ struct LibraryView: View {
     
     @ViewBuilder
     private var content: some View {
-        if allBooks.isEmpty {
+        if filteredBooks.isEmpty {
             emptyLibraryContent
         } else {
-            isGalleryView ? AnyView(galleryViewContent) : AnyView(listViewContent)
+            if isGalleryView {
+                galleryViewContent
+            } else {
+                listViewContent
+            }
         }
     }
+
     
     private var emptyLibraryContent: some View {
         VStack {
@@ -106,7 +149,7 @@ struct LibraryView: View {
     private var galleryViewContent: some View {
         ScrollView(.vertical) {
             LazyVGrid(columns: gridItems, spacing: spacing) {
-                ForEach(allBooks, id: \.self) { book in
+                ForEach(filteredBooks, id: \.self) { book in
                     bookTile(for: book)
                 }
             }
@@ -114,7 +157,7 @@ struct LibraryView: View {
     }
     
     private var listViewContent: some View {
-        List(allBooks, id: \.self) { book in
+        List(filteredBooks, id: \.self) { book in
             bookTile(for: book)
         }
     }
@@ -287,7 +330,7 @@ struct LibraryView: View {
     }
     
     func deleteAll() {
-        for book in allBooks {
+        for book in filteredBooks {
             deleteRelatedEntitiesIfOrphaned(book: book, in: viewContext)
             viewContext.delete(book)
         }
@@ -337,4 +380,13 @@ struct LibraryView: View {
             print("Error saving context:", error.localizedDescription)
         }
     }
+}
+
+
+enum LibraryFocus: String {
+    case allBooks = "All Books"
+    case favorites = "Favorites"
+    case recentlyAdded = "Recently Added"
+    case currentlyReading = "Currently Reading"
+    // ... any other focus states
 }

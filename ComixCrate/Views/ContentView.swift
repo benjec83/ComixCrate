@@ -8,9 +8,19 @@
 import SwiftUI
 import CoreData
 
+enum LibraryFilter {
+    case all
+    case favorites
+    case currentlyReading
+    // Add other cases as needed
+}
+
+
 struct ContentView: View {
     @State private var isImporting: Bool = false
     @EnvironmentObject var importingState: ImportingState
+    @FetchRequest(sortDescriptors: []) private var bookItems: FetchedResults<Book>
+    
     
     var body: some View {
         ZStack {
@@ -18,24 +28,58 @@ struct ContentView: View {
                 List {
                     Section("Library") {
                         NavigationLink {
-                            LibraryView(isImporting: $isImporting)
+                            HomeView(book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
                         } label: {
-                            Label("All Books", systemImage: "books.vertical")
+                            Label("Home", systemImage: "house.fill")
                         }
                         NavigationLink {
-                            DatabaseInspectorView()
+                            LibraryView(isImporting: $isImporting, filter: .all)
                         } label: {
-                            Label("Database Inspector", systemImage: "tablecells")
+                            Label("Library", systemImage: "books.vertical")
                         }
+
                         NavigationLink {
-                            DiagnosticView()
+                            LibraryView(isImporting: $isImporting, filter: .favorites)
                         } label: {
-                            Label("DiagnosticView", systemImage: "gear.badge.questionmark")
+                            Label("Favorites", systemImage: "star")
                         }
+                        
                     }
+                    Section("Reading Lists", content: {
+                        NavigationLink {Text("All Reading Lists")} label: {
+                            Label("All Reading Lists", systemImage: "list.bullet.rectangle")
+                        }
+                        NavigationLink {Text("User Reading List 1")} label: {
+                            Label("User Reading List 1", systemImage: "list.bullet.rectangle.portrait")
+                        }
+                        NavigationLink {Text("User Reading List 2")} label: {
+                            Label("User Reading List 2", systemImage: "list.bullet.rectangle.portrait")
+                        }
+                        NavigationLink {Text("User Reading List 3")} label: {
+                            Label("User Reading List 3", systemImage: "list.bullet.rectangle.portrait")
+                        }
+                        NavigationLink {Text("Add New List")} label: {
+                            Label("Add New List", systemImage: "doc.badge.plus")
+                        }
+                    })
                     .listStyle(.sidebar )
                     .navigationTitle("Menu")
+                    Spacer()
+                    NavigationLink {
+                        DatabaseInspectorView()
+                    } label: {
+                        Label("Database Inspector", systemImage: "tablecells")
+                    }
+                    NavigationLink {
+                        DiagnosticView()
+                    } label: {
+                        Label("DiagnosticView", systemImage: "gear.badge.questionmark")
+                    }
+                    NavigationLink {Text("Settings")} label: {
+                        Label("Settings", systemImage: "gear")
+                    }
                 }
+                HomeView(book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
             }
             // Blocking overlay
             if importingState.isImporting {
@@ -56,4 +100,5 @@ struct ContentView: View {
             .onTapGesture {} // This prevents taps from passing through
     }
 }
+
 

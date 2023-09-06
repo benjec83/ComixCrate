@@ -13,6 +13,9 @@ protocol EntityProtocol: NSManagedObject { }
 extension StoryArc: EntityProtocol { }
 // Add other entities as needed
 
+extension Event: EntityProtocol { }
+// Add other entities as needed
+
 struct AnyFetchedResults {
     private let _objects: () -> [EntityProtocol]
     
@@ -28,7 +31,7 @@ struct EntityTextFieldView: View {
     var entityType: TextFieldEntities
     @Binding var chips: [TempChipData]
     var allEntities: AnyFetchedResults
-    var placeholder: String = "Enter item..."
+//    var placeholder: String = "Enter item..."
 
     @FocusState private var isTextFieldFocused: Bool
     @State private var showAllSuggestionsSheet: Bool = false
@@ -98,30 +101,30 @@ struct EntityTextFieldView: View {
                 .frame(width: 30, height: 30) // Limit the button size
             }
             // Displaying filtered results
-            VStack(alignment: .leading) {
-                // Displaying filtered results
-                if isTextFieldFocused && !filteredEntities.isEmpty {
-                    ForEach(filteredEntities.indices, id: \.self) { index in
-                        let entity = filteredEntities[index]
-                        Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")  // Use the unwrapped attribute value
-                            .padding(.vertical, 5)
-                            .onTapGesture {
-                                entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
-                                isTextFieldFocused = false
-                            }
-                    }
-                    .foregroundColor(.accentColor)
-                }
-                
-                Button("See All") {
-                    showAllSuggestionsSheet.toggle()
-                }
-                .buttonStyle(PlainButtonStyle())
-                .foregroundColor(.accentColor)
-                .padding(.top, 10)
-            }
+//            VStack(alignment: .leading) {
+//                // Displaying filtered results
+//                if isTextFieldFocused && !filteredEntities.isEmpty {
+//                    ForEach(filteredEntities.indices, id: \.self) { index in
+//                        let entity = filteredEntities[index]
+//                        Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")  // Use the unwrapped attribute value
+//                            .padding(.vertical, 5)
+//                            .onTapGesture {
+//                                entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
+//                                isTextFieldFocused = false
+//                            }
+//                    }
+//                    .foregroundColor(.accentColor)
+//                }
+//                
+//                Button("See All") {
+//                    showAllSuggestionsSheet.toggle()
+//                }
+//                .buttonStyle(PlainButtonStyle())
+//                .foregroundColor(.accentColor)
+//                .padding(.top, 10)
+//            }
             .sheet(isPresented: $showAllSuggestionsSheet) {  // Attach the .sheet modifier here
-                Section(header: Text("Add an existing Story Arc")) {
+                Section(header: Text(entityType.headerText)) {
                 List {
                     ForEach(allEntities.objects, id: \.objectID) { entity in
                         Button(action: {
@@ -179,6 +182,17 @@ enum TextFieldEntities {
             return (field1: ("bookCreatorName", "Creator Name"), field2: ("bookCreatorRole", "Role"))
         case .bookEvent:
             return (field1: ("bookEventName", "Event Name"), field2: ("bookEventPart", "Part"))
+        }
+    }
+    
+    var headerText: String {
+        switch self {
+        case .bookStoryArc:
+            return "Add an existing Story Arc"
+        case .bookCreatorRole:
+            return "Add an existing Creator Role"
+        case .bookEvent:
+            return "Add an existing Event"
         }
     }
     

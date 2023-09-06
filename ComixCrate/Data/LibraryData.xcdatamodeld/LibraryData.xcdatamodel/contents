@@ -23,7 +23,7 @@
         <attribute name="purchaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="purchaseFrom" optional="YES" attributeType="String"/>
         <attribute name="purchasePrice" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
-        <attribute name="read" optional="YES" attributeType="Integer 16" usesScalarValueType="YES"/>
+        <attribute name="read" optional="YES" attributeType="Double" usesScalarValueType="YES"/>
         <attribute name="releaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="sypnosis" optional="YES" attributeType="String"/>
         <attribute name="thumbnailPath" optional="YES" attributeType="String"/>
@@ -31,7 +31,7 @@
         <attribute name="volumeNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="volumeYear" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="bookCreatorRoles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookCreatorRole" inverseName="book" inverseEntity="BookCreatorRole"/>
-        <relationship name="bookEvents" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BookEvents"/>
+        <relationship name="bookEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookEvents" inverseName="books" inverseEntity="BookEvents"/>
         <relationship name="bookStoryArcs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookStoryArcs" inverseName="book" inverseEntity="BookStoryArcs"/>
         <relationship name="characters" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Characters" inverseName="books" inverseEntity="Characters"/>
         <relationship name="event" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="book" inverseEntity="Event"/>
@@ -49,7 +49,7 @@
     </entity>
     <entity name="BookEvents" representedClassName="BookEvents" syncable="YES" codeGenerationType="class">
         <attribute name="eventPart" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="books" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book"/>
+        <relationship name="books" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="bookEvents" inverseEntity="Book"/>
         <relationship name="events" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="events" inverseEntity="Event"/>
     </entity>
     <entity name="BookOrdering" representedClassName="BookOrdering" syncable="YES" codeGenerationType="class">

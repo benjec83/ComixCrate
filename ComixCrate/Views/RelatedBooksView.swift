@@ -72,6 +72,8 @@ struct RelatedBooksView: View {
             return publisher.name ?? "Publisher"
         case let storyArc as StoryArc:
             return storyArc.storyArcName ?? "Story Arc"
+        case let event as Event:
+            return event.eventName ?? "Event"
         default:
             return "Related Books"
         }

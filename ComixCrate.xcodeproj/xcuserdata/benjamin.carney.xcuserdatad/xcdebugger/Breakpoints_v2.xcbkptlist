@@ -3,4 +3,70 @@
    uuid = "A18E1D71-E888-44B7-925B-C994167DB8FC"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A4DE2F7D-4691-4582-947A-E96F9DC93738"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComixCrate/Views/SpecializedTextBoxes.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "filteredEntities"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "A4DE2F7D-4691-4582-947A-E96F9DC93738 - f09906355f9e4025"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ComixCrate.EntityTextFieldView.filteredEntities.getter : Swift.Array&lt;__C.NSManagedObject&gt;"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/SpecializedTextBoxes.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43"
+                  offsetFromSymbolStart = "612">
+               </Location>
+               <Location
+                  uuid = "A4DE2F7D-4691-4582-947A-E96F9DC93738 - 587c7b05edfecf5e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (ComixCrate.EntityProtocol) -&gt; Swift.Bool in ComixCrate.EntityTextFieldView.filteredEntities.getter : Swift.Array&lt;__C.NSManagedObject&gt;"
+                  moduleName = "ComixCrate"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/benjamin.carney/Documents/Xcode/ComixCrate/ComixCrate/Views/SpecializedTextBoxes.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43"
+                  offsetFromSymbolStart = "124">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D88E9732-71DD-4CE5-93AB-F52B1F5E961C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ComixCrate/Views/SpecializedTextBoxes.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "filteredEntities"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
