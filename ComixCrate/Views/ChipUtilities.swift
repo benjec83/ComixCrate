@@ -67,34 +67,37 @@ struct Chip: View {
 
 struct ChipView: View {
     @Binding var chips: [TempChipData]
-    
-    @Binding var editedAttribute1: String
-    @Binding var editedAttribute2: String
-    var type: ChipType
+      
+      @Binding var editedAttribute1: String
+      @Binding var editedAttribute2: String
+      var type: ChipType
 
-    
-    @Binding var chipViewHeight: CGFloat
-    
-    var fontSize: CGFloat = 16
-    
-    let estimatedRowHeight: CGFloat = 40  // This is an estimate based on your chip design
+      @Binding var chipViewHeight: CGFloat
+      
+      var fontSize: CGFloat = 16
+      let estimatedRowHeight: CGFloat = 40  // This is an estimate based on your chip design
 
-    // Adding Geometry Effect to Chip...
-    @Namespace var animation
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let containerWidth = geometry.size.width
-            
-            VStack(alignment: .leading, spacing: 10) {
-                ForEach(getRows(containerWidth: containerWidth), id: \.self) { rows in
-                    HStack(spacing: 1) {
-                        ForEach(rows) { row in
-                            RowView(chip: row)
-                        }
-                    }
-                }
-            }
+      // Adding Geometry Effect to Chip...
+      @Namespace var animation
+      
+      // Filter the chips based on the ChipType
+      var filteredChips: [TempChipData] {
+          return chips.filter { ChipType(entity: $0.entity) == type }
+      }
+      
+      var body: some View {
+          GeometryReader { geometry in
+              let containerWidth = geometry.size.width
+              
+              VStack(alignment: .leading, spacing: 10) {
+                  ForEach(getRows(containerWidth: containerWidth), id: \.self) { rows in
+                      HStack(spacing: 1) {
+                          ForEach(rows) { row in
+                              RowView(chip: row)
+                          }
+                      }
+                  }
+              }
             .padding(.bottom, 20)
             .fixedSize(horizontal: false, vertical: true)
             .animation(.easeInOut, value: chips)
@@ -207,4 +210,3 @@ extension ChipType {
         }
     }
 }
-

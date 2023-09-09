@@ -8,7 +8,10 @@
 import CoreData
 
 struct PersistenceController {
-    static let shared = PersistenceController()
+    static let shared: PersistenceController = {
+        let instance = PersistenceController()
+        return instance
+    }()
 
     var container: NSPersistentContainer = {
         print("Initializing NSPersistentContainer...")

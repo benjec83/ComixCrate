@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreData
 
+
 struct EditBookView: View {
     
     @Binding var book: Book
@@ -101,7 +102,9 @@ struct EditBookView: View {
                 
                 Section(header: Text("Story Arcs")) {
                     ChipView(chips: $chips, editedAttribute1: $editedStoryArcName, editedAttribute2: $editedStoryArcPart, type: .storyArc, chipViewHeight: $chipViewHeight)
-                    
+                        .padding(.vertical, 15)
+                        .frame(height: chipViewHeight)
+
                     EntityTextFieldView(entityType: .bookStoryArc($editedStoryArcName, $editedStoryArcPart, .string, .int16), chips: $chips, allEntities: AnyFetchedResults(allStoryArcs))
                 }
                 Section(header: Text("Events")) {
@@ -309,15 +312,15 @@ extension TempChipData: Hashable {
 //    if book.title != editedTitle {
 //        book.title = editedTitle
 //    }
-//    
+//
 //    book.title = editedTitle
 //    book.issueNumber = Int16(editedIssueNumber) ?? 0
-//    
+//
 //    // Update read percentage
 //    if book.read != editedReadPercentage {
 //        book.read = editedReadPercentage
 //    }
-//    
+//
 //    for chip in chips {
 //        switch chip.entity {
 //        case "BookStoryArcs":
@@ -328,7 +331,7 @@ extension TempChipData: Hashable {
 //            break
 //        }
 //    }
-//    
+//
 //    do {
 //        try viewContext.save()
 //    } catch {

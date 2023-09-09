@@ -115,7 +115,7 @@ struct EntityTextFieldView: View {
 //                    }
 //                    .foregroundColor(.accentColor)
 //                }
-//                
+//
 //                Button("See All") {
 //                    showAllSuggestionsSheet.toggle()
 //                }
@@ -226,5 +226,3 @@ enum TextFieldEntities {
         }
     }
 }
-
-

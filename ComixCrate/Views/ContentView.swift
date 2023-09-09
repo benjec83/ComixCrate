@@ -44,9 +44,14 @@ struct ContentView: View {
                         } label: {
                             Label("Favorites", systemImage: "star")
                         }
-                        NavigationLink(destination: NewList(entityType: .storyArc(storyArcName: "Sample Arc", bookTitles: ["Sample Book 1", "Sample Book 2"]))) {
-                            Label("New List", systemImage: "list.bullet.rectangle.portrait")
+                        NavigationLink(destination: TestingView()) {
+                            Label("New Edit Sheet", systemImage: "list.bullet.rectangle.portrait")
                         }
+                        NavigationLink(destination: AnotherTest()) {
+                            Label("Another Test", systemImage: "list.bullet.rectangle.portrait")
+                        }
+
+
                     }
                     Section("Reading Lists", content: {
                         NavigationLink {Text("All Reading Lists")} label: {
@@ -64,6 +69,7 @@ struct ContentView: View {
                         NavigationLink {Text("Add New List")} label: {
                             Label("Add New List", systemImage: "doc.badge.plus")
                         }
+
                     })
                     .listStyle(.sidebar )
                     .navigationTitle("Menu")
@@ -82,6 +88,7 @@ struct ContentView: View {
                         Label("Settings", systemImage: "gear")
                     }
                 }
+                
                 HomeView(book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
             }
             // Blocking overlay

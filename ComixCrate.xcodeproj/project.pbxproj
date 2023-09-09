@@ -8,7 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		4A072FD42AA7DEA100A2E049 /* ReadingListsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */; };
+		4A095D502AAA862200CD590C /* AnotherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A095D4F2AAA862200CD590C /* AnotherTest.swift */; };
 		4A10A5FD2AA8F12D009735C4 /* NewList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10A5FC2AA8F12D009735C4 /* NewList.swift */; };
+		4A10A5FF2AA93BEE009735C4 /* OldEditBookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10A5FE2AA93BEE009735C4 /* OldEditBookView.swift */; };
+		4A10A6012AA93E80009735C4 /* TestingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10A6002AA93E80009735C4 /* TestingView.swift */; };
 		4A2E606B2A9D138700953337 /* ThumbnailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */; };
 		4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */; };
 		4A2E60732A9D1F8400953337 /* FavoriteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60722A9D1F8400953337 /* FavoriteButton.swift */; };
@@ -46,7 +49,10 @@
 
 /* Begin PBXFileReference section */
 		4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingListsView.swift; sourceTree = "<group>"; };
+		4A095D4F2AAA862200CD590C /* AnotherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnotherTest.swift; sourceTree = "<group>"; };
 		4A10A5FC2AA8F12D009735C4 /* NewList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewList.swift; sourceTree = "<group>"; };
+		4A10A5FE2AA93BEE009735C4 /* OldEditBookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldEditBookView.swift; sourceTree = "<group>"; };
+		4A10A6002AA93E80009735C4 /* TestingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingView.swift; sourceTree = "<group>"; };
 		4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailProvider.swift; sourceTree = "<group>"; };
 		4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
 		4A2E60722A9D1F8400953337 /* FavoriteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteButton.swift; sourceTree = "<group>"; };
@@ -151,6 +157,9 @@
 				4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */,
 				4AA660E42AA8E9FC007BDB50 /* OldCode.swift */,
 				4A10A5FC2AA8F12D009735C4 /* NewList.swift */,
+				4A10A5FE2AA93BEE009735C4 /* OldEditBookView.swift */,
+				4A10A6002AA93E80009735C4 /* TestingView.swift */,
+				4A095D4F2AAA862200CD590C /* AnotherTest.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -295,11 +304,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A4EFD4F2AA385BC00B7E4C8 /* ComicXMLParser.swift in Sources */,
+				4A095D502AAA862200CD590C /* AnotherTest.swift in Sources */,
 				4AB6E7BC2A9BED7D00A8EFA0 /* BookTileModel.swift in Sources */,
 				4AA660E52AA8E9FC007BDB50 /* OldCode.swift in Sources */,
 				4AB6E7C02A9D034E00A8EFA0 /* BookSheetView.swift in Sources */,
 				4AE0DF162AA7A31B006DFFF1 /* HomeView.swift in Sources */,
 				4AB6E7BA2A9BEB3300A8EFA0 /* LibraryView.swift in Sources */,
+				4A10A6012AA93E80009735C4 /* TestingView.swift in Sources */,
 				4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */,
 				4A10A5FD2AA8F12D009735C4 /* NewList.swift in Sources */,
 				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
@@ -325,6 +336,7 @@
 				4A2E60732A9D1F8400953337 /* FavoriteButton.swift in Sources */,
 				4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */,
 				4AB6E7C22A9D039900A8EFA0 /* BookDetails.swift in Sources */,
+				4A10A5FF2AA93BEE009735C4 /* OldEditBookView.swift in Sources */,
 				4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */,
 				4A4EFD512AA385D700B7E4C8 /* ComicImageResizer.swift in Sources */,
 			);
