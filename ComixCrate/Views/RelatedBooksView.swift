@@ -56,13 +56,17 @@ struct RelatedBooksView: View {
                 let bookArc2 = $1 as! BookStoryArcs
                 return bookArc1.storyArcPart < bookArc2.storyArcPart
             }).compactMap { ($0 as? BookStoryArcs)?.book?.objectID } ?? []
+        case let event as Event:
+            // Fetch the related books through the BookStoryArcs entity and sort by storyArcPart
+            return event.booksInEvent?.allObjects.sorted(by: {
+                let bookEvent1 = $0 as! BookEvents
+                let bookEvent2 = $1 as! BookEvents
+                return bookEvent1.eventPart < bookEvent2.eventPart
+            }).compactMap { ($0 as? BookEvents)?.books?.objectID } ?? []
         default:
             return []
         }
     }
-    
-    
-    
     
     var relatedObjectName: String {
         switch relatedObject {

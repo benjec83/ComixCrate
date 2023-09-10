@@ -8,28 +8,51 @@
 import SwiftUI
 import CoreData
 
+// MARK: - ChipType Enum
 enum ChipType: String {
     case storyArc = "BookStoryArcs"
-    case event = "BookEvents"
+    case bookEvents = "BookEvents"
     case creator = "Creators"
     // Add other types as needed
-
+    
     func iconName() -> String {
         switch self {
         case .storyArc:
             return "sparkles.rectangle.stack.fill"
-        case .event:
+        case .bookEvents:
             return "theatermasks.fill"
         case .creator:
             return "paintpalette.fill"
         }
     }
+    var fetchRequest: NSFetchRequest<NSFetchRequestResult> {
+        switch self {
+        case .storyArc:
+            return StoryArc.fetchRequest()
+        case .bookEvents:
+            return Event.fetchRequest()
+        case .creator:
+            // Assuming you have a Creator entity
+            return Creator.fetchRequest()
+        }
+    }
+    var correspondingTextFieldEntity: TextFieldEntities {
+        switch self {
+        case .storyArc:
+            return .bookStoryArc(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
+        case .bookEvents:
+            return .bookEvents(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
+        case .creator:
+            return .bookCreatorRole(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
+        }
+    }
 }
+    
 
-
+// MARK: - Chip View
 struct Chip: View {
     var label: String
-    var onDelete: (() -> Void)? = nil
+    var onDeleteChip: (() -> Void)? = nil
     var type: ChipType
     var showIcon: Bool = true
     var showDeleteButton: Bool = true
@@ -44,8 +67,8 @@ struct Chip: View {
             Text(label)
                 .lineLimit(1)
                 .truncationMode(.tail)
-            if showDeleteButton, let onDelete = onDelete {
-                Button(action: onDelete) {
+            if showDeleteButton, let onDeleteChip = onDeleteChip {
+                Button(action: onDeleteChip) {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.white)
                 }
@@ -67,39 +90,40 @@ struct Chip: View {
 
 struct ChipView: View {
     @Binding var chips: [TempChipData]
-      
-      @Binding var editedAttribute1: String
-      @Binding var editedAttribute2: String
-      var type: ChipType
-
-      @Binding var chipViewHeight: CGFloat
-      
-      var fontSize: CGFloat = 16
-      let estimatedRowHeight: CGFloat = 40  // This is an estimate based on your chip design
-
-      // Adding Geometry Effect to Chip...
-      @Namespace var animation
-      
-      // Filter the chips based on the ChipType
-      var filteredChips: [TempChipData] {
-          return chips.filter { ChipType(entity: $0.entity) == type }
-      }
-      
-      var body: some View {
-          GeometryReader { geometry in
-              let containerWidth = geometry.size.width
-              
-              VStack(alignment: .leading, spacing: 10) {
-                  ForEach(getRows(containerWidth: containerWidth), id: \.self) { rows in
-                      HStack(spacing: 1) {
-                          ForEach(rows) { row in
-                              RowView(chip: row)
-                          }
-                      }
-                  }
-              }
+    
+    @Binding var editedAttribute1: String
+    @Binding var editedAttribute2: String
+    var type: ChipType
+    
+    @Binding var chipViewHeight: CGFloat
+    
+    var fontSize: CGFloat = 16
+    let estimatedRowHeight: CGFloat = 40  // This is an estimate based on your chip design
+    
+    // Adding Geometry Effect to Chip...
+    @Namespace var animation
+    
+    // Filter the chips based on the ChipType
+    var filteredChips: [TempChipData] {
+        return chips.filter { ChipType(entity: $0.entity) == type }
+    }
+    
+    var body: some View {
+        GeometryReader { geometry in
+            let containerWidth = geometry.size.width
+            
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(getRows(containerWidth: containerWidth, chips: filteredChips), id: \.self) { rows in
+                    HStack(spacing: 1) {
+                        ForEach(rows) { row in
+                            RowView(chip: row)
+                        }
+                    }
+                }
+            }
             .padding(.bottom, 20)
             .fixedSize(horizontal: false, vertical: true)
+            .frame(minWidth: 250)
             .animation(.easeInOut, value: chips)
             .background(GeometryReader { gp -> Color in
                 DispatchQueue.main.async {
@@ -112,51 +136,61 @@ struct ChipView: View {
     }
     
     func createLabel(for chip: TempChipData) -> String {
-        switch chip.tempAttribute2 {
+        switch chip.tempValue2 {
         case .string:
-            return chip.tempAttribute1
+            return chip.tempValue1
         case .int16(let intValue):
             if chip.entity == "BookStoryArcs" {
-                return (intValue != 0) ? "\(chip.tempAttribute1) - Part \(intValue)" : chip.tempAttribute1
+                return (intValue != 0) ? "\(chip.tempValue1) - Part \(intValue)" : chip.tempValue1
             } else if chip.entity == "BookEvents" { // Handle events
-                return (intValue != 0) ? "\(chip.tempAttribute1) - \(intValue)" : chip.tempAttribute1
+                return (intValue != 0) ? "\(chip.tempValue1) - Part \(intValue)" : chip.tempValue1
             } else {
-                return chip.tempAttribute1
+                return chip.tempValue1
             }
         }
     }
-
-
-
-    @ViewBuilder
-    func RowView(chip: TempChipData) -> some View {
-        let label = createLabel(for: chip)
-        let chipType = ChipType(entity: chip.entity) ?? .storyArc  // Default to .storyArc if entity doesn't match any ChipType
-
-        Chip(label: label, onDelete: {
-            if let index = chips.firstIndex(where: {
-                $0.tempAttribute1 == chip.tempAttribute1 &&
-                (String(describing: $0.tempAttribute2) == String(describing: chip.tempAttribute2))
-            }) {
-                editedAttribute1 = chip.tempAttribute1
-                switch chip.tempAttribute2 {
-                case .string(let stringValue):
-                    editedAttribute2 = stringValue
-                case .int16(let intValue):
-                    editedAttribute2 = "\(intValue)"
+    
+    // MARK: - RowView Function
+        @ViewBuilder
+        func RowView(chip: TempChipData) -> some View {
+            if let chipType = ChipType(entity: chip.entity) { // Removed default value
+                let label = createLabel(for: chip)
+                Chip(label: label, onDeleteChip: {
+                    if let index = chips.firstIndex(where: {
+                        $0.tempValue1 == chip.tempValue1 &&
+                        (String(describing: $0.tempValue2) == String(describing: chip.tempValue2))
+                    }) {
+                        chips.remove(at: index)
+                    }
+                }, type: chipType, showIcon: true, showDeleteButton: true)
+                .font(.system(size: fontSize))
+                .padding(.horizontal, 5)
+                .lineLimit(1)
+                .frame(maxWidth: 300)
+                .matchedGeometryEffect(id: chip.id, in: animation)
+                .onTapGesture {
+                    if let index = chips.firstIndex(where: {
+                        $0.tempValue1 == chip.tempValue1 &&
+                        (String(describing: $0.tempValue2) == String(describing: chip.tempValue2))
+                    }) {
+                        editedAttribute1 = chip.tempValue1
+                        switch chip.tempValue2 {
+                        case .string(let stringValue):
+                            editedAttribute1 = stringValue
+                        case .int16(let intValue):
+                            editedAttribute2 = "\(intValue)"
+                        }
+                        chips.remove(at: index) // Remove the old chip
+                    }
                 }
-                chips.remove(at: index) // Remove the old chip
+            } else {
+                // Handle the error case, perhaps with a Text view displaying an error message
+                Text("Invalid entity provided: \(chip.entity)")
             }
-        }, type: chipType, showIcon: true, showDeleteButton: true)
-        .font(.system(size: fontSize))
-        .padding(.horizontal, 5)
-        .lineLimit(1)
-        .frame(maxWidth: 300)
-        .matchedGeometryEffect(id: chip.id, in: animation)
-    }
-
-
-    func getRows(containerWidth: CGFloat) -> [[TempChipData]] {
+        }
+    
+    
+    func getRows(containerWidth: CGFloat, chips: [TempChipData]) -> [[TempChipData]] {
         var rows: [[TempChipData]] = []
         var currentRow: [TempChipData] = []
         
@@ -164,11 +198,11 @@ struct ChipView: View {
         
         chips.forEach { chip in
             let label: String
-            switch chip.tempAttribute2 {
+            switch chip.tempValue2 {
             case .string(_):
-                label = chip.tempAttribute1
+                label = chip.tempValue1
             case .int16(let intValue):
-                label = intValue != 0 ? "\(chip.tempAttribute1) - Part \(intValue)" : chip.tempAttribute1
+                label = intValue != 0 ? "\(chip.tempValue1) - Part \(intValue)" : chip.tempValue1
             }
             let font = UIFont.systemFont(ofSize: fontSize)
             let attributes = [NSAttributedString.Key.font: font]
@@ -196,13 +230,14 @@ struct ChipView: View {
     }
 }
 
+// MARK: - ChipType Extension
 extension ChipType {
     init?(entity: String) {
         switch entity {
         case "BookStoryArcs":
             self = .storyArc
         case "BookEvents":
-            self = .event
+            self = .bookEvents
         case "Creators":
             self = .creator
         default:

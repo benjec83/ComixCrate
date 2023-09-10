@@ -50,7 +50,7 @@
     <entity name="BookEvents" representedClassName="BookEvents" syncable="YES" codeGenerationType="class">
         <attribute name="eventPart" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="books" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="bookEvents" inverseEntity="Book"/>
-        <relationship name="events" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="events" inverseEntity="Event"/>
+        <relationship name="events" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="booksInEvent" inverseEntity="Event"/>
     </entity>
     <entity name="BookOrdering" representedClassName="BookOrdering" syncable="YES" codeGenerationType="class">
         <attribute name="order" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -84,7 +84,7 @@
         <attribute name="eventDescription" optional="YES" attributeType="String"/>
         <attribute name="eventName" optional="YES" attributeType="String"/>
         <relationship name="book" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="event" inverseEntity="Book"/>
-        <relationship name="events" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BookEvents" inverseName="events" inverseEntity="BookEvents"/>
+        <relationship name="booksInEvent" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BookEvents" inverseName="events" inverseEntity="BookEvents"/>
     </entity>
     <entity name="Format" representedClassName="Format" syncable="YES" codeGenerationType="class">
         <attribute name="filePath" optional="YES" attributeType="String"/>

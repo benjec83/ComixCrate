@@ -58,7 +58,7 @@ struct HomeView: View {
                     Text("Currently Reading")
                     Spacer()
                     NavigationLink(destination: LibraryView(isImporting: $isImporting, filter: .currentlyReading)) {
-                        Label("View all", systemImage: "chevron.right.chevron.right")
+                        Label("View all", systemImage: "chevron.right")
                     }
                 }
                 ScrollView(.horizontal) {
@@ -128,7 +128,7 @@ struct HomeView: View {
                     Text("Favorites")
                     Spacer()
                     NavigationLink(destination: LibraryView(isImporting: $isImporting, filter: .favorites)) {
-                        Label("View all", systemImage: "chevron.right.chevron.right")
+                        Label("View all", systemImage: "chevron.right")
                     }
                 }
                 ScrollView(.horizontal) {

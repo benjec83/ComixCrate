@@ -10,37 +10,50 @@ import CoreData
 
 protocol EntityProtocol: NSManagedObject { }
 
-extension StoryArc: EntityProtocol { }
-// Add other entities as needed
+//extension StoryArc: EntityProtocol { }
+//// Add other entities as needed
+//
+//extension Event: EntityProtocol { }
+//// Add other entities as needed
 
-extension Event: EntityProtocol { }
-// Add other entities as needed
+extension NSManagedObject: EntityProtocol { }
 
-struct AnyFetchedResults {
-    private let _objects: () -> [EntityProtocol]
+
+struct AnyFetchedResults<T: NSManagedObject & EntityProtocol>: DynamicProperty {
+    var results: FetchedResults<T>
     
-    init<T: EntityProtocol>(_ results: FetchedResults<T>) {
-        _objects = { results.map { $0 } }
+    init(_ results: FetchedResults<T>) {
+        self.results = results
+    }
+    
+//    mutating func update() {
+//        _results.update()
+//    }
+    
+    private var _results: FetchedResults<T> {
+        get { results }
+        set { results = newValue }
     }
     
     var objects: [EntityProtocol] {
-        _objects()
+        results.map { $0 }
     }
 }
-struct EntityTextFieldView: View {
-    var entityType: TextFieldEntities
-    @Binding var chips: [TempChipData]
-    var allEntities: AnyFetchedResults
-//    var placeholder: String = "Enter item..."
 
+struct EntityTextFieldView: View {
+    var type: TextFieldEntities
+    @Binding var chips: [TempChipData]
+    var allEntities: AnyFetchedResults<NSManagedObject>
+    var placeholder: String = "Enter item..."
+    
     @FocusState private var isTextFieldFocused: Bool
     @State private var showAllSuggestionsSheet: Bool = false
-
+    
     // Computed property to get filtered entities based on the current input
     var filteredEntities: [NSManagedObject] {
-        let lowercasedInput = entityType.bindings.0.wrappedValue.lowercased()
+        let lowercasedInput = type.bindings.0.wrappedValue.lowercased()
         // This filtering logic might need to be updated based on the actual attribute you're filtering on
-        return allEntities.objects.filter { ($0.value(forKey: entityType.attributes.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true }
+        return allEntities.objects.filter { ($0.value(forKey: type.attributes.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true }
             .prefix(5)  // Take only the first 5 results
             .map { $0 }
     }
@@ -49,9 +62,9 @@ struct EntityTextFieldView: View {
         VStack {
             HStack {
                 // TextField for the first attribute (e.g., storyArcName, bookCreatorName, etc.)
-                TextField(entityType.attributes.field1.displayName, text: entityType.bindings.0, onCommit: {
+                TextField(type.attributes.field1.displayName, text: type.bindings.0, onCommit: {
                     if let firstSuggestion = filteredEntities.first {
-                        entityType.bindings.0.wrappedValue = firstSuggestion.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
+                        type.bindings.0.wrappedValue = firstSuggestion.value(forKey: type.attributes.field1.attribute) as? String ?? ""
                     }
                 })
                 .textFieldStyle(PlainTextFieldStyle())
@@ -59,38 +72,42 @@ struct EntityTextFieldView: View {
                 .focused($isTextFieldFocused)
                 
                 // TextField for the second attribute (e.g., storyArcPart, bookCreatorRole, etc.)
-                TextField(entityType.attributes.field2.displayName, text: entityType.bindings.1)
+                TextField(type.attributes.field2.displayName, text: type.bindings.1)
                     .textFieldStyle(PlainTextFieldStyle())
                     .multilineTextAlignment(.leading)
-                    .keyboardType(entityType.keyboardTypeForField2)  // Use the computed property here
-
+                    .keyboardType(type.keyboardTypeForField2)  // Use the computed property here
+                
                 // "+" Button to add the new entity
                 Button(action: {
                     // Check if the first attribute is not empty
-                    guard !entityType.bindings.0.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    guard !type.bindings.0.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         return
                     }
                     
                     let valueData: ValueData
-                    switch entityType.fieldTypes.1 {
+                    switch type.fieldTypes.1 {
                     case .string:
-                        valueData = .string(entityType.bindings.1.wrappedValue)
+                        valueData = .string(type.bindings.1.wrappedValue)
+                        print(type)
                     case .int16:
-                        if let intValue = Int16(entityType.bindings.1.wrappedValue) {
+                        if let intValue = Int16(type.bindings.1.wrappedValue) {
                             valueData = .int16(intValue)
+                            print(type)
                         } else {
                             valueData = .int16(0) // or any default value you want
+                            print(type)
+                            
                         }
                     }
-
-                    let newEntity = TempChipData(entity: entityType.attributes.field1.attribute, tempAttribute1: entityType.bindings.0.wrappedValue, tempAttribute2: valueData)
+                    
+                    let newEntity = TempChipData(entity: type.chipType.rawValue, tempValue1: type.bindings.0.wrappedValue, tempValue2: valueData)
                     if !chips.contains(where: {
-                        $0.tempAttribute1 == newEntity.tempAttribute1 && $0.tempAttribute2 == newEntity.tempAttribute2
+                        $0.tempValue1 == newEntity.tempValue1 && $0.tempValue2 == newEntity.tempValue2
                     }) {
                         chips.append(newEntity)
                     }
-                    entityType.bindings.0.wrappedValue = ""
-                    entityType.bindings.1.wrappedValue = ""
+                    type.bindings.0.wrappedValue = ""
+                    type.bindings.1.wrappedValue = ""
                     print("Adding new chip: \(newEntity)")
                     
                 }) {
@@ -100,49 +117,47 @@ struct EntityTextFieldView: View {
                 .buttonStyle(PlainButtonStyle())
                 .frame(width: 30, height: 30) // Limit the button size
             }
-            // Displaying filtered results
-//            VStack(alignment: .leading) {
-//                // Displaying filtered results
-//                if isTextFieldFocused && !filteredEntities.isEmpty {
-//                    ForEach(filteredEntities.indices, id: \.self) { index in
-//                        let entity = filteredEntities[index]
-//                        Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")  // Use the unwrapped attribute value
-//                            .padding(.vertical, 5)
-//                            .onTapGesture {
-//                                entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
-//                                isTextFieldFocused = false
-//                            }
-//                    }
-//                    .foregroundColor(.accentColor)
-//                }
-//
-//                Button("See All") {
-//                    showAllSuggestionsSheet.toggle()
-//                }
-//                .buttonStyle(PlainButtonStyle())
-//                .foregroundColor(.accentColor)
-//                .padding(.top, 10)
-//            }
-            .sheet(isPresented: $showAllSuggestionsSheet) {  // Attach the .sheet modifier here
-                Section(header: Text(entityType.headerText)) {
-                List {
-                    ForEach(allEntities.objects, id: \.objectID) { entity in
-                        Button(action: {
-                            // Update the text fields
-                            entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
-                            // Dismiss the sheet
-                            showAllSuggestionsSheet = false
-                        }) {
-                            Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")
-                        }
-                    }
-                }
-            }
-            }
-
+            //             Displaying filtered results
+            //            VStack(alignment: .leading) {
+            //                // Displaying filtered results
+            //                if isTextFieldFocused && !filteredEntities.isEmpty {
+            //                    ForEach(filteredEntities.indices, id: \.self) { index in
+            //                        let entity = filteredEntities[index]
+            //                        Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")  // Use the unwrapped attribute value
+            //                            .padding(.vertical, 5)
+            //                            .onTapGesture {
+            //                                entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
+            //                                isTextFieldFocused = false
+            //                            }
+            //                    }
+            //                    .foregroundColor(.accentColor)
+            //                }
+            //
+            //                Button("See All") {
+            //                    showAllSuggestionsSheet.toggle()
+            //                }
+            //                .buttonStyle(PlainButtonStyle())
+            //                .foregroundColor(.accentColor)
+            //                .padding(.top, 10)
+            //            }
+            //            .sheet(isPresented: $showAllSuggestionsSheet) {  // Attach the .sheet modifier here
+            //                Section(header: Text(entityType.headerText)) {
+            //                List {
+            //                    ForEach(allEntities.objects, id: \.objectID) { entity in
+            //                        Button(action: {
+            //                            // Update the text fields
+            //                            entityType.bindings.0.wrappedValue = entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? ""
+            //                            // Dismiss the sheet
+            //                            showAllSuggestionsSheet = false
+            //                        }) {
+            //                            Text(entity.value(forKey: entityType.attributes.field1.attribute) as? String ?? "")
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //            }
         }
     }
-
 }
 
 enum ValueData: Hashable {
@@ -169,54 +184,73 @@ enum FieldType {
 }
 
 
-enum TextFieldEntities {
-    case bookStoryArc(Binding<String>, Binding<String>, FieldType, FieldType)
-    case bookCreatorRole(Binding<String>, Binding<String>, FieldType, FieldType)
-    case bookEvent(Binding<String>, Binding<String>, FieldType, FieldType)
+enum EntityDetails {
+    case storyArc(Binding<String>, Binding<String>, FieldType, FieldType)
+    case bookEvents(Binding<String>, Binding<String>, FieldType, FieldType)
+    case creator(Binding<String>, Binding<String>, FieldType, FieldType)
+    
+    var rawValue: String {
+        switch self {
+        case .storyArc:
+            return "BookStoryArcs"
+        case .bookEvents:
+            return "BookEvents"
+        case .creator:
+            return "Creators"
+        }
+    }
+    
+    func iconName() -> String {
+        switch self {
+        case .storyArc:
+            return "sparkles.rectangle.stack.fill"
+        case .bookEvents:
+            return "theatermasks.fill"
+        case .creator:
+            return "paintpalette.fill"
+        }
+    }
     
     var attributes: (field1: (attribute: String, displayName: String), field2: (attribute: String, displayName: String)) {
         switch self {
-        case .bookStoryArc:
+        case .storyArc:
             return (field1: ("storyArcName", "Add Story Arc"), field2: ("storyArcPart", "Add Story Arc Part"))
-        case .bookCreatorRole:
+        case .creator:
             return (field1: ("bookCreatorName", "Creator Name"), field2: ("bookCreatorRole", "Role"))
-        case .bookEvent:
+        case .bookEvents:
             return (field1: ("bookEventName", "Event Name"), field2: ("bookEventPart", "Part"))
         }
     }
     
     var headerText: String {
         switch self {
-        case .bookStoryArc:
+        case .storyArc:
             return "Add an existing Story Arc"
-        case .bookCreatorRole:
+        case .creator:
             return "Add an existing Creator Role"
-        case .bookEvent:
+        case .bookEvents:
             return "Add an existing Event"
         }
     }
     
     var bindings: (Binding<String>, Binding<String>) {
         switch self {
-        case .bookStoryArc(let binding1, let binding2, _, _):
-            return (binding1, binding2)
-        case .bookCreatorRole(let binding1, let binding2, _, _):
-            return (binding1, binding2)
-        case .bookEvent(let binding1, let binding2, _, _):
+        case .storyArc(let binding1, let binding2, _, _),
+             .creator(let binding1, let binding2, _, _),
+             .bookEvents(let binding1, let binding2, _, _):
             return (binding1, binding2)
         }
     }
     
     var fieldTypes: (FieldType, FieldType) {
         switch self {
-        case .bookStoryArc(_, _, let type1, let type2):
-            return (type1, type2)
-        case .bookCreatorRole(_, _, let type1, let type2):
-            return (type1, type2)
-        case .bookEvent(_, _, let type1, let type2):
+        case .storyArc(_, _, let type1, let type2),
+             .creator(_, _, let type1, let type2),
+             .bookEvents(_, _, let type1, let type2):
             return (type1, type2)
         }
     }
+    
     var keyboardTypeForField2: UIKeyboardType {
         switch fieldTypes.1 {
         case .string:
@@ -226,3 +260,5 @@ enum TextFieldEntities {
         }
     }
 }
+
+

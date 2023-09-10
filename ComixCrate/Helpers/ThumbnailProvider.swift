@@ -44,6 +44,10 @@ struct ThumbnailProvider: View {
                 return Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
+            } else {
+                // Handle error situation
+                print("Error: Failed to load thumbnail from path: \(fullThumbnailPath)")
+                // Consider showing a placeholder image or an error image
             }
         } else if let cachedImage = ImageCache.shared.image(forKey: fullThumbnailPath) {
             print("ThumbnailProvider: Retrieved thumbnail from cache for path: \(fullThumbnailPath)")

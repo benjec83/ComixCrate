@@ -99,7 +99,8 @@ class ComicFileHandler {
                     print("Failed to read or parse ComicInfo.xml")
                 }
             } else {
-                print("ComicInfo.xml does not exist at path: \(comicInfoURL.path)")
+                throw NSError(domain: "ComicFileHandlerError", code: 1001, userInfo: [NSLocalizedDescriptionKey: "ComicInfo.xml does not exist at path: \(comicInfoURL.path)"])
+
             }
         } catch let error as ZIPFoundation.Archive.ArchiveError {
             print("ZIPFoundation error: \(error.localizedDescription)")

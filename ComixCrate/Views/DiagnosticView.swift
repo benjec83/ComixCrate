@@ -30,7 +30,6 @@ struct DiagnosticView: View {
         CoreDataDeleter(context: viewContext)
     }
 
-
     var body: some View {
         List {
             Section(header: Text("All Series")) {
@@ -66,13 +65,13 @@ struct DiagnosticView: View {
                 })
             }
             Section(header: Text("All Events")) {
-                ForEach(allStoryArcs, id: \.self) { storyArc in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: storyArc)) {
-                        Text(storyArc.storyArcName ?? "Unknown Story Arc")
+                ForEach(allEvents, id: \.self) { event in
+                    NavigationLink(destination: RelatedBooksView(relatedObject: event)) {
+                        Text(event.eventName ?? "Unknown Event")
                     }
                 }
                 .onDelete(perform: { offsets in
-                    deleter.deleteObject(from: allStoryArcs, at: offsets)
+                    deleter.deleteObject(from: allEvents, at: offsets)
                 })
             }
         }

@@ -9,7 +9,9 @@ import UIKit
 
 class ComicImageResizer {
     func resizeImage(at url: URL, to size: CGSize) throws -> UIImage {
-        let image = UIImage(contentsOfFile: url.path)!
+        guard let image = UIImage(contentsOfFile: url.path) else {
+            throw NSError(domain: "ComicImageResizerError", code: 1002, userInfo: [NSLocalizedDescriptionKey: "Failed to load image from path: \(url.path)"])
+        }
         UIGraphicsBeginImageContext(size)
         image.draw(in: CGRect(origin: .zero, size: size))
         let resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
