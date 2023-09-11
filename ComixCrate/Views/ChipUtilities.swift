@@ -8,45 +8,7 @@
 import SwiftUI
 import CoreData
 
-// MARK: - ChipType Enum
-enum ChipType: String {
-    case bookStoryArc = "BookStoryArcs"
-    case bookEvents = "BookEvents"
-    case creator = "Creators"
-    // Add other types as needed
-    
-    func iconName() -> String {
-        switch self {
-        case .bookStoryArc:
-            return "sparkles.rectangle.stack.fill"
-        case .bookEvents:
-            return "theatermasks.fill"
-        case .creator:
-            return "paintpalette.fill"
-        }
-    }
-    var fetchRequest: NSFetchRequest<NSFetchRequestResult> {
-        switch self {
-        case .bookStoryArc:
-            return StoryArc.fetchRequest()
-        case .bookEvents:
-            return Event.fetchRequest()
-        case .creator:
-            // Assuming you have a Creator entity
-            return Creator.fetchRequest()
-        }
-    }
-    var correspondingTextFieldEntity: TextFieldEntities {
-        switch self {
-        case .bookStoryArc:
-            return .bookStoryArcs(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
-        case .bookEvents:
-            return .bookEvents(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
-        case .creator:
-            return .bookCreatorRole(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
-        }
-    }
-}
+
 
 
 // MARK: - Chip View

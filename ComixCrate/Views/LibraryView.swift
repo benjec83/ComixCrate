@@ -14,22 +14,12 @@ struct LibraryView: View {
     // MARK: - Properties
     
     @Environment(\.managedObjectContext) private var viewContext
+    @ObservedObject var viewModel: LibraryViewModel
+
     @FetchRequest(
         entity: Book.entity(),
         sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)]
     ) private var allBooks: FetchedResults<Book>
-
-    var filteredBooks: [Book] {
-        switch filter {
-        case .all:
-            return allBooks.map { $0 }
-        case .favorites:
-            return allBooks.filter { $0.isFavorite }
-        case .currentlyReading:
-            return allBooks.filter { $0.read > 0.0 && $0.read < 100.0 }
-        }
-    }
-
     
     @State private var isGalleryView: Bool = true
     @State private var showingDocumentPicker = false
@@ -53,31 +43,23 @@ struct LibraryView: View {
     
     enum ActiveAlert { case deleteSelected, deleteAll }
     
-    var filter: LibraryFilter
-    private func filterPredicate(for filter: LibraryFilter) -> NSPredicate? {
-        switch filter {
-        case .all:
-            return nil
-        case .favorites:
-            return NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
-        case .currentlyReading:
-            return NSPredicate(format: "read > 0.0 AND read < 100.0")
-
-        }
-    }
-    
     private func navigationTitle(for filter: LibraryFilter) -> String {
         switch filter {
-        case .all:
+        case .allBooks:
             return "Library"
         case .favorites:
             return "Favorites"
         case .currentlyReading:
             return "Currently Reading"
+        case .recentlyAdded:
+            return "Recently Added"
         }
     }
-
-
+    
+    init(filter: LibraryFilter, isImporting: Binding<Bool>) {
+        viewModel = LibraryViewModel(filter: filter)
+        self._isImporting = isImporting
+    }
 
     // MARK: - Body
     
@@ -92,7 +74,7 @@ struct LibraryView: View {
         .toolbar {
             toolbarContent
         }
-        .navigationTitle(navigationTitle(for: filter))
+        .navigationTitle(viewModel.navigationTitle)
         .sheet(isPresented: $showingDocumentPicker) {
             DocumentPicker { urls in
                 handleImportedFiles(urls: urls)
@@ -119,7 +101,7 @@ struct LibraryView: View {
     
     @ViewBuilder
     private var content: some View {
-        if filteredBooks.isEmpty {
+        if viewModel.books.isEmpty {
             emptyLibraryContent
         } else {
             if isGalleryView {
@@ -149,7 +131,7 @@ struct LibraryView: View {
     private var galleryViewContent: some View {
         ScrollView(.vertical) {
             LazyVGrid(columns: gridItems, spacing: spacing) {
-                ForEach(filteredBooks, id: \.self) { book in
+                ForEach(viewModel.books, id: \.self) { book in
                     bookTile(for: book)
                 }
             }
@@ -157,7 +139,7 @@ struct LibraryView: View {
     }
     
     private var listViewContent: some View {
-        List(filteredBooks, id: \.self) { book in
+        List(viewModel.books, id: \.self) { book in
             bookTile(for: book)
         }
     }
@@ -330,7 +312,7 @@ struct LibraryView: View {
     }
     
     func deleteAll() {
-        for book in filteredBooks {
+        for book in viewModel.books {
             deleteRelatedEntitiesIfOrphaned(book: book, in: viewContext)
             viewContext.delete(book)
         }
@@ -385,24 +367,3 @@ struct LibraryView: View {
         }
     }
 }
-
-
-enum LibraryFocus: String {
-    case allBooks = "All Books"
-    case favorites = "Favorites"
-    case recentlyAdded = "Recently Added"
-    case currentlyReading = "Currently Reading"
-    // ... any other focus states
-}
-
-//struct LibraryView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        let mockContext = createMockManagedContext()
-//        let sampleBook = createSampleBook(using: mockContext)
-//        let importingState = ImportingState() // Create a default instance of ImportingState
-//        
-//        return LibraryView(isImporting: .constant(false), filter: .all)
-//            .environment(\.managedObjectContext, mockContext)
-//            .environmentObject(importingState)
-//    }
-//}

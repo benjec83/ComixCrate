@@ -21,7 +21,7 @@ struct BookSheetView: View {
     
     var body: some View {
         
-        BookDetailTabs(book: book)
+        BookDetails(book: book)
         
     }
 }

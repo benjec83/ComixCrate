@@ -21,7 +21,7 @@ struct RelatedBooksView: View {
         List {
             ForEach(relatedBookIDs, id: \.self) { bookID in
                 if let book = viewContext.object(with: bookID) as? Book {
-                    NavigationLink(destination: BookDetailTabs(book: book)) {
+                    NavigationLink(destination: BookDetails(book: book)) {
                         Text("#\(String(book.issueNumber)) - \(book.title ?? "No Title")")
                     }
                 }

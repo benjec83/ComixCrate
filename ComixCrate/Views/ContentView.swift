@@ -8,12 +8,6 @@
 import SwiftUI
 import CoreData
 
-enum LibraryFilter {
-    case all
-    case favorites
-    case currentlyReading
-    // Add other cases as needed
-}
 
 struct ContentView: View {
     @State private var isImporting: Bool = false
@@ -32,18 +26,17 @@ struct ContentView: View {
                 List {
                     Section("Library") {
                         NavigationLink {
-                            HomeView(book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
+                            HomeView(isImporting: $isImporting, book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
                         } label: {
                             Label("Home", systemImage: "house.fill")
                         }
                         NavigationLink {
-                            LibraryView(isImporting: $isImporting, filter: .all)
+                            LibraryView(filter: .allBooks, isImporting: $isImporting)
                         } label: {
                             Label("Library", systemImage: "books.vertical")
                         }
-                        
                         NavigationLink {
-                            LibraryView(isImporting: $isImporting, filter: .favorites)
+                            LibraryView(filter: .favorites, isImporting: $isImporting)
                         } label: {
                             Label("Favorites", systemImage: "star")
                         }
@@ -87,7 +80,7 @@ struct ContentView: View {
                     }
                 }
                 
-                HomeView(book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
+                HomeView(isImporting: $isImporting, book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
             }
             // Blocking overlay
             if importingState.isImporting {

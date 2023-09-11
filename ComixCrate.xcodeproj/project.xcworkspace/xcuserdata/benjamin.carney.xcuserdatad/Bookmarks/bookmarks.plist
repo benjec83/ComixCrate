@@ -48,6 +48,52 @@
 			<key>type</key>
 			<string>bookmark</string>
 		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>location-parameters</key>
+				<dict>
+					<key>EndingColumnNumber</key>
+					<string>5</string>
+					<key>EndingLineNumber</key>
+					<string>61</string>
+					<key>StartingColumnNumber</key>
+					<string>5</string>
+					<key>StartingLineNumber</key>
+					<string>61</string>
+					<key>Timestamp</key>
+					<string>716154481.16407</string>
+				</dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>ComixCrate/Views/LibraryView.swift</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>text-context</key>
+			<dict>
+				<key>focused</key>
+				<string></string>
+				<key>leading</key>
+				<string>        viewModel = LibraryViewModel(filter: filter)
+        self._isImporting = isImporting
+    }</string>
+				<key>trailing</key>
+				<string>
+
+    // MARK: - Body
+</string>
+			</dict>
+			<key>title</key>
+			<string>Error: Incorrect argument label in call (have 'focus:', expected 'filter:')</string>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
 	</array>
 </dict>
 </plist>
