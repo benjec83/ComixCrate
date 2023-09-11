@@ -46,6 +46,7 @@
 		4AEAB4602AA68FCB00B88723 /* ChipUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */; };
 		4AEAB4622AA68FF500B88723 /* SpecializedTextBoxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */; };
 		4AEAB4642AA6902900B88723 /* EditBookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB4632AA6902900B88723 /* EditBookView.swift */; };
+		4AF0509D2AAE7679001BE812 /* MockBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF0509C2AAE7679001BE812 /* MockBook.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -90,6 +91,7 @@
 		4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChipUtilities.swift; sourceTree = "<group>"; };
 		4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecializedTextBoxes.swift; sourceTree = "<group>"; };
 		4AEAB4632AA6902900B88723 /* EditBookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBookView.swift; sourceTree = "<group>"; };
+		4AF0509C2AAE7679001BE812 /* MockBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBook.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +111,7 @@
 			children = (
 				4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */,
 				4AB6E7B02A9BE0C500A8EFA0 /* Persistence.swift */,
+				4AF0509C2AAE7679001BE812 /* MockBook.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -328,6 +331,7 @@
 				4A6C7E712AA1B80800FF95FB /* Extensions.swift in Sources */,
 				4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */,
 				4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */,
+				4AF0509D2AAE7679001BE812 /* MockBook.swift in Sources */,
 				4AB6E7B82A9BE8F400A8EFA0 /* DocumentPicker.swift in Sources */,
 				4A6C7E7E2AA2E80A00FF95FB /* ImportingState.swift in Sources */,
 				4A6C7E7C2AA25AE500FF95FB /* RelatedBooksView.swift in Sources */,

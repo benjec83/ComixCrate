@@ -10,14 +10,14 @@ import CoreData
 
 // MARK: - ChipType Enum
 enum ChipType: String {
-    case storyArc = "BookStoryArcs"
+    case bookStoryArc = "BookStoryArcs"
     case bookEvents = "BookEvents"
     case creator = "Creators"
     // Add other types as needed
     
     func iconName() -> String {
         switch self {
-        case .storyArc:
+        case .bookStoryArc:
             return "sparkles.rectangle.stack.fill"
         case .bookEvents:
             return "theatermasks.fill"
@@ -27,7 +27,7 @@ enum ChipType: String {
     }
     var fetchRequest: NSFetchRequest<NSFetchRequestResult> {
         switch self {
-        case .storyArc:
+        case .bookStoryArc:
             return StoryArc.fetchRequest()
         case .bookEvents:
             return Event.fetchRequest()
@@ -38,8 +38,8 @@ enum ChipType: String {
     }
     var correspondingTextFieldEntity: TextFieldEntities {
         switch self {
-        case .storyArc:
-            return .bookStoryArc(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
+        case .bookStoryArc:
+            return .bookStoryArcs(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
         case .bookEvents:
             return .bookEvents(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
         case .creator:
@@ -47,7 +47,7 @@ enum ChipType: String {
         }
     }
 }
-    
+
 
 // MARK: - Chip View
 struct Chip: View {
@@ -112,7 +112,7 @@ struct ChipView: View {
         GeometryReader { geometry in
             let containerWidth = geometry.size.width
             
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 5) {
                 ForEach(getRows(containerWidth: containerWidth, chips: filteredChips), id: \.self) { rows in
                     HStack(spacing: 1) {
                         ForEach(rows) { row in
@@ -151,43 +151,52 @@ struct ChipView: View {
     }
     
     // MARK: - RowView Function
-        @ViewBuilder
-        func RowView(chip: TempChipData) -> some View {
-            if let chipType = ChipType(entity: chip.entity) { // Removed default value
-                let label = createLabel(for: chip)
-                Chip(label: label, onDeleteChip: {
-                    if let index = chips.firstIndex(where: {
-                        $0.tempValue1 == chip.tempValue1 &&
-                        (String(describing: $0.tempValue2) == String(describing: chip.tempValue2))
-                    }) {
-                        chips.remove(at: index)
-                    }
-                }, type: chipType, showIcon: true, showDeleteButton: true)
-                .font(.system(size: fontSize))
-                .padding(.horizontal, 5)
-                .lineLimit(1)
-                .frame(maxWidth: 300)
-                .matchedGeometryEffect(id: chip.id, in: animation)
-                .onTapGesture {
-                    if let index = chips.firstIndex(where: {
-                        $0.tempValue1 == chip.tempValue1 &&
-                        (String(describing: $0.tempValue2) == String(describing: chip.tempValue2))
-                    }) {
-                        editedAttribute1 = chip.tempValue1
-                        switch chip.tempValue2 {
-                        case .string(let stringValue):
-                            editedAttribute1 = stringValue
-                        case .int16(let intValue):
-                            editedAttribute2 = "\(intValue)"
-                        }
-                        chips.remove(at: index) // Remove the old chip
-                    }
+    @ViewBuilder
+    func RowView(chip: TempChipData) -> some View {
+        if let chipType = ChipType(entity: chip.entity) {
+            let label = createLabel(for: chip)
+            Chip(label: label, onDeleteChip: {
+                // Print the values of chip.tempValue1 and chip.tempValue2
+                print("Attempting to delete chip with tempValue1: \(chip.tempValue1) and tempValue2: \(chip.tempValue2)")
+                
+                if let index = chips.firstIndex(where: {
+                    $0.tempValue1 == chip.tempValue1 &&
+                    (String(describing: $0.tempValue2) == String(describing: chip.tempValue2))
+                }) {
+                    // Print the index of the chip found
+                    print("Found chip at index: \(index). Deleting...")
+                    chips.remove(at: index)
+                } else {
+                    // Print a message if the chip is not found
+                    print("Chip not found in the array.")
                 }
-            } else {
-                // Handle the error case, perhaps with a Text view displaying an error message
-                Text("Invalid entity provided: \(chip.entity)")
+            }, type: chipType, showIcon: true, showDeleteButton: true)
+            .font(.system(size: fontSize))
+            .padding(.horizontal, 5)
+            .lineLimit(1)
+            .frame(maxWidth: 300)
+            .matchedGeometryEffect(id: chip.id, in: animation)
+            .onTapGesture {
+                if let index = chips.firstIndex(where: {
+                    $0.tempValue1 == chip.tempValue1 &&
+                    (String(describing: $0.tempValue2) == String(describing: chip.tempValue2))
+                }) {
+                    editedAttribute1 = chip.tempValue1
+                    switch chip.tempValue2 {
+                    case .string(let stringValue):
+                        editedAttribute1 = stringValue
+                    case .int16(let intValue):
+                        editedAttribute2 = "\(intValue)"
+                    }
+                    chips.remove(at: index) // Remove the old chip
+                }
             }
+        } else {
+            // Handle the error case, perhaps with a Text view displaying an error message
+            Text("Invalid entity provided: \(chip.entity)")
         }
+    }
+    
     
     
     func getRows(containerWidth: CGFloat, chips: [TempChipData]) -> [[TempChipData]] {
@@ -235,7 +244,7 @@ extension ChipType {
     init?(entity: String) {
         switch entity {
         case "BookStoryArcs":
-            self = .storyArc
+            self = .bookStoryArc
         case "BookEvents":
             self = .bookEvents
         case "Creators":
