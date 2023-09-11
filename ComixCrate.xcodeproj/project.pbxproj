@@ -53,6 +53,7 @@
 		4ADF009C2AAFB24D008C98E6 /* BookSecondaryDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF009B2AAFB24D008C98E6 /* BookSecondaryDetailsView.swift */; };
 		4ADF009E2AAFB26A008C98E6 /* BookMainDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF009D2AAFB26A008C98E6 /* BookMainDetailsView.swift */; };
 		4ADF00A02AAFB280008C98E6 /* FakePublisherLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF009F2AAFB280008C98E6 /* FakePublisherLogoView.swift */; };
+		4ADF00A32AAFBF81008C98E6 /* BookActionButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF00A22AAFBF81008C98E6 /* BookActionButtonsView.swift */; };
 		4AE0DF162AA7A31B006DFFF1 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE0DF152AA7A31B006DFFF1 /* HomeView.swift */; };
 		4AEAB4602AA68FCB00B88723 /* ChipUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */; };
 		4AEAB4622AA68FF500B88723 /* SpecializedTextBoxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */; };
@@ -109,6 +110,7 @@
 		4ADF009B2AAFB24D008C98E6 /* BookSecondaryDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSecondaryDetailsView.swift; sourceTree = "<group>"; };
 		4ADF009D2AAFB26A008C98E6 /* BookMainDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookMainDetailsView.swift; sourceTree = "<group>"; };
 		4ADF009F2AAFB280008C98E6 /* FakePublisherLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakePublisherLogoView.swift; sourceTree = "<group>"; };
+		4ADF00A22AAFBF81008C98E6 /* BookActionButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookActionButtonsView.swift; sourceTree = "<group>"; };
 		4AE0DF152AA7A31B006DFFF1 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChipUtilities.swift; sourceTree = "<group>"; };
 		4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecializedTextBoxes.swift; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				4ADF00992AAFB21B008C98E6 /* BookDetailsCreativeView.swift */,
 				4ADF009D2AAFB26A008C98E6 /* BookMainDetailsView.swift */,
 				4ADF009F2AAFB280008C98E6 /* FakePublisherLogoView.swift */,
+				4ADF00A22AAFBF81008C98E6 /* BookActionButtonsView.swift */,
 			);
 			path = BookDetails;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4ADF008C2AAF961B008C98E6 /* Enums.swift in Sources */,
+				4ADF00A32AAFBF81008C98E6 /* BookActionButtonsView.swift in Sources */,
 				4ADF009E2AAFB26A008C98E6 /* BookMainDetailsView.swift in Sources */,
 				4ADF00982AAFB1EF008C98E6 /* BookDetailsMoreView.swift in Sources */,
 				4A095D502AAA862200CD590C /* AnotherTest.swift in Sources */,

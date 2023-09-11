@@ -9,10 +9,12 @@ import SwiftUI
 
 struct BookDetailsMainView: View {
     @ObservedObject var book: Book
+    @ObservedObject var viewModel: SelectedBookViewModel // Add this line
     @State private var shouldCacheHighQualityThumbnail: Bool = false
     
-    public init(book: Book) {
+    public init(book: Book, viewModel: SelectedBookViewModel) {
         self.book = book
+        self.viewModel = viewModel
     }
     
     public var body: some View {
@@ -30,7 +32,7 @@ struct BookDetailsMainView: View {
                 VStack {
                     BookMainDetails(book: book)
                     BookSecondaryDetails(book: book)
-                    BookActionButtons(book: book)
+                    BookActionButtons(book: book, viewModel: viewModel) // Update this line
                 }
                 .padding(.all)
                 .frame(width: 380)

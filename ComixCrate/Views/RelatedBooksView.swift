@@ -10,7 +10,10 @@ import CoreData
 
 struct RelatedBooksView: View {
     var relatedObject: NSManagedObject
-    
+    var viewModel: SelectedBookViewModel {
+        SelectedBookViewModel(book: selectedBook ?? Book(), context: viewContext)
+    }
+
     @State private var showBookDetails: Bool = false
     @State private var selectedBook: Book? = nil
     
@@ -21,13 +24,11 @@ struct RelatedBooksView: View {
         List {
             ForEach(relatedBookIDs, id: \.self) { bookID in
                 if let book = viewContext.object(with: bookID) as? Book {
-                    NavigationLink(destination: BookDetails(book: book)) {
+                    NavigationLink(destination: BookDetails(book: book, viewModel: self.viewModel)) {
                         Text("#\(String(book.issueNumber)) - \(book.title ?? "No Title")")
                     }
                 }
             }
-            
-            
         }
         .navigationTitle(relatedObjectName)
     }

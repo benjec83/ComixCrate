@@ -11,24 +11,20 @@ import CoreData
 struct BookSheetView: View {
     
     @ObservedObject var book: Book
+    @ObservedObject var viewModel: SelectedBookViewModel
 
     @State private var showingSheet = false
-    
     @State var isModalSheetShown: Bool = false
-    
     @Environment(\.dismiss) var dismiss
 
-    
+    init(book: Book) {
+        self.book = book
+        self.viewModel = SelectedBookViewModel(book: book, context: PersistenceController.shared.container.viewContext)
+    }
+
     var body: some View {
-        
-        BookDetails(book: book)
-        
+        BookDetails(book: book, viewModel: viewModel)
     }
 }
 
-//struct BookSheetView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        BookSheetView(book: books[0])
-//            .environmentObject(ModelData())
-//    }
-//}
+
