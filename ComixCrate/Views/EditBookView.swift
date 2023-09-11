@@ -109,37 +109,20 @@ struct EditBookView: View {
 //                        Section(header: Text("Story Arcs")) {
 //                            VStack(alignment: .leading) {
 //                                VStack(alignment: .leading) {
-//                                    EntityTextFieldView(entityType: .bookStoryArc($editedStoryArcName, $editedStoryArcPart, .string, .int16), chips: $chips, allEntities: AnyFetchedResults(allStoryArcs))
-//                                }
-//                                ScrollView {
-//                                    ChipView(chips: $chips, editedAttribute1: $editedStoryArcName, editedAttribute2: $editedStoryArcPart, type: .storyArc, chipViewHeight: $chipViewHeight)
-//                                        .padding(.vertical, 15)
-//                                        .frame(height: chipViewHeight)
-//                                }
-//                            }
-//                        }
-//                    }
-//                    VStack {
-//                        Section(header: Text("Events")) {
-//                            VStack {
-//                                VStack {
-//                                    EntityTextFieldView(entityType: .bookEvents($editedEventName, $editedEventPart, .string, .int16), chips: $chips, allEntities: AnyFetchedResults(allEvents))
-//                                }
-//                                VStack {
-//                                    ChipView(chips: $chips, editedAttribute1: $editedEventName, editedAttribute2: $editedEventPart, type: .bookEvents, chipViewHeight: $chipViewHeight)
-//                                        .padding(.vertical, 15)
-//                                        .frame(height: chipViewHeight)
-//                                }
-//                            }
-//                        }
-//                    }
+
+//                Section(header: Text("Story Arc and Events")) {
+//                    EntityTextFieldView(type: .bookStoryArc($editedStoryArcName, $editedStoryArcPart, .string, .int16), chips: $chips, allEntities: anyFetchedStoryArcs)
+//
+//                    EntityTextFieldView(type: .bookEvents($editedEventName, $editedEventPart, .string, .int16), chips: $chips, allEntities: anyFetchedEvents)
 //                }
+                
                 
                 Section(header: Text("Testing New View")) {
                     HStack(alignment: .top) {
-                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .storyArc, chips: $chips)
-                        Divider()
-                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookEvents, chips: $chips)
+
+                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookStoryArc, textType: .bookStoryArcs($editedStoryArcName, $editedStoryArcPart, .string, .int16), chips: $chips)
+                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookEvents, textType: .bookEvents($editedEventName, $editedEventPart, .string, .int16), chips: $chips)
+
                     }
                 }
             }
@@ -205,10 +188,13 @@ extension EditBookView {
         book.issueNumber = Int16(editedIssueNumber) ?? 0
         
         // Clear existing associations for the book based on ChipType
-        clearExistingAssociations(for: .storyArc, from: book)
+        clearExistingAssociations(for: .bookStoryArc, from: book)
+        print("After clearing story arcs: \(book.bookStoryArcs?.count ?? 0) arcs")
         clearExistingAssociations(for: .bookEvents, from: book)
+        print("After clearing events: \(book.bookEvents?.count ?? 0) events")
         clearExistingAssociations(for: .creator, from: book)
-        
+        print("After clearing creators: \(book.bookCreatorRole?.count ?? 0) creators")
+
         // For each chip in the chips array
         for chip in chips {
             saveChip(chip)
@@ -216,6 +202,11 @@ extension EditBookView {
         
         do {
             try viewContext.save()
+            // Fetch the book again and print its associated story arcs and events to ensure changes are persisted
+            if let savedBook = bookItems.first(where: { $0 == book }) {
+                print("After saving: \(savedBook.bookStoryArcs?.count ?? 0) story arcs")
+                print("After saving: \(savedBook.bookEvents?.count ?? 0) events")
+            }
         } catch {
             print("Error saving edited book: \(error)")
         }
@@ -223,19 +214,19 @@ extension EditBookView {
     
     func clearExistingAssociations(for type: ChipType, from book: Book) {
         switch type {
-        case .storyArc:
+        case .bookStoryArc:
             if let existingBookStoryArcs = book.bookStoryArcs as? Set<BookStoryArcs> {
                 for bookStoryArc in existingBookStoryArcs {
                     viewContext.delete(bookStoryArc)
                 }
             }
         case .bookEvents:
-            if let existingBookEvents = book.bookEvents as? Set<Event> {
+            if let existingBookEvents = book.bookEvents as? Set<BookEvents> {
                 for bookEvents in existingBookEvents {
                     viewContext.delete(bookEvents)
                 }
             }        case .creator:
-            if let existingBookCreators = book.bookCreatorRoles as? Set<Creator> {
+            if let existingBookCreators = book.bookCreatorRole as? Set<BookCreatorRole> {
                 for bookCreator in existingBookCreators {
                     viewContext.delete(bookCreator)
                 }
@@ -243,17 +234,19 @@ extension EditBookView {
         }
     }
     func saveChip(_ chip: TempChipData) {
-        switch ChipType(rawValue: chip.entity) {
-        case .storyArc:
-            saveStoryArcChip(chip)
-        case .bookEvents:
-            saveEventChip(chip)
-        case .creator:
-            print("save creator chip")
-        default:
-            print("Unknown chip type")
-        }
-    }
+         switch ChipType(rawValue: chip.entity) {
+         case .bookStoryArc:
+             saveStoryArcChip(chip)
+             print("After saving story arc chip: \(book.bookStoryArcs?.count ?? 0)") // Added print statement
+         case .bookEvents:
+             saveEventChip(chip)
+             print("After saving event chip: \(book.bookEvents?.count ?? 0)") // Added print statement
+         case .creator:
+             print("save creator chip")
+         default:
+             print("Unknown chip type")
+         }
+     }
     
     func saveStoryArcChip(_ chip: TempChipData) {
         let storyArcName = chip.tempValue1
@@ -328,6 +321,25 @@ extension EditBookView {
     }
 }
 
+//// MARK: Preview
+//#if DEBUG
+//struct EditBookView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        EditBookView(book: createSampleBook(using: PreviewCoreDataManager.shared.container.viewContext))
+//    }
+//}
+//#endif
+
+
+//#if DEBUG
+//struct EditBookView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        Text("Hello, World!")
+//    }
+//}
+//#endif
+
+
 // MARK: - TempChipData Struct
 struct TempChipData: Identifiable {
     var id: UUID = UUID()
@@ -351,26 +363,39 @@ extension TempChipData: Hashable {
 
 
 
+
+
 enum TextFieldEntities {
-    case bookStoryArc(Binding<String>, Binding<String>, FieldType, FieldType)
+    case bookStoryArcs(Binding<String>, Binding<String>, FieldType, FieldType)
     case bookCreatorRole(Binding<String>, Binding<String>, FieldType, FieldType)
     case bookEvents(Binding<String>, Binding<String>, FieldType, FieldType)
     
     
     var attributes: (field1: (attribute: String, displayName: String), field2: (attribute: String, displayName: String)) {
         switch self {
-        case .bookStoryArc:
-            return (field1: ("storyArcName", "Add Story Arc"), field2: ("storyArcPart", "Add Story Arc Part"))
+        case .bookStoryArcs:
+            return (field1: ("storyArcName", "Story Arc"), field2: ("storyArcPart", "Story Arc Part"))
         case .bookCreatorRole:
             return (field1: ("bookCreatorName", "Creator Name"), field2: ("bookCreatorRole", "Role"))
         case .bookEvents:
-            return (field1: ("bookEventName", "Event Name"), field2: ("bookEventPart", "Part"))
+            return (field1: ("eventName", "Event Name"), field2: ("eventPart", "Part"))
+        }
+    }
+    
+    var editAttributes: (field1: (attribute: String, displayName: String), field2: (attribute: String, displayName: String)) {
+        switch self {
+        case .bookStoryArcs:
+            return (field1: ("$editedStoryArcName", "Add Story Arc"), field2: ("storyArcPart", "Add Story Arc Part"))
+        case .bookCreatorRole:
+            return (field1: ("bookCreatorName", "Creator Name"), field2: ("bookCreatorRole", "Role"))
+        case .bookEvents:
+            return (field1: ("eventName", "Event Name"), field2: ("eventPart", "Part"))
         }
     }
     
     var headerText: String {
         switch self {
-        case .bookStoryArc:
+        case .bookStoryArcs:
             return "Add an existing Story Arc"
         case .bookCreatorRole:
             return "Add an existing Creator Role"
@@ -381,7 +406,7 @@ enum TextFieldEntities {
     
     var bindings: (Binding<String>, Binding<String>) {
         switch self {
-        case .bookStoryArc(let binding1, let binding2, _, _):
+        case .bookStoryArcs(let binding1, let binding2, _, _):
             return (binding1, binding2)
         case .bookCreatorRole(let binding1, let binding2, _, _):
             return (binding1, binding2)
@@ -392,7 +417,7 @@ enum TextFieldEntities {
     
     var fieldTypes: (FieldType, FieldType) {
         switch self {
-        case .bookStoryArc(_, _, let type1, let type2):
+        case .bookStoryArcs(_, _, let type1, let type2):
             return (type1, type2)
         case .bookCreatorRole(_, _, let type1, let type2):
             return (type1, type2)
@@ -410,8 +435,8 @@ enum TextFieldEntities {
     }
     var chipType: ChipType {
         switch self {
-        case .bookStoryArc:
-            return .storyArc
+        case .bookStoryArcs:
+            return .bookStoryArc
         case .bookCreatorRole:
             return .creator
         case .bookEvents:

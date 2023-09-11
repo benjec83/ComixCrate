@@ -347,7 +347,11 @@ struct LibraryView: View {
                 checkAndDeleteEntity(entity: storyArc, relatedTo: book, byKey: "storyArc", in: context)
             }
         }
-        
+        if let events = book.event as? Set<Event> {
+            for event in events {
+                checkAndDeleteEntity(entity: event, relatedTo: book, byKey: "event", in: context)
+            }
+        }
         if let publisher = book.publisher {
             checkAndDeleteEntity(entity: publisher, relatedTo: book, byKey: "publisher", in: context)
         }
@@ -390,3 +394,15 @@ enum LibraryFocus: String {
     case currentlyReading = "Currently Reading"
     // ... any other focus states
 }
+
+//struct LibraryView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        let mockContext = createMockManagedContext()
+//        let sampleBook = createSampleBook(using: mockContext)
+//        let importingState = ImportingState() // Create a default instance of ImportingState
+//        
+//        return LibraryView(isImporting: .constant(false), filter: .all)
+//            .environment(\.managedObjectContext, mockContext)
+//            .environmentObject(importingState)
+//    }
+//}

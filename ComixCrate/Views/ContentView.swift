@@ -50,23 +50,6 @@ struct ContentView: View {
                         NavigationLink(destination: TestingView()) {
                             Label("New Edit Sheet", systemImage: "list.bullet.rectangle.portrait")
                         }
-//                        NavigationLink(destination: AnotherTest()) {
-//                            Label("Another Test", systemImage: "list.bullet.rectangle.portrait")
-//                        }
-//                        NavigationLink(destination: EntityChipTextFieldView(book: bookItems.first ?? Book(), viewModel: viewModel, type: .storyArc, chips: $chips)) {
-//                            
-//                            Label("EntityChipTextFieldView - Story Arcs", systemImage: "list.bullet.rectangle.portrait")
-//                        }
-//                        NavigationLink(destination: EntityChipTextFieldView(book: bookItems.first ?? Book(), viewModel: viewModel, type: .bookEvents, chips: $chips))
-//                        {
-//                            
-//                            Label("EntityChipTextFieldView - Events", systemImage: "list.bullet.rectangle.portrait")
-//                        }
-//                        NavigationLink(destination: NewView(book: bookItems.first ?? Book(), viewModel: viewModel, type: .storyArc))
-//                        {
-//                            
-//                            Label("EntityChipTextFieldView - Events", systemImage: "list.bullet.rectangle.portrait")
-//                        }
                     }
                     Section("Reading Lists", content: {
                         NavigationLink {Text("All Reading Lists")} label: {
@@ -127,3 +110,14 @@ struct ContentView: View {
 }
 
 
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+////        let mockContext = createMockManagedContext()
+////        let sampleBook = createSampleBook(using: PreviewCoreDataManager.shared.container.viewContext)
+//        let importingState = ImportingState() // Create a default instance of ImportingState
+//        
+//        return ContentView()
+//            .environment(\.managedObjectContext, mockContext)
+//            .environmentObject(importingState)
+//    }
+//}

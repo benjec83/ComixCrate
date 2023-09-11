@@ -12,8 +12,10 @@ struct EntityChipTextFieldView: View {
     @Binding var book: Book
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.managedObjectContext) private var viewContext
-
+    
     var type: ChipType
+    var textType: TextFieldEntities
+    
     @Binding var chips: [TempChipData]
     
     @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
@@ -39,23 +41,39 @@ struct EntityChipTextFieldView: View {
     @State private var editedEventName: String
     @State private var editedEventPart: String = ""
     
-    init(book: Book, viewModel: EntityChipTextFieldViewModel, type: ChipType, chips: Binding<[TempChipData]>) {
+    init(book: Book, viewModel: EntityChipTextFieldViewModel, type: ChipType, textType: TextFieldEntities, chips: Binding<[TempChipData]>) {
         _book = .constant(book)
         self.type = type
+        self.textType = textType
         let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.storyArcName ?? ""
         _editedStoryArcName = State(initialValue: firstStoryArcName)
         let firstEventName = (book.bookEvents as? Set<Event>)?.first?.eventName ?? ""
         _editedEventName = State(initialValue: firstEventName)
         _chips = chips  // Assign the binding directly
     }
-
+    
     var body: some View {
+        
+        var anyFetchedEntities: AnyFetchedResults {
+            switch textType {
+            case .bookStoryArcs:
+                return AnyFetchedResults(allStoryArcs)
+            case .bookCreatorRole:
+                // Assuming you have a fetched results for bookCreatorRoles
+                // return AnyFetchedResults(allBookCreatorRoles)
+                fatalError("Fetched results for bookCreatorRoles not implemented yet")
+            case .bookEvents:
+                return AnyFetchedResults(allEvents)
+            }
+        }
+        
+        
+        
+        
         VStack {
-            Text("Text Fields for \(type.rawValue)")
-            // Uncomment the following line when EntityTextFieldView is ready
-//            EntityTextFieldView(type: type, chips: $chips, allEntities: allEntities)
-            ChipView(chips: $chips, editedAttribute1: $editedStoryArcName, editedAttribute2: $editedStoryArcPart, type: type, chipViewHeight: $chipViewHeight)
-            Spacer(minLength: 150)
+            EntityTextFieldView(type: textType, chips: $chips, allEntities: anyFetchedEntities)
+            ChipView(chips: $chips, editedAttribute1: $editedEventName, editedAttribute2: $editedEventPart, type: type, chipViewHeight: $chipViewHeight)
+            Spacer(minLength: chipViewHeight)
         }
         .animation(.easeInOut, value: chips)
     }

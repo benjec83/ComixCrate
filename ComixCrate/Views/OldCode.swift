@@ -589,7 +589,7 @@
 //        case .bookCreatorRole:
 //            return (field1: ("bookCreatorName", "Creator Name"), field2: ("bookCreatorRole", "Role"))
 //        case .bookEvent:
-//            return (field1: ("bookEventName", "Event Name"), field2: ("bookEventPart", "Part"))
+//            return (field1: ("eventName", "Event Name"), field2: ("eventPart", "Part"))
 //        }
 //    }
 //    

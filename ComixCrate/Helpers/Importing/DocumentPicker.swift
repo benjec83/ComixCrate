@@ -7,14 +7,12 @@
 
 import SwiftUI
 import UIKit
-import UniformTypeIdentifiers
-
 
 struct DocumentPicker: UIViewControllerRepresentable {
     var completion: ([URL]) -> Void
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item])
+        let picker = UIDocumentPickerViewController(documentTypes: ["public.item"], in: .import)
         picker.delegate = context.coordinator
         print("DocumentPicker: Starting document picking process.")
         picker.allowsMultipleSelection = true
@@ -45,5 +43,3 @@ struct DocumentPicker: UIViewControllerRepresentable {
     }
 
 }
-
-
