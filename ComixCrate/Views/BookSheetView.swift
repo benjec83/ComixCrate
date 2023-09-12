@@ -17,9 +17,9 @@ struct BookSheetView: View {
     @State var isModalSheetShown: Bool = false
     @Environment(\.dismiss) var dismiss
 
-    init(book: Book) {
+    init(book: Book, type: EntityType, allEntities: AnyFetchedResults) {
         self.book = book
-        self.viewModel = SelectedBookViewModel(book: book, context: PersistenceController.shared.container.viewContext)
+        self.viewModel = SelectedBookViewModel(book: book, context: PersistenceController.shared.container.viewContext, type: type, allEntities: allEntities)
     }
 
     var body: some View {

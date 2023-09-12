@@ -11,6 +11,8 @@ import CoreData
 struct EditBookView: View {
     
     // MARK: - Properties
+    @ObservedObject var viewModel: SelectedBookViewModel
+
     @Binding var book: Book
     
     @Environment(\.managedObjectContext) private var viewContext
@@ -25,8 +27,7 @@ struct EditBookView: View {
     
     @FetchRequest(entity: Book.entity(), sortDescriptors: [])
     private var bookItems: FetchedResults<Book>
-    var viewModel: EntityChipTextFieldViewModel = EntityChipTextFieldViewModel()
-    
+
     @State private var showAlert: Bool = false
     
     @State private var chips: [TempChipData] = []
@@ -55,7 +56,8 @@ struct EditBookView: View {
     @State private var attribute2: String = ""
     
     // MARK: - Initializer
-    init(book: Book) {
+    init(book: Book, viewModel: SelectedBookViewModel, context: NSManagedObjectContext) {
+        self.viewModel = viewModel
         _book = .constant(book)
         _editedTitle = State(initialValue: book.title ?? "")
         _editedIssueNumber = State(initialValue: "\(book.issueNumber)")
@@ -104,24 +106,15 @@ struct EditBookView: View {
                 TextField("Issue Number", text: $editedIssueNumber)
                 TextField("Read Percent", text: editedReadPercentageString)
                     .keyboardType(.numberPad)
-//                HStack(alignment: .top) {
-//                    VStack(alignment: .leading) {
-//                        Section(header: Text("Story Arcs")) {
-//                            VStack(alignment: .leading) {
-//                                VStack(alignment: .leading) {
 
-//                Section(header: Text("Story Arc and Events")) {
-//                    EntityTextFieldView(type: .bookStoryArc($editedStoryArcName, $editedStoryArcPart, .string, .int16), chips: $chips, allEntities: anyFetchedStoryArcs)
-//
-//                    EntityTextFieldView(type: .bookEvents($editedEventName, $editedEventPart, .string, .int16), chips: $chips, allEntities: anyFetchedEvents)
-//                }
                 
                 
                 Section(header: Text("Testing New View")) {
                     HStack(alignment: .top) {
 
-                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookStoryArc, textType: .bookStoryArcs($editedStoryArcName, $editedStoryArcPart, .string, .int16), chips: $chips)
-                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookEvents, textType: .bookEvents($editedEventName, $editedEventPart, .string, .int16), chips: $chips)
+                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookStoryArc, chips: $chips)
+                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookEvents, chips: $chips)
+
 
                     }
                 }
@@ -187,7 +180,7 @@ extension EditBookView {
         book.title = editedTitle
         book.issueNumber = Int16(editedIssueNumber) ?? 0
         
-        // Clear existing associations for the book based on ChipType
+        // Clear existing associations for the book based on EntityType
         clearExistingAssociations(for: .bookStoryArc, from: book)
         print("After clearing story arcs: \(book.bookStoryArcs?.count ?? 0) arcs")
         clearExistingAssociations(for: .bookEvents, from: book)
@@ -212,7 +205,7 @@ extension EditBookView {
         }
     }
     
-    func clearExistingAssociations(for type: ChipType, from book: Book) {
+    func clearExistingAssociations(for type: EntityType, from book: Book) {
         switch type {
         case .bookStoryArc:
             if let existingBookStoryArcs = book.bookStoryArcs as? Set<BookStoryArcs> {
@@ -234,7 +227,7 @@ extension EditBookView {
         }
     }
     func saveChip(_ chip: TempChipData) {
-         switch ChipType(rawValue: chip.entity) {
+         switch EntityType(rawValue: chip.entity) {
          case .bookStoryArc:
              saveStoryArcChip(chip)
              print("After saving story arc chip: \(book.bookStoryArcs?.count ?? 0)") // Added print statement

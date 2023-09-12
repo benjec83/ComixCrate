@@ -12,9 +12,10 @@ struct EntityChipTextFieldView: View {
     @Binding var book: Book
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.managedObjectContext) private var viewContext
+    @ObservedObject var viewModel: SelectedBookViewModel
+
     
-    var type: ChipType
-    var textType: TextFieldEntities
+    var type: EntityType
     
     @Binding var chips: [TempChipData]
     
@@ -41,10 +42,10 @@ struct EntityChipTextFieldView: View {
     @State private var editedEventName: String
     @State private var editedEventPart: String = ""
     
-    init(book: Book, viewModel: EntityChipTextFieldViewModel, type: ChipType, textType: TextFieldEntities, chips: Binding<[TempChipData]>) {
+    init(book: Book, viewModel: SelectedBookViewModel, type: EntityType, chips: Binding<[TempChipData]>) {
         _book = .constant(book)
+        self.viewModel = viewModel
         self.type = type
-        self.textType = textType
         let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.storyArcName ?? ""
         _editedStoryArcName = State(initialValue: firstStoryArcName)
         let firstEventName = (book.bookEvents as? Set<Event>)?.first?.eventName ?? ""
@@ -55,10 +56,10 @@ struct EntityChipTextFieldView: View {
     var body: some View {
         
         var anyFetchedEntities: AnyFetchedResults {
-            switch textType {
-            case .bookStoryArcs:
+            switch type {
+            case .bookStoryArc :
                 return AnyFetchedResults(allStoryArcs)
-            case .bookCreatorRole:
+            case .creator :
                 // Assuming you have a fetched results for bookCreatorRoles
                 // return AnyFetchedResults(allBookCreatorRoles)
                 fatalError("Fetched results for bookCreatorRoles not implemented yet")
@@ -66,34 +67,13 @@ struct EntityChipTextFieldView: View {
                 return AnyFetchedResults(allEvents)
             }
         }
-        
-        
-        
-        
+
         VStack {
-            EntityTextFieldView(type: textType, chips: $chips, allEntities: anyFetchedEntities)
-            ChipView(chips: $chips, editedAttribute1: $editedEventName, editedAttribute2: $editedEventPart, type: type, chipViewHeight: $chipViewHeight)
+            EntityTextFieldView(viewModel: viewModel, type: type, chips: $chips, allEntities: anyFetchedEntities)
+            ChipView(viewModel: viewModel, chips: $chips, type: type, chipViewHeight: $chipViewHeight)
+
             Spacer(minLength: chipViewHeight)
         }
         .animation(.easeInOut, value: chips)
-    }
-}
-
-class EntityChipTextFieldViewModel: ObservableObject {
-    @Published var chips: [TempChipData] = []
-    @Published var editedAttribute1: String = ""
-    @Published var editedAttribute2: String = ""
-    // ... other properties ...
-    
-    func addChip() {
-        // Logic to add a chip
-    }
-    
-    func editChip(chip: TempChipData) {
-        // Logic to edit a chip and populate text fields
-    }
-    
-    func deleteChip(chip: TempChipData) {
-        // Logic to delete a chip
     }
 }

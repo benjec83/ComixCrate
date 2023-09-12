@@ -32,7 +32,13 @@ struct AnyFetchedResults {
 }
 
 struct EntityTextFieldView: View {
-    var type: TextFieldEntities
+    @ObservedObject var viewModel: SelectedBookViewModel
+    private var bindings: (Binding<String>, Binding<String>) {
+        type.bindings(from: viewModel)
+    }
+
+
+    var type: EntityType
     @Binding var chips: [TempChipData]
     var allEntities: AnyFetchedResults
     var placeholder: String = "Enter item..."
@@ -40,9 +46,10 @@ struct EntityTextFieldView: View {
     @FocusState private var isTextFieldFocused: Bool
     @State private var showAllSuggestionsSheet: Bool = false
     
+    
     // Computed property to get filtered entities based on the current input
     var filteredEntities: [NSManagedObject] {
-        let lowercasedInput = type.bindings.0.wrappedValue.lowercased()
+        let lowercasedInput = bindings.0.wrappedValue.lowercased()
         // This filtering logic might need to be updated based on the actual attribute you're filtering on
         return allEntities.objects.filter { ($0.value(forKey: type.attributes.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true }
             .prefix(5)  // Take only the first 5 results
@@ -53,9 +60,9 @@ struct EntityTextFieldView: View {
         VStack {
             HStack {
                 // TextField for the first attribute (e.g., storyArcName, bookCreatorName, etc.)
-                TextField(type.attributes.field1.displayName, text: type.bindings.0, onCommit: {
+                TextField(type.attributes.field1.displayName, text: type.bindings(from: viewModel).0, onCommit: {
                     if let firstSuggestion = filteredEntities.first {
-                        type.bindings.0.wrappedValue = firstSuggestion.value(forKey: type.attributes.field1.attribute) as? String ?? ""
+                        bindings.0.wrappedValue = firstSuggestion.value(forKey: type.attributes.field1.attribute) as? String ?? ""
                     }
                 })
                 .textFieldStyle(PlainTextFieldStyle())
@@ -63,7 +70,7 @@ struct EntityTextFieldView: View {
                 .focused($isTextFieldFocused)
                 
                 // TextField for the second attribute (e.g., storyArcPart, bookCreatorRole, etc.)
-                TextField(type.attributes.field2.displayName, text: type.bindings.1)
+                TextField(type.attributes.field2.displayName, text: type.bindings(from: viewModel).1)
                     .textFieldStyle(PlainTextFieldStyle())
                     .multilineTextAlignment(.leading)
                     .keyboardType(type.keyboardTypeForField2)  // Use the computed property here
@@ -71,17 +78,17 @@ struct EntityTextFieldView: View {
                 // "+" Button to add the new entity
                 Button(action: {
                     // Check if the first attribute is not empty
-                    guard !type.bindings.0.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    guard !type.bindings(from: viewModel).0.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         return
                     }
                     
                     let valueData: ValueData
                     switch type.fieldTypes.1 {
                     case .string:
-                        valueData = .string(type.bindings.1.wrappedValue)
+                        valueData = .string(bindings.1.wrappedValue)
                         print(type)
                     case .int16:
-                        if let intValue = Int16(type.bindings.1.wrappedValue) {
+                        if let intValue = Int16(bindings.1.wrappedValue) {
                             valueData = .int16(intValue)
                             print(type)
                         } else {
@@ -91,14 +98,14 @@ struct EntityTextFieldView: View {
                         }
                     }
                     
-                    let newEntity = TempChipData(entity: type.chipType.rawValue, tempValue1: type.bindings.0.wrappedValue, tempValue2: valueData)
+                    let newEntity = TempChipData(entity: type.rawValue, tempValue1: bindings.0.wrappedValue, tempValue2: valueData)
                     if !chips.contains(where: {
                         $0.tempValue1 == newEntity.tempValue1 && $0.tempValue2 == newEntity.tempValue2
                     }) {
                         chips.append(newEntity)
                     }
-                    type.bindings.0.wrappedValue = ""
-                    type.bindings.1.wrappedValue = ""
+                    bindings.0.wrappedValue = ""
+                    bindings.1.wrappedValue = ""
                     print("Adding new chip: \(newEntity)")
                     
                 }) {
@@ -117,7 +124,7 @@ struct EntityTextFieldView: View {
                         Text(entity.value(forKey: type.attributes.field1.attribute) as? String ?? "")  // Use the unwrapped attribute value
                             .padding(.vertical, 5)
                             .onTapGesture {
-                                type.bindings.0.wrappedValue = entity.value(forKey: type.attributes.field1.attribute) as? String ?? ""
+                                bindings.0.wrappedValue = entity.value(forKey: type.attributes.field1.attribute) as? String ?? ""
                                 isTextFieldFocused = false
                             }
                     }
@@ -137,7 +144,7 @@ struct EntityTextFieldView: View {
                         ForEach(allEntities.objects, id: \.objectID) { entity in
                             Button(action: {
                                 // Update the text fields
-                                type.bindings.0.wrappedValue = entity.value(forKey: type.attributes.field1.attribute) as? String ?? ""
+                                bindings.0.wrappedValue = entity.value(forKey: type.attributes.field1.attribute) as? String ?? ""
                                 // Dismiss the sheet
                                 showAllSuggestionsSheet = false
                             }) {

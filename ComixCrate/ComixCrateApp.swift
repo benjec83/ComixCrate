@@ -15,8 +15,8 @@ struct ComixCrateApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(importingState) // Provide the ImportingState to the environment
+            ContentView(type: .bookEvents)
+                .environmentObject(importingState)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

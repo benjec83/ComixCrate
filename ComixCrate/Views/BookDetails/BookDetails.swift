@@ -10,6 +10,7 @@ import CoreData
 
 struct BookDetails: View {
     @ObservedObject var viewModel: SelectedBookViewModel
+    @Environment(\.managedObjectContext) private var viewContext
     @State private var isFavorite: Bool
     @State private var isEditing: Bool = false
     @ObservedObject var book: Book
@@ -47,7 +48,7 @@ struct BookDetails: View {
                     Text("Collection")
                 }
         }
-        .navigationTitle("#" + "\(String(book.issueNumber))" + " - " + "\(book.title ?? seriesName ?? "")")
+        .navigationTitle(bookTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing:
                                 HStack {
@@ -57,7 +58,7 @@ struct BookDetails: View {
                 Label("Edit", systemImage: "pencil")
             }
             .sheet(isPresented: $isEditing) {
-                EditBookView(book: book)
+                EditBookView(book: book, viewModel: viewModel, context: viewContext)
             }
             FavoriteButton(book: book, context: book.managedObjectContext ?? PersistenceController.shared.container.viewContext)
             
@@ -77,6 +78,9 @@ struct BookDetails: View {
             }
         }
         )
+    }
+    var bookTitle: String {
+        return "#" + "\(String(book.issueNumber))" + " - " + "\(book.title ?? book.series?.name ?? "")"
     }
 }
 

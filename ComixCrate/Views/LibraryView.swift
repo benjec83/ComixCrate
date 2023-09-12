@@ -20,6 +20,8 @@ struct LibraryView: View {
         entity: Book.entity(),
         sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)]
     ) private var allBooks: FetchedResults<Book>
+    var allEntities: AnyFetchedResults
+
     
     @State private var isGalleryView: Bool = true
     @State private var showingDocumentPicker = false
@@ -56,9 +58,10 @@ struct LibraryView: View {
         }
     }
     
-    init(filter: LibraryFilter, isImporting: Binding<Bool>) {
+    init(filter: LibraryFilter, isImporting: Binding<Bool>, type: EntityType, allEntities: AnyFetchedResults) {
         viewModel = LibraryViewModel(filter: filter)
         self._isImporting = isImporting
+        self.allEntities = allEntities
     }
 
     // MARK: - Body
@@ -91,7 +94,7 @@ struct LibraryView: View {
         .sheet(item: $selectedBook) { item in
             NavigationStack {
                 VStack {
-                    BookSheetView(book: item)
+                    BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
                 }
             }
         }
