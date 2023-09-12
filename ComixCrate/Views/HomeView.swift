@@ -12,6 +12,8 @@ import CoreData
 struct HomeView: View {
     
     @Environment(\.isSearching) var isSearching
+    var allEntities: AnyFetchedResults
+
     
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Book.dateAdded, ascending: false)]) private var books: FetchedResults<Book>
@@ -60,10 +62,12 @@ struct HomeView: View {
         Array(books.prefix(readingListsLimit))
     }
     
-    init(isImporting: Binding<Bool>, book: Book, recentlyAdded: [Book]) {
+    init(isImporting: Binding<Bool>, book: Book, recentlyAdded: [Book], allEntities: AnyFetchedResults) {
         self._isImporting = isImporting
         self.book = book
         self.recentlyAdded = recentlyAdded
+        self.allEntities = allEntities
+
     }
     
     var body: some View {
@@ -78,7 +82,7 @@ struct HomeView: View {
                 HStack {
                     Text("Currently Reading")
                     Spacer()
-                    NavigationLink(destination: LibraryView(filter: .currentlyReading, isImporting: $isImporting)) {
+                    NavigationLink(destination: LibraryView(filter: .currentlyReading, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)) {
                         Label("View all", systemImage: "chevron.right")
                     }
                 }
@@ -97,7 +101,7 @@ struct HomeView: View {
                         .sheet(item: $selected) { item in
                             NavigationStack {
                                 VStack {
-                                    BookSheetView(book: item)
+                                    BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
                                 }
                             }
                         }
@@ -130,7 +134,7 @@ struct HomeView: View {
                     .sheet(item: $selected) { item in
                         NavigationStack {
                             VStack {
-                                BookSheetView(book: item)
+                                BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
                             }
                         }
                     }
@@ -142,7 +146,7 @@ struct HomeView: View {
                 HStack {
                     Text("Favorites")
                     Spacer()
-                    NavigationLink(destination: LibraryView(filter: .favorites, isImporting: $isImporting)) {
+                    NavigationLink(destination: LibraryView(filter: .favorites, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)) {
                         Label("View all", systemImage: "chevron.right")
                     }
                 }
@@ -161,7 +165,7 @@ struct HomeView: View {
                     .sheet(item: $selected) { item in
                         NavigationStack {
                             VStack {
-                                BookSheetView(book: item)
+                                BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
                             }
                         }
                     }
@@ -193,7 +197,7 @@ struct HomeView: View {
                     .sheet(item: $selected) { item in
                         NavigationStack {
                             VStack {
-                                BookSheetView(book: item)
+                                BookSheetView(book: item,  type: .bookEvents, allEntities: allEntities)
                             }
                         }
                     }

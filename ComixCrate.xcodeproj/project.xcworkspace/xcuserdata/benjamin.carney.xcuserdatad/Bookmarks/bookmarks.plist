@@ -54,15 +54,15 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingColumnNumber</key>
-					<string>5</string>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>61</string>
+					<string>65</string>
 					<key>StartingColumnNumber</key>
-					<string>5</string>
+					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>61</string>
+					<string>64</string>
 					<key>Timestamp</key>
-					<string>716154481.16407</string>
+					<string>716188544.1499341</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -78,15 +78,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string></string>
+				<string>    }
+</string>
 				<key>leading</key>
-				<string>        viewModel = LibraryViewModel(filter: filter)
-        self._isImporting = isImporting
-    }</string>
+				<string>        self._isImporting = isImporting
+        self.allEntities = allEntities
+</string>
 				<key>trailing</key>
 				<string>
-
     // MARK: - Body
+    
 </string>
 			</dict>
 			<key>title</key>

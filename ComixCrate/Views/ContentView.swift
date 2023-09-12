@@ -14,29 +14,41 @@ struct ContentView: View {
     @EnvironmentObject var importingState: ImportingState
     @FetchRequest(entity: Book.entity(), sortDescriptors: []) private var bookItems: FetchedResults<Book>
     @State private var chips: [TempChipData] = []
+    var type: EntityType
 
+    @Environment(\.managedObjectContext) private var context  // Fetch the context from the environment
+
+    var allEntities: AnyFetchedResults {
+        AnyFetchedResults(bookItems)
+    }
+
+    // Lazily initialize the viewModel property
+    var viewModel: SelectedBookViewModel {
+        SelectedBookViewModel(book: bookItems.first ?? Book(context: context), context: context, type: type, allEntities: allEntities)
+    }
     
-    // Added for testing EntityChipTextFieldView - delete when finished
-    @State private var text: String = ""
-    var viewModel: EntityChipTextFieldViewModel = EntityChipTextFieldViewModel()
+    init(type: EntityType) {
+        self.type = type
+    }
     
     var body: some View {
+        
         ZStack {
             NavigationView {
                 List {
                     Section("Library") {
                         NavigationLink {
-                            HomeView(isImporting: $isImporting, book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
+                            HomeView(isImporting: $isImporting, book: bookItems.first ?? Book(context: context), recentlyAdded: Array(bookItems), allEntities: allEntities)
                         } label: {
                             Label("Home", systemImage: "house.fill")
                         }
                         NavigationLink {
-                            LibraryView(filter: .allBooks, isImporting: $isImporting)
+                            LibraryView(filter: .allBooks, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)
                         } label: {
                             Label("Library", systemImage: "books.vertical")
                         }
                         NavigationLink {
-                            LibraryView(filter: .favorites, isImporting: $isImporting)
+                            LibraryView(filter: .favorites, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)
                         } label: {
                             Label("Favorites", systemImage: "star")
                         }
@@ -71,7 +83,7 @@ struct ContentView: View {
                         Label("Database Inspector", systemImage: "tablecells")
                     }
                     NavigationLink {
-                        DiagnosticView()
+                        DiagnosticView(viewModel: viewModel, allEntities: allEntities)
                     } label: {
                         Label("DiagnosticView", systemImage: "gear.badge.questionmark")
                     }
@@ -80,7 +92,7 @@ struct ContentView: View {
                     }
                 }
                 
-                HomeView(isImporting: $isImporting, book: bookItems.first ?? Book(), recentlyAdded: Array(bookItems))
+                HomeView(isImporting: $isImporting, book: bookItems.first ?? Book(context: context), recentlyAdded: Array(bookItems), allEntities: allEntities)
             }
             // Blocking overlay
             if importingState.isImporting {

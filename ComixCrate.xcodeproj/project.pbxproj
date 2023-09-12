@@ -8,10 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		4A072FD42AA7DEA100A2E049 /* ReadingListsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */; };
-		4A095D502AAA862200CD590C /* AnotherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A095D4F2AAA862200CD590C /* AnotherTest.swift */; };
-		4A095D522AAD409F00CD590C /* NewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A095D512AAD409F00CD590C /* NewView.swift */; };
-		4A10A5FD2AA8F12D009735C4 /* NewList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10A5FC2AA8F12D009735C4 /* NewList.swift */; };
-		4A10A5FF2AA93BEE009735C4 /* OldEditBookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10A5FE2AA93BEE009735C4 /* OldEditBookView.swift */; };
 		4A10A6012AA93E80009735C4 /* TestingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10A6002AA93E80009735C4 /* TestingView.swift */; };
 		4A2E606B2A9D138700953337 /* ThumbnailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */; };
 		4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */; };
@@ -28,7 +24,6 @@
 		4A6C7E802AA2E91A00FF95FB /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E7F2AA2E91A00FF95FB /* SharedViews.swift */; };
 		4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7E7D6D2AA0582600504BAF /* LRUCache.swift */; };
 		4A9C26032AAE370B00339EC6 /* EntityChipTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9C26022AAE370B00339EC6 /* EntityChipTextFieldView.swift */; };
-		4AA660E52AA8E9FC007BDB50 /* OldCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA660E42AA8E9FC007BDB50 /* OldCode.swift */; };
 		4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */; };
 		4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */; };
 		4AB6E7A12A9BD90A00A8EFA0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AB6E7A02A9BD90A00A8EFA0 /* Assets.xcassets */; };
@@ -54,6 +49,10 @@
 		4ADF009E2AAFB26A008C98E6 /* BookMainDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF009D2AAFB26A008C98E6 /* BookMainDetailsView.swift */; };
 		4ADF00A02AAFB280008C98E6 /* FakePublisherLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF009F2AAFB280008C98E6 /* FakePublisherLogoView.swift */; };
 		4ADF00A32AAFBF81008C98E6 /* BookActionButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF00A22AAFBF81008C98E6 /* BookActionButtonsView.swift */; };
+		4ADF00A62AAFD6EC008C98E6 /* EntityInputViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF00A52AAFD6EC008C98E6 /* EntityInputViewModel.swift */; };
+		4ADF00A82AAFD766008C98E6 /* EntityInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF00A72AAFD766008C98E6 /* EntityInputView.swift */; };
+		4ADF00AA2AAFD796008C98E6 /* ChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF00A92AAFD796008C98E6 /* ChipView.swift */; };
+		4ADF00AC2AAFD7B6008C98E6 /* IndividualChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF00AB2AAFD7B6008C98E6 /* IndividualChip.swift */; };
 		4AE0DF162AA7A31B006DFFF1 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE0DF152AA7A31B006DFFF1 /* HomeView.swift */; };
 		4AEAB4602AA68FCB00B88723 /* ChipUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */; };
 		4AEAB4622AA68FF500B88723 /* SpecializedTextBoxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */; };
@@ -63,10 +62,6 @@
 
 /* Begin PBXFileReference section */
 		4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingListsView.swift; sourceTree = "<group>"; };
-		4A095D4F2AAA862200CD590C /* AnotherTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnotherTest.swift; sourceTree = "<group>"; };
-		4A095D512AAD409F00CD590C /* NewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewView.swift; sourceTree = "<group>"; };
-		4A10A5FC2AA8F12D009735C4 /* NewList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewList.swift; sourceTree = "<group>"; };
-		4A10A5FE2AA93BEE009735C4 /* OldEditBookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldEditBookView.swift; sourceTree = "<group>"; };
 		4A10A6002AA93E80009735C4 /* TestingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingView.swift; sourceTree = "<group>"; };
 		4A2E606A2A9D138700953337 /* ThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailProvider.swift; sourceTree = "<group>"; };
 		4A2E60702A9D1F5200953337 /* CoreDataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
@@ -83,7 +78,6 @@
 		4A6C7E7F2AA2E91A00FF95FB /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
 		4A7E7D6D2AA0582600504BAF /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		4A9C26022AAE370B00339EC6 /* EntityChipTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityChipTextFieldView.swift; sourceTree = "<group>"; };
-		4AA660E42AA8E9FC007BDB50 /* OldCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldCode.swift; sourceTree = "<group>"; };
 		4AB6E7992A9BD90700A8EFA0 /* ComixCrate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComixCrate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AB6E79C2A9BD90700A8EFA0 /* ComixCrateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComixCrateApp.swift; sourceTree = "<group>"; };
 		4AB6E79E2A9BD90700A8EFA0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -111,6 +105,10 @@
 		4ADF009D2AAFB26A008C98E6 /* BookMainDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookMainDetailsView.swift; sourceTree = "<group>"; };
 		4ADF009F2AAFB280008C98E6 /* FakePublisherLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakePublisherLogoView.swift; sourceTree = "<group>"; };
 		4ADF00A22AAFBF81008C98E6 /* BookActionButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookActionButtonsView.swift; sourceTree = "<group>"; };
+		4ADF00A52AAFD6EC008C98E6 /* EntityInputViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityInputViewModel.swift; sourceTree = "<group>"; };
+		4ADF00A72AAFD766008C98E6 /* EntityInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityInputView.swift; sourceTree = "<group>"; };
+		4ADF00A92AAFD796008C98E6 /* ChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChipView.swift; sourceTree = "<group>"; };
+		4ADF00AB2AAFD7B6008C98E6 /* IndividualChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndividualChip.swift; sourceTree = "<group>"; };
 		4AE0DF152AA7A31B006DFFF1 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		4AEAB45F2AA68FCB00B88723 /* ChipUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChipUtilities.swift; sourceTree = "<group>"; };
 		4AEAB4612AA68FF500B88723 /* SpecializedTextBoxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecializedTextBoxes.swift; sourceTree = "<group>"; };
@@ -165,6 +163,7 @@
 			children = (
 				4ADF00892AAF8F36008C98E6 /* LibraryViewModel.swift */,
 				4ADF008D2AAFA610008C98E6 /* SelectedBookViewModel.swift */,
+				4ADF00A52AAFD6EC008C98E6 /* EntityInputViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -172,6 +171,7 @@
 		4A70B9C22A9F8F1F0059AB82 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4ADF00A42AAFD6C0008C98E6 /* EntityInput */,
 				4ADF00A12AAFB29D008C98E6 /* BookDetails */,
 				4AB6E7BF2A9D034E00A8EFA0 /* BookSheetView.swift */,
 				4A2E60742A9D357400953337 /* DatabaseInspectorView.swift */,
@@ -186,12 +186,7 @@
 				4AEAB4632AA6902900B88723 /* EditBookView.swift */,
 				4AE0DF152AA7A31B006DFFF1 /* HomeView.swift */,
 				4A072FD32AA7DEA100A2E049 /* ReadingListsView.swift */,
-				4AA660E42AA8E9FC007BDB50 /* OldCode.swift */,
-				4A10A5FC2AA8F12D009735C4 /* NewList.swift */,
-				4A10A5FE2AA93BEE009735C4 /* OldEditBookView.swift */,
 				4A10A6002AA93E80009735C4 /* TestingView.swift */,
-				4A095D4F2AAA862200CD590C /* AnotherTest.swift */,
-				4A095D512AAD409F00CD590C /* NewView.swift */,
 				4A9C26022AAE370B00339EC6 /* EntityChipTextFieldView.swift */,
 				4ADF008B2AAF961B008C98E6 /* Enums.swift */,
 			);
@@ -278,6 +273,16 @@
 			path = BookDetails;
 			sourceTree = "<group>";
 		};
+		4ADF00A42AAFD6C0008C98E6 /* EntityInput */ = {
+			isa = PBXGroup;
+			children = (
+				4ADF00A72AAFD766008C98E6 /* EntityInputView.swift */,
+				4ADF00A92AAFD796008C98E6 /* ChipView.swift */,
+				4ADF00AB2AAFD7B6008C98E6 /* IndividualChip.swift */,
+			);
+			path = EntityInput;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -357,28 +362,27 @@
 				4ADF00A32AAFBF81008C98E6 /* BookActionButtonsView.swift in Sources */,
 				4ADF009E2AAFB26A008C98E6 /* BookMainDetailsView.swift in Sources */,
 				4ADF00982AAFB1EF008C98E6 /* BookDetailsMoreView.swift in Sources */,
-				4A095D502AAA862200CD590C /* AnotherTest.swift in Sources */,
 				4AB6E7BC2A9BED7D00A8EFA0 /* BookTileModel.swift in Sources */,
-				4AA660E52AA8E9FC007BDB50 /* OldCode.swift in Sources */,
 				4AB6E7C02A9D034E00A8EFA0 /* BookSheetView.swift in Sources */,
 				4A9C26032AAE370B00339EC6 /* EntityChipTextFieldView.swift in Sources */,
 				4ADF009A2AAFB21B008C98E6 /* BookDetailsCreativeView.swift in Sources */,
+				4ADF00AA2AAFD796008C98E6 /* ChipView.swift in Sources */,
 				4AE0DF162AA7A31B006DFFF1 /* HomeView.swift in Sources */,
 				4AB6E7BA2A9BEB3300A8EFA0 /* LibraryView.swift in Sources */,
 				4A10A6012AA93E80009735C4 /* TestingView.swift in Sources */,
 				4ADF00882AAF7733008C98E6 /* MockBook.swift in Sources */,
 				4AB6E79F2A9BD90700A8EFA0 /* ContentView.swift in Sources */,
 				4ADF00902AAFB0D1008C98E6 /* BookDetails.swift in Sources */,
-				4A10A5FD2AA8F12D009735C4 /* NewList.swift in Sources */,
 				4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */,
 				4A072FD42AA7DEA100A2E049 /* ReadingListsView.swift in Sources */,
 				4ADF008E2AAFA610008C98E6 /* SelectedBookViewModel.swift in Sources */,
+				4ADF00AC2AAFD7B6008C98E6 /* IndividualChip.swift in Sources */,
 				4A4EFD532AA385F100B7E4C8 /* ComicDataWriter.swift in Sources */,
-				4A095D522AAD409F00CD590C /* NewView.swift in Sources */,
 				4ADF00962AAFB1A7008C98E6 /* BookDetailsLibraryView.swift in Sources */,
 				4ADF009C2AAFB24D008C98E6 /* BookSecondaryDetailsView.swift in Sources */,
 				4A6C7E802AA2E91A00FF95FB /* SharedViews.swift in Sources */,
 				4AEAB4642AA6902900B88723 /* EditBookView.swift in Sources */,
+				4ADF00A82AAFD766008C98E6 /* EntityInputView.swift in Sources */,
 				4AB6E7BE2A9C203E00A8EFA0 /* ImageUtilities.swift in Sources */,
 				4ADF008A2AAF8F36008C98E6 /* LibraryViewModel.swift in Sources */,
 				4A4EFD4D2AA3852D00B7E4C8 /* ComicFileUnzipper.swift in Sources */,
@@ -387,6 +391,7 @@
 				4AB6E79D2A9BD90700A8EFA0 /* ComixCrateApp.swift in Sources */,
 				4A2E60712A9D1F5200953337 /* CoreDataHelper.swift in Sources */,
 				4AF0509D2AAE7679001BE812 /* MockBook.swift in Sources */,
+				4ADF00A62AAFD6EC008C98E6 /* EntityInputViewModel.swift in Sources */,
 				4AB6E7B82A9BE8F400A8EFA0 /* DocumentPicker.swift in Sources */,
 				4A6C7E7E2AA2E80A00FF95FB /* ImportingState.swift in Sources */,
 				4ADF00942AAFB16A008C98E6 /* BookDetailsMainView.swift in Sources */,
@@ -400,7 +405,6 @@
 				4A2E60732A9D1F8400953337 /* FavoriteButton.swift in Sources */,
 				4ADF00A02AAFB280008C98E6 /* FakePublisherLogoView.swift in Sources */,
 				4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */,
-				4A10A5FF2AA93BEE009735C4 /* OldEditBookView.swift in Sources */,
 				4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */,
 				4A4EFD512AA385D700B7E4C8 /* ComicImageResizer.swift in Sources */,
 			);

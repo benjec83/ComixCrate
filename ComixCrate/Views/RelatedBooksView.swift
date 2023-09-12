@@ -10,9 +10,9 @@ import CoreData
 
 struct RelatedBooksView: View {
     var relatedObject: NSManagedObject
-    var viewModel: SelectedBookViewModel {
-        SelectedBookViewModel(book: selectedBook ?? Book(), context: viewContext)
-    }
+    var type: EntityType
+    var allEntities: AnyFetchedResults
+    @ObservedObject var viewModel: SelectedBookViewModel
 
     @State private var showBookDetails: Bool = false
     @State private var selectedBook: Book? = nil

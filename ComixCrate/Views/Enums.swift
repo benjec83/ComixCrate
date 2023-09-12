@@ -17,6 +17,114 @@ enum LibraryFilter: String {
     // ... any other filter states
 }
 
+enum EntityType: String {
+    case bookStoryArc = "BookStoryArcs"
+    case bookEvents = "BookEvents"
+    case creator = "Creators"
+    
+    var displayName: String {
+        switch self {
+        case .bookStoryArc: return "BookStoryArcs"
+        case .bookEvents: return "BookEvents"
+        case .creator: return "Creators"
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .bookStoryArc: return "sparkles.rectangle.stack.fill"
+        case .bookEvents: return "theatermasks.fill"
+        case .creator: return "paintpalette.fill"
+        }
+    }
+    
+    var attributes: (field1: (attribute: String, displayName: String), field2: (attribute: String, displayName: String)) {
+        switch self {
+        case .bookStoryArc:
+            return (field1: ("storyArcName", "Story Arc"), field2: ("storyArcPart", "Story Arc Part"))
+        case .creator:
+            return (field1: ("creatorName", "Creator Name"), field2: ("bookCreatorRole", "Role"))
+        case .bookEvents:
+            return (field1: ("eventName", "Event Name"), field2: ("eventPart", "Part"))
+        }
+    }
+    
+    var headerText: String {
+        switch self {
+        case .bookStoryArc: return "Add an existing Story Arc"
+        case .creator: return "Add an existing Creator Role"
+        case .bookEvents: return "Add an existing Event"
+        }
+    }
+    
+    var fetchRequest: NSFetchRequest<NSFetchRequestResult> {
+        switch self {
+        case .bookStoryArc: return StoryArc.fetchRequest()
+        case .bookEvents: return Event.fetchRequest()
+        case .creator: return Creator.fetchRequest() // Assuming you have a Creator entity
+        }
+    }
+    
+    var fieldTypes: (FieldType, FieldType) {
+        switch self {
+        case .bookStoryArc:
+            return (.string, .int16)
+        case .creator:
+            return (.string, .string)
+        case .bookEvents:
+            return (.string, .int16)
+        }
+    }
+    
+    var keyboardTypeForField2: UIKeyboardType {
+        switch fieldTypes.1 {
+        case .string:
+            return .default
+        case .int16:
+            return .numberPad
+        }
+    }
+    
+    func bindings(from viewModel: SelectedBookViewModel) -> (Binding<String>, Binding<String>) {
+        switch self {
+        case .bookStoryArc:
+            return (
+                Binding(
+                    get: { viewModel.editedStoryArcName },
+                    set: { viewModel.editedStoryArcName = $0 }
+                ),
+                Binding(
+                    get: { viewModel.editedStoryArcPart },
+                    set: { viewModel.editedStoryArcPart = $0 }
+                )
+            )
+        case .bookEvents:
+            return (
+                Binding(
+                    get: { viewModel.editedEventName },
+                    set: { viewModel.editedEventName = $0 }
+                ),
+                Binding(
+                    get: { viewModel.editedEventPart },
+                    set: { viewModel.editedEventPart = $0 }
+                )
+            )
+        case .creator:
+            return (
+                Binding(
+                    get: { viewModel.editedCreatorName },
+                    set: { viewModel.editedCreatorName = $0 }
+                ),
+                Binding(
+                    get: { viewModel.editedCreatorRole },
+                    set: { viewModel.editedCreatorRole = $0 }
+                )
+            )
+        }
+    }
+}
+
+
 // MARK: - ChipType Enum
 enum ChipType: String {
     case bookStoryArc = "BookStoryArcs"
@@ -53,6 +161,21 @@ enum ChipType: String {
             return .bookEvents(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
         case .creator:
             return .bookCreatorRole(Binding.constant(""), Binding.constant(""), .string, .string) // Provide default bindings and field types
+        }
+    }
+}
+
+extension ChipType {
+    init?(entity: String) {
+        switch entity {
+        case "BookStoryArcs":
+            self = .bookStoryArc
+        case "BookEvents":
+            self = .bookEvents
+        case "Creators":
+            self = .creator
+        default:
+            return nil
         }
     }
 }
