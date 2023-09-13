@@ -62,13 +62,17 @@ struct HomeView: View {
         Array(books.prefix(readingListsLimit))
     }
     
-    init(isImporting: Binding<Bool>, book: Book, recentlyAdded: [Book], allEntities: AnyFetchedResults) {
-        self._isImporting = isImporting
-        self.book = book
-        self.recentlyAdded = recentlyAdded
-        self.allEntities = allEntities
-
-    }
+    init(isImporting: Binding<Bool>, context: NSManagedObjectContext, recentlyAdded: [Book], allEntities: AnyFetchedResults) {
+            self._isImporting = isImporting
+            self.recentlyAdded = recentlyAdded
+            self.allEntities = allEntities
+            
+        if let firstBook = try? context.fetch(Book.fetchRequest()).first {
+                self.book = firstBook
+            } else {
+                self.book = Book(context: context) // Create a new Book instance
+            }
+        }
     
     var body: some View {
         Text("")

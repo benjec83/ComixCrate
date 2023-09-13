@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct DiagnosticView: View {
-    @ObservedObject var viewModel: SelectedBookViewModel
 
     @Environment(\.managedObjectContext) private var viewContext
+    
     var allEntities: AnyFetchedResults
 
     
@@ -38,7 +38,7 @@ struct DiagnosticView: View {
         List {
             Section(header: Text("All Series")) {
                 ForEach(allSeries, id: \.self) { series in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: series, type: .bookEvents, allEntities: allEntities, viewModel: viewModel)) {
+                    NavigationLink(destination: RelatedBooksView(relatedObject: series, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
                         Text(series.name ?? "Unknown Series")
                     }
                 }
@@ -49,7 +49,7 @@ struct DiagnosticView: View {
             
             Section(header: Text("All Publishers")) {
                 ForEach(allPublishers, id: \.self) { publisher in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: publisher, type: .bookEvents, allEntities: allEntities, viewModel: viewModel)) {
+                    NavigationLink(destination: RelatedBooksView(relatedObject: publisher, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
                         Text(publisher.name ?? "Unknown Publisher")
                     }
                 }
@@ -60,7 +60,7 @@ struct DiagnosticView: View {
             
             Section(header: Text("All Story Arcs")) {
                 ForEach(allStoryArcs, id: \.self) { storyArc in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: storyArc, type: .bookEvents, allEntities: allEntities, viewModel: viewModel)) {
+                    NavigationLink(destination: RelatedBooksView(relatedObject: storyArc, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
                         Text(storyArc.storyArcName ?? "Unknown Story Arc")
                     }
                 }
@@ -70,7 +70,7 @@ struct DiagnosticView: View {
             }
             Section(header: Text("All Events")) {
                 ForEach(allEvents, id: \.self) { event in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: event, type: .bookEvents, allEntities: allEntities, viewModel: viewModel)) {
+                    NavigationLink(destination: RelatedBooksView(relatedObject: event, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
                         Text(event.eventName ?? "Unknown Event")
                     }
                 }

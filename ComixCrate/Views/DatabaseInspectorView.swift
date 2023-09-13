@@ -14,14 +14,23 @@ struct DatabaseInspectorView: View {
     private var books: FetchedResults<Book>
     @FetchRequest(entity: BookStoryArcs.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \BookStoryArcs.storyArc, ascending: true)])
     private var arcs: FetchedResults<BookStoryArcs>
+    @FetchRequest(entity: Characters.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Characters.characterName, ascending: true)])
+    private var characters: FetchedResults<Characters>
     
-    let dateFormatter: DateFormatter = {
+    let dateFormatterWithTime: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .medium
         return formatter
     }()
-
+    
+    let dateFormatterWithoutTime: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
+    
     
     var body: some View {
         List {
@@ -35,12 +44,15 @@ struct DatabaseInspectorView: View {
                     Text("Favorite: \(book.isFavorite ? "Yes" : "No")")
                     Text("Volume Year: \(String(book.volumeYear))")
                     Text("Volume Number: \(String(book.volumeNumber))")
-                    Text("Date Added: \(dateFormatter.string(from: book.dateAdded ?? Date()))")
+                    Text("Date Added: \(dateFormatterWithTime.string(from: book.dateAdded ?? Date()))")
                     Text("Read: \(String(book.read))")
                     Text("Personal Rating: \(String(book.personalRating))")
                     Text("File Name: \(book.fileName ?? "Unknown")")
                     Text("File Location: \(book.filePath ?? "Unkown")")
-
+                    Text("Cover Date: \(dateFormatterWithoutTime.string(from: book.coverDate ?? Date()))")
+                    Text("Characters: \((book.characters as? Set<Characters>)?.compactMap { $0.characterName }.joined(separator: ", ") ?? "Unknown")")
+                    
+                    
                     // Add any other attributes you want to inspect here
                 }
             }
@@ -51,11 +63,36 @@ struct DatabaseInspectorView: View {
                     Text("Story Arc: \(arc.storyArc?.storyArcName ?? "N/A")")
                     Text("Part: \(String(arc.storyArcPart))")
                     Text("Book: \(arc.book?.title ?? "N/A")")
-
+                    
                     // Add any other attributes you want to inspect here
                 }
             }
         }
+        List {
+            ForEach(characters, id: \.self) { character in
+                VStack(alignment: .leading) {
+                    Text("Character Name: \(character.characterName ?? "Unknown")")
+                    Text("Publisher: \(character.publisher?.name ?? "Unknown")")
+                    Text("Books: \(sortedBooksForCharacter(character: character))")
+                }
+            }
+        }
+        
         .navigationBarTitle("Database Inspector", displayMode: .inline)
+        
+        
+        
+    }
+    
+    
+    func sortedBooksForCharacter(character: Characters) -> String {
+        guard let booksSet = character.books as? Set<Book> else { return "Unknown" }
+        let sortedBooks = booksSet.sorted { (book1, book2) in
+            if book1.series?.name == book2.series?.name {
+                return book1.issueNumber < book2.issueNumber
+            }
+            return (book1.series?.name ?? "") < (book2.series?.name ?? "")
+        }
+        return sortedBooks.compactMap { "\($0.series?.name ?? "Unknown") #\($0.issueNumber)" }.joined(separator: ", ")
     }
 }

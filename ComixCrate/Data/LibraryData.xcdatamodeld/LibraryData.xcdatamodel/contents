@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22203.2" systemVersion="22G90" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22203.2" systemVersion="22G91" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="Book" representedClassName="Book" syncable="YES" codeGenerationType="class">
         <attribute name="cachedThumbnailData" optional="YES" attributeType="Binary"/>
         <attribute name="communityRating" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
@@ -30,10 +30,12 @@
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="volumeNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="volumeYear" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="web" optional="YES" attributeType="String"/>
         <relationship name="bookCreatorRole" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookCreatorRole" inverseName="book" inverseEntity="BookCreatorRole"/>
         <relationship name="bookEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookEvents" inverseName="books" inverseEntity="BookEvents"/>
         <relationship name="bookStoryArcs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookStoryArcs" inverseName="book" inverseEntity="BookStoryArcs"/>
         <relationship name="characters" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Characters" inverseName="books" inverseEntity="Characters"/>
+        <relationship name="era" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Era" inverseName="books" inverseEntity="Era"/>
         <relationship name="event" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="book" inverseEntity="Event"/>
         <relationship name="formats" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Format" inverseName="book" inverseEntity="Format"/>
         <relationship name="imprint" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Imprint" inverseName="book" inverseEntity="Imprint"/>
@@ -41,11 +43,12 @@
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="book" inverseEntity="Publisher"/>
         <relationship name="series" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Series" inverseName="book" inverseEntity="Series"/>
         <relationship name="storyArc" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="StoryArc" inverseName="book" inverseEntity="StoryArc"/>
+        <relationship name="teams" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Teams" inverseName="books" inverseEntity="Teams"/>
     </entity>
     <entity name="BookCreatorRole" representedClassName="BookCreatorRole" syncable="YES" codeGenerationType="class">
         <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="bookCreatorRole" inverseEntity="Book"/>
-        <relationship name="creator" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Creator"/>
-        <relationship name="creatorRole" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CreatorRole"/>
+        <relationship name="creator" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Creator" inverseName="bookCreatorRoles" inverseEntity="Creator"/>
+        <relationship name="creatorRole" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CreatorRole" inverseName="bookCreatorRoles" inverseEntity="CreatorRole"/>
     </entity>
     <entity name="BookEvents" representedClassName="BookEvents" syncable="YES" codeGenerationType="class">
         <attribute name="eventPart" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -66,7 +69,8 @@
     </entity>
     <entity name="Characters" representedClassName="Characters" syncable="YES" codeGenerationType="class">
         <attribute name="characterName" optional="YES" attributeType="String"/>
-        <relationship name="books" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="characters" inverseEntity="Book"/>
+        <relationship name="books" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="characters" inverseEntity="Book"/>
+        <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="charcters" inverseEntity="Publisher"/>
     </entity>
     <entity name="Creator" representedClassName="Creator" syncable="YES" codeGenerationType="class">
         <attribute name="creatorBio" optional="YES" attributeType="String"/>
@@ -76,9 +80,17 @@
         <attribute name="creatorProfilePic" optional="YES" attributeType="Binary"/>
         <attribute name="creatorSocial" optional="YES" attributeType="String"/>
         <attribute name="creatorWebsite" optional="YES" attributeType="String"/>
+        <relationship name="bookCreatorRoles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookCreatorRole" inverseName="creator" inverseEntity="BookCreatorRole"/>
     </entity>
     <entity name="CreatorRole" representedClassName="CreatorRole" syncable="YES" codeGenerationType="class">
         <attribute name="creatorRole" optional="YES" attributeType="String"/>
+        <relationship name="bookCreatorRoles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookCreatorRole" inverseName="creatorRole" inverseEntity="BookCreatorRole"/>
+    </entity>
+    <entity name="Era" representedClassName="Era" syncable="YES" codeGenerationType="class">
+        <attribute name="eraDescription" optional="YES" attributeType="String"/>
+        <attribute name="eraName" attributeType="String"/>
+        <relationship name="books" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="era" inverseEntity="Book"/>
+        <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="era" inverseEntity="Publisher"/>
     </entity>
     <entity name="Event" representedClassName="Event" syncable="YES" codeGenerationType="class">
         <attribute name="eventDescription" optional="YES" attributeType="String"/>
@@ -101,6 +113,7 @@
     <entity name="Locations" representedClassName="Locations" syncable="YES" codeGenerationType="class">
         <attribute name="locationName" optional="YES" attributeType="String"/>
         <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="locations" inverseEntity="Book"/>
+        <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="location" inverseEntity="Publisher"/>
     </entity>
     <entity name="Page" representedClassName="Page" syncable="YES" codeGenerationType="class">
         <attribute name="pageNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -111,6 +124,9 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="publisherDescription" optional="YES" attributeType="String"/>
         <relationship name="book" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="publisher" inverseEntity="Book"/>
+        <relationship name="charcters" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Characters" inverseName="publisher" inverseEntity="Characters"/>
+        <relationship name="era" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Era" inverseName="publisher" inverseEntity="Era"/>
+        <relationship name="location" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Locations" inverseName="publisher" inverseEntity="Locations"/>
         <relationship name="series" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Series" inverseName="publisher" inverseEntity="Series"/>
     </entity>
     <entity name="ReadingList" representedClassName="ReadingList" syncable="YES" codeGenerationType="class">
@@ -132,5 +148,10 @@
         <attribute name="storyArcPart" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="book" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="storyArc" inverseEntity="Book"/>
         <relationship name="booksInArc" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BookStoryArcs" inverseName="storyArc" inverseEntity="BookStoryArcs"/>
+    </entity>
+    <entity name="Teams" representedClassName="Teams" syncable="YES" codeGenerationType="class">
+        <attribute name="teamName" optional="YES" attributeType="String"/>
+        <relationship name="books" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="teams" inverseEntity="Book"/>
+        <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher"/>
     </entity>
 </model>

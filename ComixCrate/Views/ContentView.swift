@@ -21,15 +21,17 @@ struct ContentView: View {
     var allEntities: AnyFetchedResults {
         AnyFetchedResults(bookItems)
     }
-
-    // Lazily initialize the viewModel property
-    var viewModel: SelectedBookViewModel {
-        SelectedBookViewModel(book: bookItems.first ?? Book(context: context), context: context, type: type, allEntities: allEntities)
-    }
+    @ObservedObject var viewModel: LibraryViewModel
     
-    init(type: EntityType) {
+    var filter: LibraryFilter
+
+    
+    init(type: EntityType, filter: LibraryFilter) {
         self.type = type
+        self.filter = filter  // Initialize the filter property here
+        self.viewModel = LibraryViewModel(filter: filter)
     }
+
     
     var body: some View {
         
@@ -38,7 +40,7 @@ struct ContentView: View {
                 List {
                     Section("Library") {
                         NavigationLink {
-                            HomeView(isImporting: $isImporting, book: bookItems.first ?? Book(context: context), recentlyAdded: Array(bookItems), allEntities: allEntities)
+                            HomeView(isImporting: $isImporting, context: context, recentlyAdded: Array(bookItems), allEntities: allEntities)
                         } label: {
                             Label("Home", systemImage: "house.fill")
                         }
@@ -83,7 +85,7 @@ struct ContentView: View {
                         Label("Database Inspector", systemImage: "tablecells")
                     }
                     NavigationLink {
-                        DiagnosticView(viewModel: viewModel, allEntities: allEntities)
+                        DiagnosticView(allEntities: allEntities)
                     } label: {
                         Label("DiagnosticView", systemImage: "gear.badge.questionmark")
                     }
@@ -92,7 +94,7 @@ struct ContentView: View {
                     }
                 }
                 
-                HomeView(isImporting: $isImporting, book: bookItems.first ?? Book(context: context), recentlyAdded: Array(bookItems), allEntities: allEntities)
+                HomeView(isImporting: $isImporting, context: context, recentlyAdded: Array(bookItems), allEntities: allEntities)
             }
             // Blocking overlay
             if importingState.isImporting {
@@ -114,15 +116,3 @@ struct ContentView: View {
     }
 }
 
-
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-////        let mockContext = createMockManagedContext()
-////        let sampleBook = createSampleBook(using: PreviewCoreDataManager.shared.container.viewContext)
-//        let importingState = ImportingState() // Create a default instance of ImportingState
-//        
-//        return ContentView()
-//            .environment(\.managedObjectContext, mockContext)
-//            .environmentObject(importingState)
-//    }
-//}

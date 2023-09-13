@@ -12,25 +12,39 @@ struct RelatedBooksView: View {
     var relatedObject: NSManagedObject
     var type: EntityType
     var allEntities: AnyFetchedResults
-    @ObservedObject var viewModel: SelectedBookViewModel
+    @ObservedObject var viewModel: LibraryViewModel
+    var filter: LibraryFilter
+    
+    var selectedBookViewModel: SelectedBookViewModel?
 
     @State private var showBookDetails: Bool = false
     @State private var selectedBook: Book? = nil
     
-    
-    
+    init(relatedObject: NSManagedObject, type: EntityType, allEntities: AnyFetchedResults, filter: LibraryFilter, selectedBookViewModel: SelectedBookViewModel? = nil) {
+        self.relatedObject = relatedObject
+        self.type = type
+        self.allEntities = allEntities
+        self.filter = filter
+        self.viewModel = LibraryViewModel(filter: filter)
+        self.selectedBookViewModel = selectedBookViewModel
+    }
     
     var body: some View {
-        List {
-            ForEach(relatedBookIDs, id: \.self) { bookID in
-                if let book = viewContext.object(with: bookID) as? Book {
-                    NavigationLink(destination: BookDetails(book: book, viewModel: self.viewModel)) {
-                        Text("#\(String(book.issueNumber)) - \(book.title ?? "No Title")")
+        if let viewModel = selectedBookViewModel {
+            
+            List {
+                ForEach(relatedBookIDs, id: \.self) { bookID in
+                    if let book = viewContext.object(with: bookID) as? Book {
+                        NavigationLink(destination: BookDetails(book: book, viewModel: viewModel)) {
+                            Text("#\(String(book.issueNumber)) - \(book.title ?? "No Title")")
+                        }
                     }
                 }
             }
+            .navigationTitle(relatedObjectName)
+        } else {
+            Text(" That stupid view model problem caused this")
         }
-        .navigationTitle(relatedObjectName)
     }
     
     @Environment(\.managedObjectContext) private var viewContext
