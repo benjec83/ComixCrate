@@ -11,16 +11,36 @@ import UIKit
 
 class ComicFileHandler {
     
-    static func handleImportedFile(at url: URL, in context: NSManagedObjectContext) {
+    func isValidComicFile(at url: URL) -> Bool {
+        let validExtensions = ["cbr", "cbz", "cbt", "cba"]
+        
+        // Check file extension
+        let fileExtension = url.pathExtension.lowercased()
+        if !validExtensions.contains(fileExtension) {
+            return false
+        }
+        
+        // Unzip and check if it contains images
         let fileManager = FileManager()
         let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
         
-        let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .medium
-            formatter.timeStyle = .medium
-            return formatter
-        }()
+        do {
+            try fileManager.unzipItem(at: url, to: tempDirectory)
+            let imageFiles = try fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" })
+            if imageFiles.isEmpty {
+                return false
+            }
+        } catch {
+            return false
+        }
+        
+        return true
+    }
+    
+    
+    static func handleImportedFile(at url: URL, in context: NSManagedObjectContext) {
+        let fileManager = FileManager()
+        let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
         
         do {
             if !fileManager.fileExists(atPath: tempDirectory.path) {
@@ -37,6 +57,16 @@ class ComicFileHandler {
                     comicFile.fileName = url.lastPathComponent
                     comicFile.filePath = url.path
                     
+                    // Add attribute values to Book Entity
+                    
+                    comicFile.sypnosis = comicInfo.summary
+                    comicFile.title = comicInfo.title
+                    comicFile.issueNumber = comicInfo.number ?? 0
+                    comicFile.dateAdded = Date()
+//                    comicFile.web = comicInfo.web as NSObject?
+                    
+                    // Add Series to Series Entity
+                    
                     let fetchRequest: NSFetchRequest<Series> = Series.fetchRequest()
                     fetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.series)
                     
@@ -50,6 +80,8 @@ class ComicFileHandler {
                     }
                     
                     comicFile.series = seriesEntity
+                    
+                    // Add Publisher to Publisher Entity
                     
                     let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
                     publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
@@ -65,11 +97,73 @@ class ComicFileHandler {
                     
                     comicFile.publisher = publisherEntity
                     
-                    comicFile.sypnosis = comicInfo.summary
-                    comicFile.title = comicInfo.title
-                    comicFile.issueNumber = comicInfo.number ?? 0
-                    comicFile.volumeYear = comicInfo.year ?? 0
-                    comicFile.dateAdded = Date()
+                    // Add Cover Date to Book.coverDate
+                    
+                    if let year = comicInfo.year, let month = comicInfo.month, let day = comicInfo.day {
+                        var dateComponents = DateComponents()
+                        dateComponents.year = year
+                        dateComponents.month = month
+                        dateComponents.day = day
+                        
+                        let calendar = Calendar.current
+                        if let coverDate = calendar.date(from: dateComponents) {
+                            comicFile.coverDate = coverDate
+                        }
+                    }
+                    
+                    // 1. Fetch all necessary entities first
+                    var allCharactersEntities: [Characters] = []
+                    for characterName in comicInfo.characters ?? [] {
+                        let fetchRequest: NSFetchRequest<Characters> = Characters.fetchRequest()
+                        fetchRequest.predicate = NSPredicate(format: "characterName == %@", characterName)
+                        if let charactersEntities = try? context.fetch(fetchRequest) {
+                            allCharactersEntities.append(contentsOf: charactersEntities)
+                        }
+                    }
+
+                    // 2. In a separate loop, make the necessary modifications
+                    for charactersEntity in allCharactersEntities {
+                        let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
+                        publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
+                        if let publisherEntities = try? context.fetch(publisherFetchRequest), let publisherEntity = publisherEntities.first {
+                            charactersEntity.publisher = publisherEntity
+                            charactersEntity.addToBooks(comicFile)
+                            comicFile.addToCharacters(charactersEntity)
+                        }
+                    }
+                    
+                    // Add Teams with Publisher (matched to Publisher Entity)
+                    
+                    for teamName in comicInfo.teams ?? [] {
+                        let fetchRequest: NSFetchRequest<Teams> = Teams.fetchRequest()
+                        
+                        // Fetch the Publisher entity based on the XML data
+                        let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
+                        publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
+                        
+                        if let publisherEntities = try? context.fetch(publisherFetchRequest), let publisherEntity = publisherEntities.first {
+                            
+                            // Modify the predicate to check both team name and publisher
+                            fetchRequest.predicate = NSPredicate(format: "teamName == %@ AND publisher == %@", teamName, publisherEntity)
+                            
+                            let teamsEntities = try? context.fetch(fetchRequest)
+                            var teamsEntity: Teams!
+                            if let existingTeam = teamsEntities?.first {
+                                teamsEntity = existingTeam
+                            } else {
+                                teamsEntity = Teams(context: context)
+                                teamsEntity.teamName = teamName
+                                teamsEntity.publisher = publisherEntity
+                            }
+                            
+                            // Associate the team with the book
+                            teamsEntity.addToBooks(comicFile)
+                            
+                            // Associate the book with the team
+                            comicFile.addToTeams(teamsEntity)
+                        }
+                    }
+                    //
                     
                     if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
                         
@@ -100,7 +194,7 @@ class ComicFileHandler {
                 }
             } else {
                 throw NSError(domain: "ComicFileHandlerError", code: 1001, userInfo: [NSLocalizedDescriptionKey: "ComicInfo.xml does not exist at path: \(comicInfoURL.path)"])
-
+                
             }
         } catch let error as ZIPFoundation.Archive.ArchiveError {
             print("ZIPFoundation error: \(error.localizedDescription)")
@@ -125,12 +219,24 @@ class ComicFileHandler {
 struct ComicInfo {
     var series: String
     var number: Int16?
-    var web: URL?
+//    var web: URL?
     var summary: String?
     var publisher: String?
     var title: String?
     var coverImageName: String?
-    var year: Int16?
+    var year: Int?
+    var month: Int?
+    var day: Int?
+    var writer: [String]?
+    var penciller: [String]?
+    var inker: [String]?
+    var colorist: [String]?
+    var letterer: [String]?
+    var coverArtist: [String]?
+    var editor: [String]?
+    var characters: [String]?
+    var teams: [String]?
+    var locations: [String]?
 }
 
 class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
@@ -158,15 +264,43 @@ class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
                 comicInfo.number = number
             }
         case "Volume":
-            if let year = Int16(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
+            if let year = Int(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
                 comicInfo.year = year
             }
-        case "Web":
-            comicInfo.web = URL(string: currentText.trimmingCharacters(in: .whitespacesAndNewlines))
-        case "Summary":
+        case "Month":
+            if let month = Int(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
+                comicInfo.month = month
+            }
+        case "Day":
+            if let day = Int(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
+                comicInfo.day = day
+            }
+//        case "Web":
+//            comicInfo.web = URL(string: currentText.trimmingCharacters(in: .whitespacesAndNewlines))
+//        case "Summary":
             comicInfo.summary = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
         case "Publisher":
             comicInfo.publisher = currentText
+        case "Writer":
+            comicInfo.writer = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "Penciller":
+            comicInfo.penciller = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "Inker":
+            comicInfo.inker = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "Colorist":
+            comicInfo.colorist = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "Letterer":
+            comicInfo.letterer = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "CoverArtist":
+            comicInfo.coverArtist = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "Editor":
+            comicInfo.editor = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "Characters":
+            comicInfo.characters = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "Teams":
+            comicInfo.teams = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
+        case "Locations":
+            comicInfo.locations = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
         case .none, .some(_):
             break
         }

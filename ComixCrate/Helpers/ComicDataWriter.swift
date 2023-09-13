@@ -51,7 +51,6 @@ class ComicDataWriter {
         comicFile.sypnosis = comicInfo.summary
         comicFile.title = comicInfo.title
         comicFile.issueNumber = comicInfo.number ?? 0
-        comicFile.volumeYear = comicInfo.year ?? 0
         comicFile.dateAdded = Date()
         
         if let imageFiles = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {

@@ -15,7 +15,7 @@ struct ComixCrateApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(type: .bookEvents)
+            ContentView(type: .bookEvents, filter: .allBooks)
                 .environmentObject(importingState)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
