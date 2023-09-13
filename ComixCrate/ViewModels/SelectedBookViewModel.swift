@@ -39,7 +39,7 @@ class SelectedBookViewModel: ObservableObject {
         self.type = type
         self.allEntities = allEntities
     }
-    
+
     var filteredEntities: [NSManagedObject] {
         let lowercasedInput = editedAttribute1.lowercased()
         return allEntities.objects.filter {

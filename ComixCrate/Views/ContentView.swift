@@ -39,11 +39,11 @@ struct ContentView: View {
             NavigationView {
                 List {
                     Section("Library") {
-//                        NavigationLink {
+                        NavigationLink {
 //                            HomeView(isImporting: $isImporting, context: context, recentlyAdded: Array(bookItems), allEntities: allEntities)
-//                        } label: {
-//                            Label("Home", systemImage: "house.fill")
-//                        }
+                        } label: {
+                            Label("Home", systemImage: "house.fill")
+                        }
                         NavigationLink {
                             LibraryView(filter: .allBooks, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)
                         } label: {

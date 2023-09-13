@@ -63,7 +63,7 @@ class ComicFileHandler {
                     comicFile.title = comicInfo.title
                     comicFile.issueNumber = comicInfo.number ?? 0
                     comicFile.dateAdded = Date()
-//                    comicFile.web = comicInfo.web as NSObject?
+                    comicFile.web = comicInfo.web
                     
                     // Add Series to Series Entity
                     
@@ -111,7 +111,8 @@ class ComicFileHandler {
                         }
                     }
                     
-                    // 1. Fetch all necessary entities first
+                    // MARK: Add Characters with Publisher (matched to Publisher Entity)
+                    // Fetch all necessary entities first
                     var allCharactersEntities: [Characters] = []
                     for characterName in comicInfo.characters ?? [] {
                         let fetchRequest: NSFetchRequest<Characters> = Characters.fetchRequest()
@@ -120,32 +121,52 @@ class ComicFileHandler {
                             allCharactersEntities.append(contentsOf: charactersEntities)
                         }
                     }
-
-                    // 2. In a separate loop, make the necessary modifications
-                    for charactersEntity in allCharactersEntities {
+                    
+                    // In a separate loop, make the necessary modifications
+                    for characterName in comicInfo.characters ?? [] {
                         let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
                         publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
                         if let publisherEntities = try? context.fetch(publisherFetchRequest), let publisherEntity = publisherEntities.first {
-                            charactersEntity.publisher = publisherEntity
+                            
+                            let fetchRequest: NSFetchRequest<Characters> = Characters.fetchRequest()
+                            fetchRequest.predicate = NSPredicate(format: "characterName == %@ AND publisher == %@", characterName, publisherEntity)
+                            let charactersEntities = try? context.fetch(fetchRequest)
+                            var charactersEntity: Characters!
+                            if let existingCharacter = charactersEntities?.first {
+                                charactersEntity = existingCharacter
+                            } else {
+                                charactersEntity = Characters(context: context)
+                                charactersEntity.characterName = characterName
+                                charactersEntity.publisher = publisherEntity
+                            }
+                            
+                            // Associate the character with the book
                             charactersEntity.addToBooks(comicFile)
+                            
+                            // Associate the book with the character
                             comicFile.addToCharacters(charactersEntity)
                         }
                     }
                     
-                    // Add Teams with Publisher (matched to Publisher Entity)
-                    
+                    // MARK: Add Teams with Publisher (matched to Publisher Entity)
+                    // Fetch all necessary entities first
+                    var allTeamsEntitites: [Teams] = []
                     for teamName in comicInfo.teams ?? [] {
                         let fetchRequest: NSFetchRequest<Teams> = Teams.fetchRequest()
-                        
-                        // Fetch the Publisher entity based on the XML data
+                        fetchRequest.predicate = NSPredicate(format: "teamName == %@", teamName)
+                        if let teamsEntities = try? context.fetch(fetchRequest) {
+                            allTeamsEntitites.append(contentsOf: teamsEntities)
+                        }
+                    }
+                    
+                    // In a separate loop, make the necessary modifications
+                    for teamName in comicInfo.teams ?? [] {
                         let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
                         publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
-                        
                         if let publisherEntities = try? context.fetch(publisherFetchRequest), let publisherEntity = publisherEntities.first {
                             
-                            // Modify the predicate to check both team name and publisher
+                            let fetchRequest: NSFetchRequest<Teams> = Teams.fetchRequest()
                             fetchRequest.predicate = NSPredicate(format: "teamName == %@ AND publisher == %@", teamName, publisherEntity)
-                            
                             let teamsEntities = try? context.fetch(fetchRequest)
                             var teamsEntity: Teams!
                             if let existingTeam = teamsEntities?.first {
@@ -163,6 +184,8 @@ class ComicFileHandler {
                             comicFile.addToTeams(teamsEntity)
                         }
                     }
+                    
+
                     //
                     
                     if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
@@ -219,7 +242,7 @@ class ComicFileHandler {
 struct ComicInfo {
     var series: String
     var number: Int16?
-//    var web: URL?
+    var web: String?
     var summary: String?
     var publisher: String?
     var title: String?
@@ -275,9 +298,9 @@ class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
             if let day = Int(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
                 comicInfo.day = day
             }
-//        case "Web":
-//            comicInfo.web = URL(string: currentText.trimmingCharacters(in: .whitespacesAndNewlines))
-//        case "Summary":
+        case "Web":
+            comicInfo.web = String(currentText.trimmingCharacters(in: .whitespacesAndNewlines))
+        case "Summary":
             comicInfo.summary = currentText.trimmingCharacters(in: .whitespacesAndNewlines)
         case "Publisher":
             comicInfo.publisher = currentText

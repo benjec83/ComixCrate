@@ -40,6 +40,7 @@ struct DatabaseInspectorView: View {
                     Text("Issue Number: \(String(book.issueNumber))")
                     Text("Series: \(book.series?.name ?? "Unknown")")
                     Text("Story Arcs: \((book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.storyArcName }.joined(separator: ", ") ?? "Unknown")")
+                    Text("Events: \((book.event as? Set<BookEvents>)?.compactMap { $0.events?.eventName }.joined(separator: ", ") ?? "Unknown")")
                     Text("Publisher: \(book.publisher?.name ?? "Unknown")")
                     Text("Favorite: \(book.isFavorite ? "Yes" : "No")")
                     Text("Volume Year: \(String(book.volumeYear))")
@@ -51,39 +52,42 @@ struct DatabaseInspectorView: View {
                     Text("File Location: \(book.filePath ?? "Unkown")")
                     Text("Cover Date: \(dateFormatterWithoutTime.string(from: book.coverDate ?? Date()))")
                     Text("Characters: \((book.characters as? Set<Characters>)?.compactMap { $0.characterName }.joined(separator: ", ") ?? "Unknown")")
+                    Text("Teams: \((book.teams as? Set<Teams>)?.compactMap { $0.teamName }.joined(separator: ", ") ?? "Unknown")")
+
                     
                     
                     // Add any other attributes you want to inspect here
                 }
             }
         }
-        List {
-            ForEach(arcs, id: \.self) { arc in
-                VStack(alignment: .leading) {
-                    Text("Story Arc: \(arc.storyArc?.storyArcName ?? "N/A")")
-                    Text("Part: \(String(arc.storyArcPart))")
-                    Text("Book: \(arc.book?.title ?? "N/A")")
-                    
-                    // Add any other attributes you want to inspect here
-                }
-            }
-        }
-        List {
-            ForEach(characters, id: \.self) { character in
-                VStack(alignment: .leading) {
-                    Text("Character Name: \(character.characterName ?? "Unknown")")
-                    Text("Publisher: \(character.publisher?.name ?? "Unknown")")
-                    Text("Books: \(sortedBooksForCharacter(character: character))")
-                }
-            }
-        }
-        
+//        .frame(width: UIScreen.main.bounds.width / 3)
+//
+//        List {
+//            ForEach(arcs, id: \.self) { arc in
+//                VStack(alignment: .leading) {
+//                    Text("Story Arc: \(arc.storyArc?.storyArcName ?? "N/A")")
+//                    Text("Part: \(String(arc.storyArcPart))")
+//                    Text("Book: \(arc.book?.title ?? "N/A")")
+//                    
+//                    // Add any other attributes you want to inspect here
+//                }
+//            }
+//        }
+//        .frame(width: UIScreen.main.bounds.width / 3)
+//        
+//        List {
+//            ForEach(characters, id: \.self) { character in
+//                VStack(alignment: .leading) {
+//                    Text("Character Name: \(character.characterName ?? "Unknown")")
+//                    Text("Publisher: \(character.publisher?.name ?? "Unknown")")
+//                    Text("Books: \(sortedBooksForCharacter(character: character))")
+//                }
+//            }
+//            
+//        }
+//        .frame(width: UIScreen.main.bounds.width / 3)
         .navigationBarTitle("Database Inspector", displayMode: .inline)
-        
-        
-        
     }
-    
     
     func sortedBooksForCharacter(character: Characters) -> String {
         guard let booksSet = character.books as? Set<Book> else { return "Unknown" }
@@ -95,4 +99,6 @@ struct DatabaseInspectorView: View {
         }
         return sortedBooks.compactMap { "\($0.series?.name ?? "Unknown") #\($0.issueNumber)" }.joined(separator: ", ")
     }
+    
+    
 }
