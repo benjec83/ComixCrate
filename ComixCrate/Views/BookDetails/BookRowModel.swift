@@ -1,15 +1,15 @@
 //
-//  BookTileModel.swift
-//  Comic Reader
+//  BookRowModel.swift
+//  ComixCrate
 //
-//  Created by Ben Carney on 12/29/22.
+//  Created by Ben Carney on 9/13/23.
 //
 
 import SwiftUI
-import CoreData
 
-struct BookTileModel: View {
+struct BookRowModel: View {
     @ObservedObject var book: Book
+    
 
     // MARK: - Computed Properties
     
@@ -37,31 +37,29 @@ struct BookTileModel: View {
     private var seriesAndYear: String {
         "\(seriesName ?? "") (\(book.volumeYear))"
     }
-    
-    // MARK: - Body
-    
     var body: some View {
-        VStack(alignment: .leading) {
-            bookThumbnail
-            bookDetails
+        VStack {
+            
+            HStack {
+                bookThumbnail
+                bookDetails
+                Spacer()
+                FavoriteButton(book: book, context: book.managedObjectContext ?? PersistenceController.shared.container.viewContext)            }
+
+            .foregroundColor(.secondary)
+
         }
-        .frame(width: 180, height: 345)
-        .padding()
-        .scaledToFit()
-        .foregroundColor(.secondary)
-        .multilineTextAlignment(.leading)
     }
     
     // MARK: - Subviews
     
     private var bookThumbnail: some View {
         HStack(alignment: .center) {
-            Spacer()
             ThumbnailProvider(book: book)
-            Spacer()
+                .scaledToFit()
+                .frame(width: 50, height: 50)
         }
-        .shadow(radius: 1)
-        .frame(height: 266)
+
     }
     
     private var bookDetails: some View {
@@ -73,8 +71,7 @@ struct BookTileModel: View {
             Text(seriesAndYear)
                 .font(.caption2)
                 .lineLimit(1)
-            
-            Spacer()
         }
     }
 }
+

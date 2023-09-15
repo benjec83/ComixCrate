@@ -43,10 +43,14 @@ class SelectedBookViewModel: ObservableObject {
     var filteredEntities: [NSManagedObject] {
         let lowercasedInput = editedAttribute1.lowercased()
         return allEntities.objects.filter {
-            ($0.value(forKey: type.attributes.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true
+            ($0.value(forKey: type.attribute.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true
         }
         .prefix(5)
         .map { $0 }
+    }
+    
+    var bookIsRead: Bool {
+        book.read == 100
     }
     
     func markBookAsRead() {
@@ -67,11 +71,7 @@ class SelectedBookViewModel: ObservableObject {
         }
     }
     
-    func updateUserRating(to newRating: Double) {
-        userRating = newRating
-        book.personalRating = newRating
-        saveContext()
-    }
+
     
     func updateEditedAttributes(for chip: TempChipData) {
         switch EntityType(rawValue: chip.entity) {

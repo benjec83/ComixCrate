@@ -1,10 +1,3 @@
-//
-//  LibraryViewModel.swift
-//  ComixCrate
-//
-//  Created by Ben Carney on 9/11/23.
-//
-
 import Foundation
 import SwiftUI
 import CoreData
@@ -33,8 +26,13 @@ class LibraryViewModel: NSObject, ObservableObject {
             request.predicate = NSPredicate(format: "read > 0.0 AND read < 100.0")
         }
 
-        self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: PersistenceController.shared.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        let viewContext = PersistenceController.shared.container.viewContext
+        self.fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: viewContext, sectionNameKeyPath: nil, cacheName: nil)
 
+        super.init()
+        
+        self.fetchedResultsController.delegate = self
+        
         do {
             try self.fetchedResultsController.performFetch()
             self.books = self.fetchedResultsController.fetchedObjects ?? []
@@ -46,7 +44,9 @@ class LibraryViewModel: NSObject, ObservableObject {
 
 extension LibraryViewModel: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        books = fetchedResultsController.fetchedObjects ?? []
+        DispatchQueue.main.async { [weak self] in
+            self?.books = self?.fetchedResultsController.fetchedObjects ?? []
+        }
     }
 }
 

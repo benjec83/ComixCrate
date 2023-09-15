@@ -1,5 +1,5 @@
 //
-//  SpecializedTextBoxes.swift
+//  EntityTextFieldView.swift
 //  ComixCrate
 //
 //  Created by Ben Carney on 9/4/23.
@@ -47,29 +47,29 @@ struct EntityTextFieldView: View {
     @State private var showAllSuggestionsSheet: Bool = false
     
     
-    // Computed property to get filtered entities based on the current input
-    var filteredEntities: [NSManagedObject] {
-        let lowercasedInput = bindings.0.wrappedValue.lowercased()
-        // This filtering logic might need to be updated based on the actual attribute you're filtering on
-        return allEntities.objects.filter { ($0.value(forKey: type.attributes.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true }
-            .prefix(5)  // Take only the first 5 results
-            .map { $0 }
-    }
+//    // Computed property to get filtered entities based on the current input
+//    var filteredEntities: [NSManagedObject] {
+//        let lowercasedInput = bindings.0.wrappedValue.lowercased()
+//        // This filtering logic might need to be updated based on the actual attributes you're filtering on
+//        return allEntities.objects.filter { ($0.value(forKey: type.attributes.field1.attributes) as? String)?.lowercased().contains(lowercasedInput) == true }
+//            .prefix(5)  // Take only the first 5 results
+//            .map { $0 }
+//    }
     
     var body: some View {
         VStack {
             HStack {
-                // TextField for the first attribute (e.g., storyArcName, bookCreatorName, etc.)
+                // TextField for the first attributes (e.g., storyArcName, bookCreatorName, etc.)
                 TextField(type.attributes.field1.displayName, text: type.bindings(from: viewModel).0, onCommit: {
-                    if let firstSuggestion = filteredEntities.first {
-                        bindings.0.wrappedValue = firstSuggestion.value(forKey: type.attributes.field1.attribute) as? String ?? ""
+                    if let firstSuggestion = viewModel.filteredEntities.first {
+                        bindings.0.wrappedValue = firstSuggestion.value(forKey: type.attributes.field1.attributes) as? String ?? ""
                     }
                 })
                 .textFieldStyle(PlainTextFieldStyle())
                 .multilineTextAlignment(.leading)
                 .focused($isTextFieldFocused)
                 
-                // TextField for the second attribute (e.g., storyArcPart, bookCreatorRole, etc.)
+                // TextField for the second attributes (e.g., storyArcPart, bookCreatorRole, etc.)
                 TextField(type.attributes.field2.displayName, text: type.bindings(from: viewModel).1)
                     .textFieldStyle(PlainTextFieldStyle())
                     .multilineTextAlignment(.leading)
@@ -77,7 +77,7 @@ struct EntityTextFieldView: View {
                 
                 // "+" Button to add the new entity
                 Button(action: {
-                    // Check if the first attribute is not empty
+                    // Check if the first attributes is not empty
                     guard !type.bindings(from: viewModel).0.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         return
                     }
@@ -118,13 +118,13 @@ struct EntityTextFieldView: View {
             // MARK: Displaying filtered results
             VStack(alignment: .leading) {
                 // Displaying filtered results
-                if isTextFieldFocused && !filteredEntities.isEmpty {
-                    ForEach(filteredEntities.indices, id: \.self) { index in
-                        let entity = filteredEntities[index]
-                        Text(entity.value(forKey: type.attributes.field1.attribute) as? String ?? "")  // Use the unwrapped attribute value
+                if isTextFieldFocused && !viewModel.filteredEntities.isEmpty {
+                    ForEach(viewModel.filteredEntities.indices, id: \.self) { index in
+                        let entity = viewModel.filteredEntities[index]
+                        Text(entity.value(forKey: type.attributes.field1.attributes) as? String ?? "")  // Use the unwrapped attributes value
                             .padding(.vertical, 5)
                             .onTapGesture {
-                                bindings.0.wrappedValue = entity.value(forKey: type.attributes.field1.attribute) as? String ?? ""
+                                bindings.0.wrappedValue = entity.value(forKey: type.attributes.field1.attributes) as? String ?? ""
                                 isTextFieldFocused = false
                             }
                     }
@@ -144,11 +144,11 @@ struct EntityTextFieldView: View {
                         ForEach(allEntities.objects, id: \.objectID) { entity in
                             Button(action: {
                                 // Update the text fields
-                                bindings.0.wrappedValue = entity.value(forKey: type.attributes.field1.attribute) as? String ?? ""
+                                bindings.0.wrappedValue = entity.value(forKey: type.attributes.field1.attributes) as? String ?? ""
                                 // Dismiss the sheet
                                 showAllSuggestionsSheet = false
                             }) {
-                                Text(entity.value(forKey: type.attributes.field1.attribute) as? String ?? "")
+                                Text(entity.value(forKey: type.attributes.field1.attributes) as? String ?? "")
                             }
                         }
                     }

@@ -12,40 +12,46 @@ struct EditBookView: View {
     
     // MARK: - Properties
     @ObservedObject var viewModel: SelectedBookViewModel
-
+    
     @Binding var book: Book
     
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
     
     
-    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
+    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.name, ascending: true)])
     private var allStoryArcs: FetchedResults<StoryArc>
     
-    @FetchRequest(entity: Event.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Event.eventName, ascending: true)])
+    @FetchRequest(entity: Event.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Event.name, ascending: true)])
     private var allEvents: FetchedResults<Event>
     
     @FetchRequest(entity: Book.entity(), sortDescriptors: [])
     private var bookItems: FetchedResults<Book>
-
+    
     @State private var showAlert: Bool = false
     
     @State private var chips: [TempChipData] = []
     private var bookStoryArcNames: [String] {
-        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.storyArcName  } ?? []
+        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.name  } ?? []
     }
     
     private var eventName: [String] {
-        (book.bookEvents as? Set<BookEvents>)?.compactMap { $0.events?.eventName } ?? []
+        (book.bookEvents as? Set<BookEvents>)?.compactMap { $0.events?.name } ?? []
     }
     
     @State private var editedTitle: String
     @State private var editedIssueNumber: String
     @State private var editedStoryArcName: String
     @State private var editedStoryArcPart: String = ""
-    @State private var editedReadPercentage: Double = 0.0
+    @State private var editedReadPercentage: Decimal = 0.0
     @State private var editedEventName: String
     @State private var editedEventPart: String = ""
+    @State private var editedSeriesVolume: String
+    @State private var editedSeries: String = ""
+    @State private var editedSummary: String = ""
+
+    
+    
     
     @State private var chipViewHeight: CGFloat = 10  // Initial value, can be adjusted
     
@@ -61,61 +67,146 @@ struct EditBookView: View {
         _book = .constant(book)
         _editedTitle = State(initialValue: book.title ?? "")
         _editedIssueNumber = State(initialValue: "\(book.issueNumber)")
-        _editedReadPercentage = State(initialValue: book.read)
-        let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.storyArcName ?? ""
+        _editedSummary = State(initialValue: book.summary ?? "")
+        _editedSeries = State(initialValue: book.series?.name ?? "")
+        _editedReadPercentage = State(initialValue: book.read?.decimalValue ?? Decimal(0))
+        let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.name ?? ""
         _editedStoryArcName = State(initialValue: firstStoryArcName)
-        let firstEventName = (book.bookEvents as? Set<Event>)?.first?.eventName ?? ""
+        let firstEventName = (book.bookEvents as? Set<Event>)?.first?.name ?? ""
         _editedEventName = State(initialValue: firstEventName)
-        
-        
+        _editedSeriesVolume = State(initialValue: "\(book.volumeYear)")
+
         // Populate the chips array with existing story arcs from the book
         let existingStoryArcs: [TempChipData] = (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap {
             let entityType = String(describing: type(of: $0).self) // This will give "BookStoryArcs"
-            return TempChipData(entity: entityType, tempValue1: $0.storyArc?.storyArcName ?? "", tempValue2: ValueData.int16($0.storyArcPart))
+            return TempChipData(entity: entityType, tempValue1: $0.storyArc?.name ?? "", tempValue2: ValueData.int16($0.storyArcPart))
         } ?? []
         
         // Populate the chips array with existing events from the book
         let existingEvents: [TempChipData] = (book.bookEvents as? Set<BookEvents>)?.compactMap {
             let entityType = String(describing: type(of: $0).self) // This will give "BookEvents"
-            return TempChipData(entity: entityType, tempValue1: $0.events?.eventName ?? "", tempValue2: ValueData.int16($0.eventPart))
+            return TempChipData(entity: entityType, tempValue1: $0.events?.name ?? "", tempValue2: ValueData.int16($0.eventPart))
         } ?? []
         
         _chips = State(initialValue: existingStoryArcs + existingEvents) // Combine both arrays
         print("Existing story arcs: \(existingStoryArcs)")
+        print("Existing events: \(existingEvents)")
+
     }
     
     
     var editedReadPercentageString: Binding<String> {
         Binding<String>(
             get: {
-                String(self.editedReadPercentage)
+                "\(self.editedReadPercentage)"
             },
             set: {
-                if let value = Double($0) {
+                if let value = Decimal(string: $0) {
                     self.editedReadPercentage = value
                 }
             }
         )
     }
+
+
     
     // MARK: - Body
     var body: some View {
         VStack {
             Form {
-                TextField("Title", text: $editedTitle)
-                TextField("Issue Number", text: $editedIssueNumber)
+                HStack(spacing: 2) {
+                    VStack(alignment: .leading) {
+                        Section {
+                            TextField("Title", text: $editedTitle)
+                        }header: {
+                            Text("Title")
+                                .multilineTextAlignment(.leading)
+                        }
+                    }
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Section {
+                                TextField("Issue Number", text: $editedIssueNumber)
+                                    .keyboardType(.numberPad)
+                            }header: {
+                                Text("Issue Number")
+                                    .multilineTextAlignment(.leading)
+                            }
+                        }
+                        VStack(alignment: .leading) {
+                            Section {
+                                TextField("Volume Number", value: $editedSeriesVolume, formatter: NumberFormatter())
+                                    .keyboardType(.numberPad)
+                            }header: {
+                                Text("Volume Number")
+                                    .multilineTextAlignment(.leading)
+                            }
+                        }
+                    }
+                }
+                VStack(alignment: .leading) {
+                    Section {
+                        TextField("Add a Series", text: $editedSeries)
+                    }header: {
+                        Text("Series")
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+                HStack(spacing: 2) {
+                    VStack(alignment: .leading) {
+                        Section {
+                            EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookStoryArc, chips: $chips)
+                        }header: {
+                            Text("Story Arcs")
+                                .multilineTextAlignment(.leading)
+                        }
+                    }
+                    Spacer(minLength: 10)
+                    VStack(alignment: .leading) {
+                        Section {
+                            EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookEvents, chips: $chips)
+                        }header: {
+                            Text("Events")
+                                .multilineTextAlignment(.leading)
+                        }
+                    }
+                }
+                VStack(alignment: .leading) {
+                    Section {
+                        TextEditor(text: $editedSummary)
+                            .frame(minHeight: 150, alignment: .top)
+                    }header: {
+                        Text("Summary")
+                    }
+                }
                 TextField("Read Percent", text: editedReadPercentageString)
                     .keyboardType(.numberPad)
-
                 
-                
-                Section(header: Text("Testing New View")) {
-                    HStack(alignment: .top) {
+                Section {
+                    ChipView(viewModel: viewModel, chips: $chips, type: .creator, chipViewHeight: $chipViewHeight)
 
-                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookStoryArc, chips: $chips)
-                        EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookEvents, chips: $chips)
-
-
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Section {
+                                Text("$editedCharacters")
+                            }header: {
+                                Text("Characters")
+                            }
+                        }
+                        VStack(alignment: .leading) {
+                            Section {
+                                Text("$editedTeams")
+                            }header: {
+                                Text("Teams")
+                            }
+                        }
+                    }
+                    VStack(alignment: .leading) {
+                        Section {
+                            Text("$editedLocations")
+                        }header: {
+                            Text("Locations")
+                        }
                     }
                 }
             }
@@ -161,24 +252,25 @@ extension EditBookView {
     
     func filterStoryArcs() -> [StoryArc] {
         let query = editedStoryArcName.lowercased()
-        return allStoryArcs.filter { ($0.storyArcName?.lowercased().contains(query) ?? false) }
+        return allStoryArcs.filter { ($0.name?.lowercased().contains(query) ?? false) }
     }
     
     func filterEvents() -> [Event] {
         let query = editedEventName.lowercased()
-        return allEvents.filter { ($0.eventName?.lowercased().contains(query) ?? false) }
+        return allEvents.filter { ($0.name?.lowercased().contains(query) ?? false) }
     }
     
     func saveChanges() {
         printAllTempChipData()
-        print("Current book title: \(book.title ?? "nil")")
-        print("Edited title: \(editedTitle)")
         if book.title != editedTitle {
             book.title = editedTitle
         }
         
         book.title = editedTitle
         book.issueNumber = Int16(editedIssueNumber) ?? 0
+        book.read = NSDecimalNumber(decimal: editedReadPercentage)
+        book.summary = editedSummary
+        book.series?.name = editedSeries
         
         // Clear existing associations for the book based on EntityType
         clearExistingAssociations(for: .bookStoryArc, from: book)
@@ -187,7 +279,7 @@ extension EditBookView {
         print("After clearing events: \(book.bookEvents?.count ?? 0) events")
         clearExistingAssociations(for: .creator, from: book)
         print("After clearing creators: \(book.bookCreatorRole?.count ?? 0) creators")
-
+        
         // For each chip in the chips array
         for chip in chips {
             saveChip(chip)
@@ -227,21 +319,22 @@ extension EditBookView {
         }
     }
     func saveChip(_ chip: TempChipData) {
-         switch EntityType(rawValue: chip.entity) {
-         case .bookStoryArc:
-             saveStoryArcChip(chip)
-             print("After saving story arc chip: \(book.bookStoryArcs?.count ?? 0)") // Added print statement
-         case .bookEvents:
-             saveEventChip(chip)
-             print("After saving event chip: \(book.bookEvents?.count ?? 0)") // Added print statement
-         case .creator:
-             print("save creator chip")
-         default:
-             print("Unknown chip type")
-         }
-     }
+        switch EntityType(rawValue: chip.entity) {
+        case .bookStoryArc:
+            saveStoryArcChip(chip)
+            print("After saving story arc chip: \(book.bookStoryArcs?.count ?? 0)") // Added print statement
+        case .bookEvents:
+            saveEventChip(chip)
+            print("After saving event chip: \(book.bookEvents?.count ?? 0)") // Added print statement
+        case .creator:
+            print("save creator chip")
+        default:
+            print("Unknown chip type")
+        }
+    }
     
     func saveStoryArcChip(_ chip: TempChipData) {
+        print("Running saveStoryArcChip")
         let storyArcName = chip.tempValue1
         let partNumber: Int16?
         switch chip.tempValue2 {
@@ -253,12 +346,12 @@ extension EditBookView {
         
         // Check if a StoryArc with the story arc name already exists globally
         let storyArc: StoryArc
-        if let existingStoryArc = allStoryArcs.first(where: { $0.storyArcName?.lowercased() == storyArcName.lowercased() }) {
+        if let existingStoryArc = allStoryArcs.first(where: { $0.name?.lowercased() == storyArcName.lowercased() }) {
             storyArc = existingStoryArc
         } else {
             // If the StoryArc doesn't exist, create a new one
             storyArc = StoryArc(context: viewContext)
-            storyArc.storyArcName = storyArcName
+            storyArc.name = storyArcName
         }
         
         // Create a new BookStoryArcs record to associate the book with the story arc
@@ -273,6 +366,7 @@ extension EditBookView {
         }
     }
     func saveEventChip(_ chip: TempChipData) {
+        print("Running saveEventChip")
         let eventName = chip.tempValue1
         let partNumber: Int16?
         switch chip.tempValue2 {
@@ -284,53 +378,26 @@ extension EditBookView {
         
         // Check if an Event with the event name already exists globally
         let event: Event
-        if let existingEvent = allEvents.first(where: { $0.eventName?.lowercased() == eventName.lowercased() }) {
+        if let existingEvent = allEvents.first(where: { $0.name?.lowercased() == eventName.lowercased() }) {
             event = existingEvent
         } else {
             // If the Event doesn't exist, create a new one
             event = Event(context: viewContext)
-            event.eventName = eventName
+            event.name = eventName
         }
         
-        // Check if a BookEvents association already exists for the current book and event
-        if let existingBookEvent = (book.bookEvents as? Set<BookEvents>)?.first(where: { $0.events == event }) {
-            // Update the existing association if necessary
-            if let validPartNumber = partNumber {
-                existingBookEvent.eventPart = validPartNumber
-            } else {
-                existingBookEvent.eventPart = 0 // or any default value you want
-            }
+        // Create a new BookEvent record to associate the book with the event
+        let bookEvent = BookEvents(context: viewContext)
+        bookEvent.books = book
+        bookEvent.events = event
+        if let validPartNumber = partNumber {
+            bookEvent.eventPart = validPartNumber
         } else {
-            // Create a new BookEvents record to associate the book with the event
-            let bookEvent = BookEvents(context: viewContext)
-            bookEvent.books = book
-            bookEvent.events = event
-            if let validPartNumber = partNumber {
-                bookEvent.eventPart = validPartNumber
-            } else {
-                bookEvent.eventPart = 0 // or any default value you want
-            }
+            // Handle the case where partNumber is nil
+            bookEvent.eventPart = 0
         }
     }
 }
-
-//// MARK: Preview
-//#if DEBUG
-//struct EditBookView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        EditBookView(book: createSampleBook(using: PreviewCoreDataManager.shared.container.viewContext))
-//    }
-//}
-//#endif
-
-
-//#if DEBUG
-//struct EditBookView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Text("Hello, World!")
-//    }
-//}
-//#endif
 
 
 // MARK: - TempChipData Struct

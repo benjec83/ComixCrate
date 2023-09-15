@@ -73,17 +73,24 @@ struct ThumbnailProvider: View {
         let fullThumbnailPath = basePath.appendingPathComponent(book.thumbnailPath ?? "").path
 
         if isHighQuality {
-            if shouldCacheHighQuality, ThumbnailProvider.highQualityImageCache.get(fullThumbnailPath) == nil, let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
+            if shouldCacheHighQuality, ThumbnailProvider.highQualityImageCache.get(fullThumbnailPath) == nil, UIImage(contentsOfFile: fullThumbnailPath) != nil {
                 print("ThumbnailProvider: Caching high quality thumbnail for path: \(fullThumbnailPath)")
-                ThumbnailProvider.highQualityImageCache.set(fullThumbnailPath, value: uiImage)
+                ThumbnailProvider.highQualityImageCache.set(fullThumbnailPath, value: UIImage(contentsOfFile: fullThumbnailPath)!)
                 shouldCacheHighQuality = false // Reset the trigger after caching
+            } else {
+                print("ThumbnailProvider: High-quality thumbnail already cached or not needed for path: \(fullThumbnailPath)")
             }
-        } else if ImageCache.shared.image(forKey: fullThumbnailPath) == nil, let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
-            print("ThumbnailProvider: Caching thumbnail for path: \(fullThumbnailPath)")
-            ImageCache.shared.set(image: uiImage, forKey: fullThumbnailPath)
         } else {
-            print("ThumbnailProvider: Thumbnail already cached for path: \(fullThumbnailPath)")
+            if ImageCache.shared.image(forKey: fullThumbnailPath) == nil, UIImage(contentsOfFile: fullThumbnailPath) == nil {
+                if let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
+                    print("ThumbnailProvider: Caching thumbnail for path: \(fullThumbnailPath)")
+                    ImageCache.shared.set(image: uiImage, forKey: fullThumbnailPath)
+                } else {
+                    print("ThumbnailProvider: Failed to load UIImage for caching from path: \(fullThumbnailPath)")
+                }
+            } else {
+                print("ThumbnailProvider: Thumbnail already cached or retrieved from file system for path: \(fullThumbnailPath)")
+            }
         }
     }
-
 }

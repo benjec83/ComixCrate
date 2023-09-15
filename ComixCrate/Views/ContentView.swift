@@ -40,9 +40,9 @@ struct ContentView: View {
                 List {
                     Section("Library") {
                         NavigationLink {
-//                            HomeView(isImporting: $isImporting, context: context, recentlyAdded: Array(bookItems), allEntities: allEntities)
+                            HomeView(isImporting: $isImporting, context: context, allEntities: allEntities)
                         } label: {
-                            Label("Home", systemImage: "house.fill")
+                            Label("Home", systemImage: "house")
                         }
                         NavigationLink {
                             LibraryView(filter: .allBooks, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)
@@ -78,7 +78,6 @@ struct ContentView: View {
                     })
                     .listStyle(.sidebar )
                     .navigationTitle("Menu")
-                    Spacer()
                     NavigationLink {
                         DatabaseInspectorView()
                     } label: {
@@ -94,7 +93,7 @@ struct ContentView: View {
                     }
                 }
                 
-//                HomeView(isImporting: $isImporting, context: context, recentlyAdded: Array(bookItems), allEntities: allEntities)
+                HomeView(isImporting: $isImporting, context: context, allEntities: allEntities)
             }
             // Blocking overlay
             if importingState.isImporting {

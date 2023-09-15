@@ -11,12 +11,26 @@ import UIKit
 
 class ComicFileHandler {
     
-    func isValidComicFile(at url: URL) -> Bool {
+    // MARK: - File Handling
+    
+    // Check for valid file extension
+    func hasValidFileExtension(_ url: URL) -> Bool {
         let validExtensions = ["cbr", "cbz", "cbt", "cba"]
-        
+        return validExtensions.contains(url.pathExtension.lowercased())
+    }
+    
+    // Unzip file
+    func unzipFile(at url: URL, to destination: URL) throws {
+        let fileManager = FileManager()
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.createDirectory(at: destination, withIntermediateDirectories: true, attributes: nil)
+        }
+        try fileManager.unzipItem(at: url, to: destination)
+    }
+    
+    func isValidComicFile(at url: URL) -> Bool {
         // Check file extension
-        let fileExtension = url.pathExtension.lowercased()
-        if !validExtensions.contains(fileExtension) {
+        if !hasValidFileExtension(url) {
             return false
         }
         
@@ -25,7 +39,7 @@ class ComicFileHandler {
         let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
         
         do {
-            try fileManager.unzipItem(at: url, to: tempDirectory)
+            try unzipFile(at: url, to: tempDirectory)
             let imageFiles = try fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" })
             if imageFiles.isEmpty {
                 return false
@@ -37,6 +51,68 @@ class ComicFileHandler {
         return true
     }
     
+    // MARK: - Entity Handling
+    
+    // Fetch entity
+    func fetchEntity<T: NSManagedObject>(ofType type: T.Type, withPredicate predicate: NSPredicate, in context: NSManagedObjectContext) -> T? {
+        let fetchRequest: NSFetchRequest<T> = T.fetchRequest() as! NSFetchRequest<T>
+        fetchRequest.predicate = predicate
+        return try? context.fetch(fetchRequest).first
+    }
+    
+    // Fetch or create entity
+    func fetchOrCreateEntity<T: NSManagedObject>(
+        ofType type: T.Type,
+        withName name: String,
+        in context: NSManagedObjectContext,
+        for key: String = "name"
+    ) -> T {
+        let fetchRequest: NSFetchRequest<T> = T.fetchRequest() as! NSFetchRequest<T>
+        fetchRequest.predicate = NSPredicate(format: "\(key) == %@", name)
+        
+        if let entity = try? context.fetch(fetchRequest).first {
+            return entity
+        } else {
+            let newEntity = T(context: context)
+            newEntity.setValue(name, forKey: key)
+            return newEntity
+        }
+    }
+    
+    // Fetch or create entities in a loop with a publisher
+    func fetchOrCreateEntities<T: NSManagedObject>(
+        ofType type: T.Type,
+        withNames names: [String],
+        publisher: Publisher?,
+        in context: NSManagedObjectContext,
+        for key: String = "name",
+        customizeEntity: ((T, Publisher?) -> Void)? = nil
+    ) -> [T] {
+        var entities: [T] = []
+        
+        for name in names {
+            let entity = fetchOrCreateEntity(ofType: type, withName: name, in: context, for: key)
+            
+            // If a custom closure is provided, use it to customize the entity
+            customizeEntity?(entity, publisher)
+            
+            entities.append(entity)
+        }
+        
+        return entities
+    }
+    
+    func fetchPublisher(withName name: String, in context: NSManagedObjectContext) -> [Publisher] {
+        let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
+        publisherFetchRequest.predicate = NSPredicate(format: "name == %@", name)
+        
+        do {
+            return try context.fetch(publisherFetchRequest)
+        } catch {
+            // Handle the error here, e.g., print or log it.
+            return []
+        }
+    }
     
     static func handleImportedFile(at url: URL, in context: NSManagedObjectContext) {
         let fileManager = FileManager()
@@ -58,44 +134,28 @@ class ComicFileHandler {
                     comicFile.filePath = url.path
                     
                     // Add attribute values to Book Entity
-                    
-                    comicFile.sypnosis = comicInfo.summary
                     comicFile.title = comicInfo.title
                     comicFile.issueNumber = comicInfo.number ?? 0
                     comicFile.dateAdded = Date()
+                    comicFile.summary = comicInfo.summary
                     comicFile.web = comicInfo.web
                     
+                    let comicFileHandler = ComicFileHandler()
+                    
                     // Add Series to Series Entity
-                    
-                    let fetchRequest: NSFetchRequest<Series> = Series.fetchRequest()
-                    fetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.series)
-                    
-                    let seriesEntities = try? context.fetch(fetchRequest)
-                    var seriesEntity: Series!
-                    if let existingSeries = seriesEntities?.first {
-                        seriesEntity = existingSeries
-                    } else {
-                        seriesEntity = Series(context: context)
-                        seriesEntity.name = comicInfo.series
-                    }
-                    
-                    comicFile.series = seriesEntity
+                    comicFile.series = comicFileHandler.fetchOrCreateEntity(ofType: Series.self, withName: comicInfo.series, in: context)
                     
                     // Add Publisher to Publisher Entity
+                    comicFile.publisher = comicFileHandler.fetchOrCreateEntity(ofType: Publisher.self, withName: comicInfo.publisher ?? "", in: context)
                     
-                    let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
-                    publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
+                    // Fetch or create Publisher entity
+                    let publisherEntity = comicFileHandler.fetchOrCreateEntity(
+                        ofType: Publisher.self,
+                        withName: comicInfo.publisher ?? "",
+                        in: context
+                    )
                     
-                    let publisherEntities = try? context.fetch(publisherFetchRequest)
-                    var publisherEntity: Publisher!
-                    if let existingPublisher = publisherEntities?.first {
-                        publisherEntity = existingPublisher
-                    } else {
-                        publisherEntity = Publisher(context: context)
-                        publisherEntity.name = comicInfo.publisher
-                    }
-                    
-                    comicFile.publisher = publisherEntity
+                    var allPublishers = comicFileHandler.fetchPublisher(withName: comicInfo.publisher ?? "", in: context)
                     
                     // Add Cover Date to Book.coverDate
                     
@@ -112,81 +172,106 @@ class ComicFileHandler {
                     }
                     
                     // MARK: Add Characters with Publisher (matched to Publisher Entity)
-                    // Fetch all necessary entities first
-                    var allCharactersEntities: [Characters] = []
-                    for characterName in comicInfo.characters ?? [] {
-                        let fetchRequest: NSFetchRequest<Characters> = Characters.fetchRequest()
-                        fetchRequest.predicate = NSPredicate(format: "characterName == %@", characterName)
-                        if let charactersEntities = try? context.fetch(fetchRequest) {
-                            allCharactersEntities.append(contentsOf: charactersEntities)
+                    // Fetch or create Characters entities with the associated publisher
+                    let charactersEntities = comicFileHandler.fetchOrCreateEntities(
+                        ofType: Characters.self,
+                        withNames: comicInfo.characters ?? [],
+                        publisher: publisherEntity,
+                        in: context
+                    ) { entity, publisher in
+                        if let charactersEntity = entity as? Characters {
+                            charactersEntity.publisher = publisher
                         }
                     }
                     
-                    // In a separate loop, make the necessary modifications
-                    for characterName in comicInfo.characters ?? [] {
-                        let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
-                        publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
-                        if let publisherEntities = try? context.fetch(publisherFetchRequest), let publisherEntity = publisherEntities.first {
-                            
-                            let fetchRequest: NSFetchRequest<Characters> = Characters.fetchRequest()
-                            fetchRequest.predicate = NSPredicate(format: "characterName == %@ AND publisher == %@", characterName, publisherEntity)
-                            let charactersEntities = try? context.fetch(fetchRequest)
-                            var charactersEntity: Characters!
-                            if let existingCharacter = charactersEntities?.first {
-                                charactersEntity = existingCharacter
-                            } else {
-                                charactersEntity = Characters(context: context)
-                                charactersEntity.characterName = characterName
-                                charactersEntity.publisher = publisherEntity
-                            }
-                            
-                            // Associate the character with the book
-                            charactersEntity.addToBooks(comicFile)
-                            
-                            // Associate the book with the character
-                            comicFile.addToCharacters(charactersEntity)
-                        }
+                    // Associate characters with the book
+                    charactersEntities.forEach { character in
+                        character.addToBooks(comicFile)
+                        comicFile.addToCharacters(character)
                     }
                     
                     // MARK: Add Teams with Publisher (matched to Publisher Entity)
-                    // Fetch all necessary entities first
-                    var allTeamsEntitites: [Teams] = []
-                    for teamName in comicInfo.teams ?? [] {
-                        let fetchRequest: NSFetchRequest<Teams> = Teams.fetchRequest()
-                        fetchRequest.predicate = NSPredicate(format: "teamName == %@", teamName)
-                        if let teamsEntities = try? context.fetch(fetchRequest) {
-                            allTeamsEntitites.append(contentsOf: teamsEntities)
+                    // Fetch or create Teams entities with the associated publisher
+                    let teamsEntities = comicFileHandler.fetchOrCreateEntities(
+                        ofType: Teams.self,
+                        withNames: comicInfo.teams ?? [],
+                        publisher: publisherEntity,
+                        in: context
+                    ) { entity, publisher in
+                        if let teamsEntity = entity as? Teams {
+                            teamsEntity.publisher = publisher
                         }
                     }
                     
-                    // In a separate loop, make the necessary modifications
-                    for teamName in comicInfo.teams ?? [] {
-                        let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
-                        publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")
-                        if let publisherEntities = try? context.fetch(publisherFetchRequest), let publisherEntity = publisherEntities.first {
-                            
-                            let fetchRequest: NSFetchRequest<Teams> = Teams.fetchRequest()
-                            fetchRequest.predicate = NSPredicate(format: "teamName == %@ AND publisher == %@", teamName, publisherEntity)
-                            let teamsEntities = try? context.fetch(fetchRequest)
-                            var teamsEntity: Teams!
-                            if let existingTeam = teamsEntities?.first {
-                                teamsEntity = existingTeam
-                            } else {
-                                teamsEntity = Teams(context: context)
-                                teamsEntity.teamName = teamName
-                                teamsEntity.publisher = publisherEntity
+                    // Associate teams with the book
+                    teamsEntities.forEach { team in
+                        team.addToBooks(comicFile)
+                        comicFile.addToTeams(team)
+                    }
+                    
+                    // MARK: Add Locations with Publisher (matched to Publisher Entity)
+                    // Fetch or create Locations entities with the associated publisher
+                    let locationsEntities = comicFileHandler.fetchOrCreateEntities(
+                        ofType: Locations.self,
+                        withNames: comicInfo.locations ?? [],
+                        publisher: publisherEntity,
+                        in: context
+                    ) { entity, publisher in
+                        if let locationsEntity = entity as? Locations {
+                            locationsEntity.publisher = publisher
+                        }
+                    }
+                    
+                    // Associate teams with the book
+                    locationsEntities.forEach { location in
+                        location.addToBooks(comicFile)
+                        comicFile.addToLocations(location)
+                    }
+                    
+                    // MARK: Add CreatorRoles
+                    
+                    // Fetch or create CreatorRoles entities
+                    let creatorRolesEntities = comicFileHandler.fetchOrCreateEntities(
+                        ofType: CreatorRole.self,
+                        withNames: ["Writer", "Penciller", "Inker", "Colorist", "Letterer", "Cover Artist", "Editor"],
+                        publisher: publisherEntity,
+                        in: context
+                    )
+                    
+                    // Fetch or create Creators entities
+                    let creatorNames = [comicInfo.writer, comicInfo.penciller, comicInfo.inker, comicInfo.colorist, comicInfo.letterer, comicInfo.coverArtist, comicInfo.editor]
+                        .compactMap { $0 }
+                        .flatMap { $0 }
+                    
+                    let creatorsEntities = comicFileHandler.fetchOrCreateEntities(
+                        ofType: Creator.self,
+                        withNames: creatorNames,
+                        publisher: publisherEntity,
+                        in: context
+                    )
+                    
+                    // Associate creators with roles and the book
+                    for (roleName, creators) in [
+                        ("Writer", comicInfo.writer),
+                        ("Penciller", comicInfo.penciller),
+                        ("Inker", comicInfo.inker),
+                        ("Colorist", comicInfo.colorist),
+                        ("Letterer", comicInfo.letterer),
+                        ("Cover Artist", comicInfo.coverArtist),
+                        ("Editor", comicInfo.editor)
+                    ] {
+                        if let roleEntity = creatorRolesEntities.first(where: { $0.name == roleName }) {
+                            for creatorName in creators ?? [] {
+                                if let creatorEntity = creatorsEntities.first(where: { $0.name == creatorName }) {
+                                    let bookCreatorRole = BookCreatorRole(context: context)
+                                    bookCreatorRole.book = comicFile
+                                    bookCreatorRole.creator = creatorEntity
+                                    bookCreatorRole.creatorRole = roleEntity
+                                    comicFile.addToBookCreatorRole(bookCreatorRole)
+                                }
                             }
-                            
-                            // Associate the team with the book
-                            teamsEntity.addToBooks(comicFile)
-                            
-                            // Associate the book with the team
-                            comicFile.addToTeams(teamsEntity)
                         }
                     }
-                    
-
-                    //
                     
                     if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
                         
@@ -203,12 +288,16 @@ class ComicFileHandler {
                                 if comicFile.thumbnailPath == nil {
                                     comicFile.thumbnailPath = uniqueFilename
                                 }
-                                
                             }
                         }
                         
                         DispatchQueue.main.async {
-                            try? context.save()
+                            do {
+                                try context.save()
+                                context.reset()
+                            } catch let saveError {
+                                print("Failed to save context: \(saveError)")
+                            }
                         }
                     }
                     
@@ -227,6 +316,8 @@ class ComicFileHandler {
         
         try? fileManager.removeItem(at: tempDirectory)
     }
+    
+    // MARK: - XML Parsing
     
     private static func parseComicInfoXML(data: Data) -> ComicInfo? {
         let parser = XMLParser(data: data)
@@ -325,6 +416,8 @@ class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
         case "Locations":
             comicInfo.locations = currentText.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: ", ")
         case .none, .some(_):
+            break
+        default:
             break
         }
     }

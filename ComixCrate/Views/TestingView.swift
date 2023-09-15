@@ -21,10 +21,11 @@ struct TestingView: View {
     @State private var editedSeries: String = ""
     @State private var editedBookStoryArc: String = ""
     @State private var editedBookEvent: String = ""
-    @State private var editedSummary: String = ""
+//    @State private var editedSummary: String = ""
     @State private var editedCharacters: String = ""
     @State private var editedTeams: String = ""
     @State private var editedLocations: String = ""
+//    @State private var editedSummary: String = ""
     
     var body: some View {
         Form {
@@ -86,8 +87,8 @@ struct TestingView: View {
             }
             VStack(alignment: .leading) {
                 Section {
-                    TextEditor(text: $editedSummary)
-                        .frame(minHeight: 150, alignment: .top)
+//                    TextEditor(text: $editedSummary)
+//                        .frame(minHeight: 150, alignment: .top)
                 }header: {
                     Text("Summary")
                 }
