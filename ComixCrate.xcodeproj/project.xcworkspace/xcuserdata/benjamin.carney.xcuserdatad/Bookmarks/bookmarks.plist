@@ -60,9 +60,9 @@
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>64</string>
+					<string>65</string>
 					<key>Timestamp</key>
-					<string>716188544.1499341</string>
+					<string>716443893.581495</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -78,14 +78,13 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>    }
-</string>
+				<string></string>
 				<key>leading</key>
-				<string>        self._isImporting = isImporting
-        self.allEntities = allEntities
+				<string>        self.allEntities = allEntities
+    }
 </string>
 				<key>trailing</key>
-				<string>
+				<string>    
     // MARK: - Body
     
 </string>

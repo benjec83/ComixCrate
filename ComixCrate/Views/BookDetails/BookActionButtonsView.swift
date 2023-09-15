@@ -31,7 +31,7 @@ struct BookActionButtons: View {
         VStack {
             Spacer()
             actionButton(title: .readNow, icon: "magazine")
-            actionButton(title: bookIsRead ? .markAsUnread : .markAsRead, icon: "checkmark.circle")
+            actionButton(title: viewModel.bookIsRead ? .markAsUnread : .markAsRead, icon: "checkmark.circle")
             actionButton(title: .addToReadingPile, icon: "square.stack.3d.up")
             Spacer()
             ratingsSection(title: "Personal Rating", rating: userRating)
@@ -52,19 +52,25 @@ struct BookActionButtons: View {
                 ForEach(0..<5) { index in
                     BookActionButtons.starImage(for: index, in: rating)
                         .onTapGesture {
-                            viewModel.updateUserRating(to: Double(index) + 0.5)
+                            updateUserRating(to: Double(index) + 0.5)
                         }
                         .gesture(
                             DragGesture(minimumDistance: 0)
                                 .onChanged { value in
                                     let width = value.location.x
                                     let computedRating = Double(width / 30)
-                                    viewModel.updateUserRating(to: min(max(computedRating, 0.5), 5))
+                                    updateUserRating(to: min(max(computedRating, 0.5), 5))
                                 }
                         )
                 }
             }
         }
+    }
+    
+    func updateUserRating(to newRating: Double) {
+        userRating = newRating
+        book.personalRating = newRating
+        saveContext()
     }
     
     static func starImage(for index: Int, in rating: Double) -> some View {
@@ -75,10 +81,6 @@ struct BookActionButtons: View {
         } else {
             return Image(systemName: "star").foregroundColor(Color.gray)
         }
-    }
-    
-    private var bookIsRead: Bool {
-        book.read == 1
     }
     
     private func actionButton(title: ActionTitle, icon: String) -> some View {
@@ -98,6 +100,13 @@ struct BookActionButtons: View {
                 .foregroundColor(.white)
                 .cornerRadius(51.0)
                 .font(.headline)
+        }
+    }
+    func saveContext() {
+        do {
+            try viewContext.save()
+        } catch {
+            print("Failed to update read status: \(error)")
         }
     }
 }

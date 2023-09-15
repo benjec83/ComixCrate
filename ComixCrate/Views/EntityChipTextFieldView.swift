@@ -19,18 +19,18 @@ struct EntityChipTextFieldView: View {
     
     @Binding var chips: [TempChipData]
     
-    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
+    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.name, ascending: true)])
     private var allStoryArcs: FetchedResults<StoryArc>
     
-    @FetchRequest(entity: Event.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Event.eventName, ascending: true)])
+    @FetchRequest(entity: Event.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Event.name, ascending: true)])
     private var allEvents: FetchedResults<Event>
     
     private var bookStoryArcNames: [String] {
-        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.storyArcName  } ?? []
+        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.name  } ?? []
     }
     
     private var eventName: [String] {
-        (book.bookEvents as? Set<BookEvents>)?.compactMap { $0.events?.eventName } ?? []
+        (book.bookEvents as? Set<BookEvents>)?.compactMap { $0.events?.name } ?? []
     }
     
     //Bindings for EntityTextFieldView
@@ -46,9 +46,9 @@ struct EntityChipTextFieldView: View {
         _book = .constant(book)
         self.viewModel = viewModel
         self.type = type
-        let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.storyArcName ?? ""
+        let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.name ?? ""
         _editedStoryArcName = State(initialValue: firstStoryArcName)
-        let firstEventName = (book.bookEvents as? Set<Event>)?.first?.eventName ?? ""
+        let firstEventName = (book.bookEvents as? Set<Event>)?.first?.name ?? ""
         _editedEventName = State(initialValue: firstEventName)
         _chips = chips  // Assign the binding directly
     }
@@ -69,10 +69,11 @@ struct EntityChipTextFieldView: View {
         }
 
         VStack {
-            EntityTextFieldView(viewModel: viewModel, type: type, chips: $chips, allEntities: anyFetchedEntities)
             ChipView(viewModel: viewModel, chips: $chips, type: type, chipViewHeight: $chipViewHeight)
-
             Spacer(minLength: chipViewHeight)
+            EntityInputView(viewModel: viewModel, type: type, chips: $chips, allEntities: anyFetchedEntities)
+                .padding(.top, 25)
+
         }
         .animation(.easeInOut, value: chips)
     }

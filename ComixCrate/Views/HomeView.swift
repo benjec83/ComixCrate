@@ -13,7 +13,7 @@ struct HomeView: View {
     
     @Environment(\.isSearching) var isSearching
     var allEntities: AnyFetchedResults
-
+    
     
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Book.dateAdded, ascending: false)]) private var books: FetchedResults<Book>
@@ -21,13 +21,23 @@ struct HomeView: View {
     @EnvironmentObject var importingState: ImportingState
     @Binding var isImporting: Bool
     
-    let book: Book
+    //    let book: Book
     
     var currentlyReading: [Book] {
-        books.filter { $0.read > 0.0 && $0.read < 100.0 }
+        let lowerBound = NSDecimalNumber(value: 0.0)
+        let upperBound = NSDecimalNumber(value: 100.0)
+        
+        return books.filter { book in
+            guard let readValue = book.read else { return false }
+            return readValue.compare(lowerBound) == .orderedDescending && readValue.compare(upperBound) == .orderedAscending
+        }
     }
+
+
     
-    var recentlyAdded: [Book]
+    var recentlyAdded: [Book] {
+        Array(books.filter { $0.dateAdded != nil }.sorted(by: { $0.dateAdded! > $1.dateAdded! }).prefix(10))
+    }
     
     var favorites: [Book] {
         books.filter { book in
@@ -62,17 +72,11 @@ struct HomeView: View {
         Array(books.prefix(readingListsLimit))
     }
     
-    init(isImporting: Binding<Bool>, context: NSManagedObjectContext, recentlyAdded: [Book], allEntities: AnyFetchedResults) {
-            self._isImporting = isImporting
-            self.recentlyAdded = recentlyAdded
-            self.allEntities = allEntities
-            
-        if let firstBook = try? context.fetch(Book.fetchRequest()).first {
-                self.book = firstBook
-            } else {
-                self.book = Book(context: context) // Create a new Book instance
-            }
-        }
+    init(isImporting: Binding<Bool>, context: NSManagedObjectContext, allEntities: AnyFetchedResults) {
+        self._isImporting = isImporting
+        //            self.recentlyAdded = recentlyAdded
+        self.allEntities = allEntities
+    }
     
     var body: some View {
         Text("")
@@ -90,27 +94,38 @@ struct HomeView: View {
                         Label("View all", systemImage: "chevron.right")
                     }
                 }
-                    VStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, content: {
-                        LazyHGrid(rows: rows) {
-                            ForEach(limitedCurrentlyReading) { item in
-                                
-                                Button {
+                VStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, content: {
+                    LazyHGrid(rows: rows) {
+                        ForEach(limitedCurrentlyReading) { item in
+                            BookTileModel(book: item)
+                                .onTapGesture(count: 2) {
                                     selected = item
-                                } label: {
-                                    BookTileModel(book: item)
                                 }
+                                .contextMenu {
+                                    Button(action: {
+                                        // Mark the book as read
+                                    }) {
+                                        Label("Mark as Read", systemImage: "book.closed")
+                                    }
+                                    
+                                    Button(action: {
+                                        // Delete the book
+                                    }) {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                        }
+                    }
+                    //  Start of sheet
+                    .sheet(item: $selected) { item in
+                        NavigationStack {
+                            VStack {
+                                BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
                             }
                         }
-                        //  Start of sheet
-                        .sheet(item: $selected) { item in
-                            NavigationStack {
-                                VStack {
-                                    BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
-                                }
-                            }
-                        }
-                        // End of sheet
-                    })
+                    }
+                    // End of sheet
+                })
             }
             
             VStack {
@@ -126,12 +141,10 @@ struct HomeView: View {
                 VStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, content: {
                     LazyHGrid(rows: rows) {
                         ForEach(limitedRecentlyAdded) { item in
-                            
-                            Button {
-                                selected = item
-                            } label: {
-                                BookTileModel(book: item)
-                            }
+                            BookTileModel(book: item)
+                                .onTapGesture(count: 2) {
+                                    selected = item
+                                }
                         }
                     }
                     //  Start of sheet
@@ -157,12 +170,10 @@ struct HomeView: View {
                 VStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, content: {
                     LazyHGrid(rows: rows) {
                         ForEach(limitedFavorites) { item in
-                            
-                            Button {
-                                selected = item
-                            } label: {
-                                BookTileModel(book: item)
-                            }
+                            BookTileModel(book: item)
+                                .onTapGesture(count: 2) {
+                                    selected = item
+                                }
                         }
                     }
                     //  Start of sheet
@@ -189,12 +200,10 @@ struct HomeView: View {
                 VStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, content: {
                     LazyHGrid(rows: rows) {
                         ForEach(limitedReadingLists) { item in
-                            
-                            Button {
-                                selected = item
-                            } label: {
-                                BookTileModel(book: item)
-                            }
+                            BookTileModel(book: item)
+                                .onTapGesture(count: 2) {
+                                    selected = item
+                                }
                         }
                     }
                     //  Start of sheet

@@ -21,7 +21,7 @@ class ComicDataWriter {
         comicFile.filePath = url.path
         
         let fetchRequest: NSFetchRequest<Series> = Series.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.series)
+        fetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.series ?? "")
         
         let seriesEntities = try? context.fetch(fetchRequest)
         var seriesEntity: Series!
@@ -48,7 +48,7 @@ class ComicDataWriter {
         
         comicFile.publisher = publisherEntity
         
-        comicFile.sypnosis = comicInfo.summary
+        comicFile.summary = comicInfo.summary
         comicFile.title = comicInfo.title
         comicFile.issueNumber = comicInfo.number ?? 0
         comicFile.dateAdded = Date()

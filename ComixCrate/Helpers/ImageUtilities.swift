@@ -7,6 +7,24 @@
 
 import UIKit
 
+
+// Image Cache
+class ImageCache {
+    private var cache = NSCache<NSString, UIImage>()
+
+    static let shared = ImageCache()
+
+    private init() {}
+
+    func set(image: UIImage, forKey key: String) {
+        cache.setObject(image, forKey: key as NSString)
+    }
+
+    func image(forKey key: String) -> UIImage? {
+        return cache.object(forKey: key as NSString)
+    }
+}
+
 // Image Resizing
 func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
     let size = image.size
@@ -31,19 +49,16 @@ func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage? {
     return newImage
 }
 
-// Image Cache
-class ImageCache {
-    private var cache = NSCache<NSString, UIImage>()
+func imageFromPath(_ path: String) -> UIImage? {
+    return UIImage(contentsOfFile: path)
+}
 
-    static let shared = ImageCache()
-
-    private init() {}
-
-    func set(image: UIImage, forKey key: String) {
-        cache.setObject(image, forKey: key as NSString)
-    }
-
-    func image(forKey key: String) -> UIImage? {
-        return cache.object(forKey: key as NSString)
+func imageFromCaches(forKey key: String, isHighQuality: Bool) -> UIImage? {
+    if isHighQuality {
+        return ThumbnailProvider.highQualityImageCache.get(key)
+    } else {
+        return ImageCache.shared.image(forKey: key)
     }
 }
+
+

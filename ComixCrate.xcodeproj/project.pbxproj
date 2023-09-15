@@ -17,6 +17,8 @@
 		4A4EFD4D2AA3852D00B7E4C8 /* ComicFileUnzipper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4EFD4C2AA3852D00B7E4C8 /* ComicFileUnzipper.swift */; };
 		4A4EFD512AA385D700B7E4C8 /* ComicImageResizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4EFD502AA385D700B7E4C8 /* ComicImageResizer.swift */; };
 		4A4EFD532AA385F100B7E4C8 /* ComicDataWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4EFD522AA385F100B7E4C8 /* ComicDataWriter.swift */; };
+		4A54BCCA2AB29173005B24B1 /* BookRowModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A54BCC92AB29173005B24B1 /* BookRowModel.swift */; };
+		4A54BCCC2AB3AEAE005B24B1 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A54BCCB2AB3AEAE005B24B1 /* File.swift */; };
 		4A69E8462AB0D3B300CD023A /* ReadMeNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A69E8452AB0D3B300CD023A /* ReadMeNotes.swift */; };
 		4A6C7E6F2AA14B4400FF95FB /* AppOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E6E2AA14B4400FF95FB /* AppOverview.swift */; };
 		4A6C7E712AA1B80800FF95FB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C7E702AA1B80800FF95FB /* Extensions.swift */; };
@@ -31,12 +33,12 @@
 		4AB6E7AD2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7AB2A9BD9CC00A8EFA0 /* LibraryData.xcdatamodeld */; };
 		4AB6E7B12A9BE0C500A8EFA0 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B02A9BE0C500A8EFA0 /* Persistence.swift */; };
 		4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B22A9BE0FB00A8EFA0 /* ComicFileHandler.swift */; };
-		4AB6E7B62A9BE13400A8EFA0 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4AB6E7B52A9BE13400A8EFA0 /* ZIPFoundation */; };
 		4AB6E7B82A9BE8F400A8EFA0 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B72A9BE8F400A8EFA0 /* DocumentPicker.swift */; };
 		4AB6E7BA2A9BEB3300A8EFA0 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7B92A9BEB3300A8EFA0 /* LibraryView.swift */; };
 		4AB6E7BC2A9BED7D00A8EFA0 /* BookTileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7BB2A9BED7D00A8EFA0 /* BookTileModel.swift */; };
 		4AB6E7BE2A9C203E00A8EFA0 /* ImageUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7BD2A9C203E00A8EFA0 /* ImageUtilities.swift */; };
 		4AB6E7C02A9D034E00A8EFA0 /* BookSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB6E7BF2A9D034E00A8EFA0 /* BookSheetView.swift */; };
+		4AD861A92AB41154006A390D /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4AD861A82AB41154006A390D /* ZIPFoundation */; };
 		4ADF00882AAF7733008C98E6 /* MockBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF00872AAF7733008C98E6 /* MockBook.swift */; };
 		4ADF008A2AAF8F36008C98E6 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF00892AAF8F36008C98E6 /* LibraryViewModel.swift */; };
 		4ADF008C2AAF961B008C98E6 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADF008B2AAF961B008C98E6 /* Enums.swift */; };
@@ -72,6 +74,8 @@
 		4A4EFD4C2AA3852D00B7E4C8 /* ComicFileUnzipper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicFileUnzipper.swift; sourceTree = "<group>"; };
 		4A4EFD502AA385D700B7E4C8 /* ComicImageResizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicImageResizer.swift; sourceTree = "<group>"; };
 		4A4EFD522AA385F100B7E4C8 /* ComicDataWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComicDataWriter.swift; sourceTree = "<group>"; };
+		4A54BCC92AB29173005B24B1 /* BookRowModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookRowModel.swift; sourceTree = "<group>"; };
+		4A54BCCB2AB3AEAE005B24B1 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		4A69E8452AB0D3B300CD023A /* ReadMeNotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadMeNotes.swift; sourceTree = "<group>"; };
 		4A6C7E6E2AA14B4400FF95FB /* AppOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverview.swift; sourceTree = "<group>"; };
 		4A6C7E702AA1B80800FF95FB /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -123,7 +127,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4AB6E7B62A9BE13400A8EFA0 /* ZIPFoundation in Frameworks */,
+				4AD861A92AB41154006A390D /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,6 +160,7 @@
 				4AB6E7B22A9BE0FB00A8EFA0 /* ComicFileHandler.swift */,
 				4A6C7E7D2AA2E80A00FF95FB /* ImportingState.swift */,
 				4A4EFD4C2AA3852D00B7E4C8 /* ComicFileUnzipper.swift */,
+				4A54BCCB2AB3AEAE005B24B1 /* File.swift */,
 			);
 			path = Importing;
 			sourceTree = "<group>";
@@ -272,6 +277,7 @@
 				4ADF009D2AAFB26A008C98E6 /* BookMainDetailsView.swift */,
 				4ADF009F2AAFB280008C98E6 /* FakePublisherLogoView.swift */,
 				4ADF00A22AAFBF81008C98E6 /* BookActionButtonsView.swift */,
+				4A54BCC92AB29173005B24B1 /* BookRowModel.swift */,
 			);
 			path = BookDetails;
 			sourceTree = "<group>";
@@ -303,7 +309,7 @@
 			);
 			name = ComixCrate;
 			packageProductDependencies = (
-				4AB6E7B52A9BE13400A8EFA0 /* ZIPFoundation */,
+				4AD861A82AB41154006A390D /* ZIPFoundation */,
 			);
 			productName = ComixCrate;
 			productReference = 4AB6E7992A9BD90700A8EFA0 /* ComixCrate.app */;
@@ -334,7 +340,7 @@
 			);
 			mainGroup = 4AB6E7902A9BD90700A8EFA0;
 			packageReferences = (
-				4AB6E7B42A9BE13400A8EFA0 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				4AD861A72AB41154006A390D /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			productRefGroup = 4AB6E79A2A9BD90700A8EFA0 /* Products */;
 			projectDirPath = "";
@@ -401,6 +407,7 @@
 				4A6C7E7C2AA25AE500FF95FB /* RelatedBooksView.swift in Sources */,
 				4A2E60752A9D357400953337 /* DatabaseInspectorView.swift in Sources */,
 				4AEAB4602AA68FCB00B88723 /* ChipUtilities.swift in Sources */,
+				4A54BCCA2AB29173005B24B1 /* BookRowModel.swift in Sources */,
 				4AEAB4622AA68FF500B88723 /* SpecializedTextBoxes.swift in Sources */,
 				4A6C7E6F2AA14B4400FF95FB /* AppOverview.swift in Sources */,
 				4A7E7D6E2AA0582600504BAF /* LRUCache.swift in Sources */,
@@ -409,6 +416,7 @@
 				4ADF00A02AAFB280008C98E6 /* FakePublisherLogoView.swift in Sources */,
 				4AB6E7B32A9BE0FB00A8EFA0 /* ComicFileHandler.swift in Sources */,
 				4A69E8462AB0D3B300CD023A /* ReadMeNotes.swift in Sources */,
+				4A54BCCC2AB3AEAE005B24B1 /* File.swift in Sources */,
 				4A2E60792A9D391D00953337 /* DiagnosticView.swift in Sources */,
 				4A4EFD512AA385D700B7E4C8 /* ComicImageResizer.swift in Sources */,
 			);
@@ -534,6 +542,10 @@
 		4AB6E7A92A9BD90A00A8EFA0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64x,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ComixCrate/ComixCrate.entitlements;
@@ -543,6 +555,7 @@
 				DEVELOPMENT_TEAM = Y854J87CU9;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				EXCLUDED_ARCHS = arm64e;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -572,6 +585,10 @@
 		4AB6E7AA2A9BD90A00A8EFA0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64x,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ComixCrate/ComixCrate.entitlements;
@@ -581,6 +598,7 @@
 				DEVELOPMENT_TEAM = Y854J87CU9;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				EXCLUDED_ARCHS = arm64e;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -631,7 +649,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		4AB6E7B42A9BE13400A8EFA0 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+		4AD861A72AB41154006A390D /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
 			requirement = {
@@ -642,9 +660,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4AB6E7B52A9BE13400A8EFA0 /* ZIPFoundation */ = {
+		4AD861A82AB41154006A390D /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4AB6E7B42A9BE13400A8EFA0 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			package = 4AD861A72AB41154006A390D /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -48,7 +48,7 @@ struct BookDetailsMainView: View {
                         .padding(.bottom, 5.0)
                     Spacer()
                 }
-                Text(book.sypnosis ?? "")
+                Text(book.summary ?? "")
             }
             .font(.subheadline)
             .padding(.horizontal)

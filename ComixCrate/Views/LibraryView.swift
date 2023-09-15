@@ -15,13 +15,13 @@ struct LibraryView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var viewModel: LibraryViewModel
-
+    
     @FetchRequest(
         entity: Book.entity(),
         sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)]
     ) private var allBooks: FetchedResults<Book>
     var allEntities: AnyFetchedResults
-
+    
     
     @State private var isGalleryView: Bool = true
     @State private var showingDocumentPicker = false
@@ -36,7 +36,7 @@ struct LibraryView: View {
     @State private var importProgress: Double = 0.0
     @State private var currentImportingFilename: String = ""
     @EnvironmentObject var importingState: ImportingState
-
+    
     
     private let spacing: CGFloat = 10
     private var gridItems: [GridItem] {
@@ -63,7 +63,7 @@ struct LibraryView: View {
         self._isImporting = isImporting
         self.allEntities = allEntities
     }
-
+    
     // MARK: - Body
     
     var body: some View {
@@ -73,7 +73,7 @@ struct LibraryView: View {
         .overlay(
             isImporting ? AnyView(ImportProgressView(progress: $importProgress, currentFilename: $currentImportingFilename, currentBookNumber: $importingState.currentBookNumber, totalBooks: $importingState.totalBooks)) : AnyView(EmptyView())
         )
-
+        
         .toolbar {
             toolbarContent
         }
@@ -114,7 +114,7 @@ struct LibraryView: View {
             }
         }
     }
-
+    
     
     private var emptyLibraryContent: some View {
         VStack {
@@ -143,15 +143,53 @@ struct LibraryView: View {
     
     private var listViewContent: some View {
         List(viewModel.books, id: \.self) { book in
-            bookTile(for: book)
+            bookRow(for: book)
+                .opacity(isSelecting && !selectedBooks.contains(book) ? 0.5 : 1.0)
+                .onTapGesture(count: 2) {
+                    handleBookSelection(book: book)
+                }
+                .contextMenu {
+                    Button(action: {
+                        // Mark the book as read
+                    }) {
+                        Label("Mark as Read", systemImage: "book.closed")
+                    }
+                    
+                    Button(action: {
+                        // Delete the book
+                    }) {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
         }
     }
     
     private func bookTile(for book: Book) -> some View {
+        BookTileModel(book: book)
+            .opacity(isSelecting && !selectedBooks.contains(book) ? 0.5 : 1.0)
+            .onTapGesture(count: 2) {
+                handleBookSelection(book: book)
+            }
+            .contextMenu {
+                Button(action: {
+                    // Mark the book as read
+                }) {
+                    Label("Mark as Read", systemImage: "book.closed")
+                }
+                
+                Button(action: {
+                    // Delete the book
+                }) {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+    }
+    
+    private func bookRow(for book: Book) -> some View {
         Button {
             handleBookSelection(book: book)
         } label: {
-            BookTileModel(book: book)
+            BookRowModel(book: book)
                 .opacity(isSelecting && !selectedBooks.contains(book) ? 0.5 : 1.0)
         }
     }
@@ -162,8 +200,9 @@ struct LibraryView: View {
                 deleteButton
                 doneButton
             } else {
-                galleryViewButton
-                listViewButton
+                //                galleryViewButton
+                //                listViewButton
+                toggleViewButton
                 filterButton
                 addBooksButton
                 selectButton
@@ -209,19 +248,15 @@ struct LibraryView: View {
         }
     }
     
-    private var galleryViewButton: some View {
+    private var toggleViewButton: some View {
         Button(action: {
-            isGalleryView = true
+            isGalleryView.toggle()
         }) {
-            Label("Gallery", systemImage: "square.grid.2x2")
-        }
-    }
-    
-    private var listViewButton: some View {
-        Button(action: {
-            isGalleryView = false
-        }) {
-            Label("List", systemImage: "line.3.horizontal")
+            if isGalleryView {
+                Label("List", systemImage: "line.3.horizontal")
+            } else {
+                Label("Gallery", systemImage: "square.grid.2x2")
+            }
         }
     }
     
@@ -243,13 +278,6 @@ struct LibraryView: View {
     
     // MARK: - Helper Functions
     
-    //    private func handleImportedFiles(urls: [URL]) {
-    //        for url in urls {
-    //            ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
-    //        }
-    //    }
-    // Over written for progress view
-    
     private func handleImportedFiles(urls: [URL]) {
         importingState.isImporting = true
         let totalFiles = Double(urls.count)
@@ -257,7 +285,15 @@ struct LibraryView: View {
         DispatchQueue.global(qos: .userInitiated).async {
             for (index, url) in urls.enumerated() {
                 let filename = url.lastPathComponent
-                ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
+                
+                do {
+                    try ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
+                } catch {
+                    print("Error handling imported file: \(error)")
+                    // Handle the error or break out of the loop if necessary
+                    continue
+                }
+                
                 let currentProgress = Double(index + 1) / totalFiles
                 
                 DispatchQueue.main.async {
@@ -272,9 +308,10 @@ struct LibraryView: View {
                 importingState.isImporting = false
             }
         }
+        
     }
-
-
+    
+    
     
     private func handleBookSelection(book: Book) {
         if isSelecting {
@@ -283,7 +320,6 @@ struct LibraryView: View {
             selectedBook = book
         }
     }
-    
     
     private func deletionAlert(title: String, message: String, action: @escaping () -> Void) -> Alert {
         Alert(

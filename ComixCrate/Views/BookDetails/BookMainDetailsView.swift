@@ -20,7 +20,7 @@ struct BookMainDetails: View {
         }
         
         return bookStoryArcsSet.compactMap { bookStoryArc in
-            return bookStoryArc.storyArc?.storyArcName
+            return bookStoryArc.storyArc?.name
         }
     }
 

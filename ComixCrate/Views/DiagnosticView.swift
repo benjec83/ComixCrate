@@ -23,11 +23,11 @@ struct DiagnosticView: View {
     private var allPublishers: FetchedResults<Publisher>
     
     // FetchRequest for StoryArc
-    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.storyArcName, ascending: true)])
+    @FetchRequest(entity: StoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \StoryArc.name, ascending: true)])
     private var allStoryArcs: FetchedResults<StoryArc>
     
     // FetchRequest for Events
-    @FetchRequest(entity: Event.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Event.eventName, ascending: true)])
+    @FetchRequest(entity: Event.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Event.name, ascending: true)])
     private var allEvents: FetchedResults<Event>
     
     var deleter: CoreDataDeleter {
@@ -61,7 +61,7 @@ struct DiagnosticView: View {
             Section(header: Text("All Story Arcs")) {
                 ForEach(allStoryArcs, id: \.self) { storyArc in
                     NavigationLink(destination: RelatedBooksView(relatedObject: storyArc, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
-                        Text(storyArc.storyArcName ?? "Unknown Story Arc")
+                        Text(storyArc.name ?? "Unknown Story Arc")
                     }
                 }
                 .onDelete(perform: { offsets in
@@ -71,7 +71,7 @@ struct DiagnosticView: View {
             Section(header: Text("All Events")) {
                 ForEach(allEvents, id: \.self) { event in
                     NavigationLink(destination: RelatedBooksView(relatedObject: event, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
-                        Text(event.eventName ?? "Unknown Event")
+                        Text(event.name ?? "Unknown Event")
                     }
                 }
                 .onDelete(perform: { offsets in

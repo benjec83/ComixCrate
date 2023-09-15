@@ -35,9 +35,9 @@ struct ChipView: View {
                                 }
                             }
                             )}
-                        .padding(.bottom, 20)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(minWidth: 250)
+//                        .padding(.bottom, 2)
+                        .fixedSize(horizontal: false, vertical: false)
+//                        .frame(minWidth: 250)
                         .animation(.easeInOut, value: chips)
                         .background(GeometryReader { gp -> Color in
                             DispatchQueue.main.async {
@@ -50,6 +50,7 @@ struct ChipView: View {
                 }
             }
         }
+//        .padding(.bottom, 100)
     }
     
     func createLabel(for chip: TempChipData) -> String {
@@ -57,8 +58,8 @@ struct ChipView: View {
             return chip.tempValue1 // Default return if entity type is not recognized
         }
         
-        let attribute1DisplayName = entityType.attributes.field1.displayName
-        let attribute2DisplayName = entityType.attributes.field2.displayName
+        let attribute1DisplayName = entityType.attribute.field1.displayName
+        let attribute2DisplayName = entityType.attribute.field2.displayName
         
         switch chip.tempValue2 {
         case .string:

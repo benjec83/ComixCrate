@@ -26,7 +26,7 @@ class EntityInputViewModel: ObservableObject {
     var filteredEntities: [NSManagedObject] {
         let lowercasedInput = editedAttribute1.lowercased()
         return allEntities.objects.filter {
-            ($0.value(forKey: type.attributes.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true
+            ($0.value(forKey: type.attribute.field1.attribute) as? String)?.lowercased().contains(lowercasedInput) == true
         }
         .prefix(5)
         .map { $0 }

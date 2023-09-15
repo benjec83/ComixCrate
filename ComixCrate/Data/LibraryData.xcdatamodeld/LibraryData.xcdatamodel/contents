@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22203.2" systemVersion="22G91" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22222" systemVersion="22G91" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="Book" representedClassName="Book" syncable="YES" codeGenerationType="class">
         <attribute name="cachedThumbnailData" optional="YES" attributeType="Binary"/>
         <attribute name="communityRating" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
@@ -23,9 +23,9 @@
         <attribute name="purchaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="purchaseFrom" optional="YES" attributeType="String"/>
         <attribute name="purchasePrice" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
-        <attribute name="read" optional="YES" attributeType="Double" usesScalarValueType="YES"/>
+        <attribute name="read" optional="YES" attributeType="Decimal"/>
         <attribute name="releaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="sypnosis" optional="YES" attributeType="String"/>
+        <attribute name="summary" optional="YES" attributeType="String"/>
         <attribute name="thumbnailPath" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="volumeNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -39,7 +39,7 @@
         <relationship name="event" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="book" inverseEntity="Event"/>
         <relationship name="formats" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Format" inverseName="book" inverseEntity="Format"/>
         <relationship name="imprint" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Imprint" inverseName="book" inverseEntity="Imprint"/>
-        <relationship name="locations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Locations" inverseName="book" inverseEntity="Locations"/>
+        <relationship name="locations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Locations" inverseName="books" inverseEntity="Locations"/>
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="book" inverseEntity="Publisher"/>
         <relationship name="series" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Series" inverseName="book" inverseEntity="Series"/>
         <relationship name="storyArc" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="StoryArc" inverseName="book" inverseEntity="StoryArc"/>
@@ -68,7 +68,7 @@
         <relationship name="storyArc" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="StoryArc" inverseName="booksInArc" inverseEntity="StoryArc"/>
     </entity>
     <entity name="Characters" representedClassName="Characters" syncable="YES" codeGenerationType="class">
-        <attribute name="characterName" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="books" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="characters" inverseEntity="Book"/>
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="charcters" inverseEntity="Publisher"/>
     </entity>
@@ -76,32 +76,32 @@
         <attribute name="creatorBio" optional="YES" attributeType="String"/>
         <attribute name="creatorBirthday" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="creatorDeathDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="creatorName" optional="YES" attributeType="String"/>
         <attribute name="creatorProfilePic" optional="YES" attributeType="Binary"/>
         <attribute name="creatorSocial" optional="YES" attributeType="String"/>
         <attribute name="creatorWebsite" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="bookCreatorRoles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookCreatorRole" inverseName="creator" inverseEntity="BookCreatorRole"/>
     </entity>
     <entity name="CreatorRole" representedClassName="CreatorRole" syncable="YES" codeGenerationType="class">
-        <attribute name="creatorRole" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="bookCreatorRoles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookCreatorRole" inverseName="creatorRole" inverseEntity="BookCreatorRole"/>
     </entity>
     <entity name="Era" representedClassName="Era" syncable="YES" codeGenerationType="class">
         <attribute name="eraDescription" optional="YES" attributeType="String"/>
-        <attribute name="eraName" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
         <relationship name="books" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="era" inverseEntity="Book"/>
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="era" inverseEntity="Publisher"/>
     </entity>
     <entity name="Event" representedClassName="Event" syncable="YES" codeGenerationType="class">
         <attribute name="eventDescription" optional="YES" attributeType="String"/>
-        <attribute name="eventName" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="book" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="event" inverseEntity="Book"/>
         <relationship name="booksInEvent" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BookEvents" inverseName="events" inverseEntity="BookEvents"/>
     </entity>
     <entity name="Format" representedClassName="Format" syncable="YES" codeGenerationType="class">
         <attribute name="filePath" optional="YES" attributeType="String"/>
-        <attribute name="formatName" optional="YES" attributeType="String"/>
         <attribute name="isDigital" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="purchaseLink" optional="YES" attributeType="String"/>
         <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="formats" inverseEntity="Book"/>
     </entity>
@@ -111,8 +111,8 @@
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher"/>
     </entity>
     <entity name="Locations" representedClassName="Locations" syncable="YES" codeGenerationType="class">
-        <attribute name="locationName" optional="YES" attributeType="String"/>
-        <relationship name="book" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Book" inverseName="locations" inverseEntity="Book"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="books" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="locations" inverseEntity="Book"/>
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="location" inverseEntity="Publisher"/>
     </entity>
     <entity name="Page" representedClassName="Page" syncable="YES" codeGenerationType="class">
@@ -143,14 +143,14 @@
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher" inverseName="series" inverseEntity="Publisher"/>
     </entity>
     <entity name="StoryArc" representedClassName="StoryArc" syncable="YES" codeGenerationType="class">
+        <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="storyArcDescription" optional="YES" attributeType="String"/>
-        <attribute name="storyArcName" optional="YES" attributeType="String"/>
         <attribute name="storyArcPart" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="book" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="storyArc" inverseEntity="Book"/>
         <relationship name="booksInArc" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BookStoryArcs" inverseName="storyArc" inverseEntity="BookStoryArcs"/>
     </entity>
     <entity name="Teams" representedClassName="Teams" syncable="YES" codeGenerationType="class">
-        <attribute name="teamName" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="books" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="teams" inverseEntity="Book"/>
         <relationship name="publisher" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Publisher"/>
     </entity>
