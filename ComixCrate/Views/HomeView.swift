@@ -90,7 +90,7 @@ struct HomeView: View {
                 HStack {
                     Text("Currently Reading")
                     Spacer()
-                    NavigationLink(destination: LibraryView(filter: .currentlyReading, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)) {
+                    NavigationLink(destination: LibraryView(filter: .currentlyReading, isImporting: $isImporting, type: .joinEntityEvent, allEntities: allEntities)) {
                         Label("View all", systemImage: "chevron.right")
                     }
                 }
@@ -120,7 +120,7 @@ struct HomeView: View {
                     .sheet(item: $selected) { item in
                         NavigationStack {
                             VStack {
-                                BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
+                                BookSheetView(book: item, type: .joinEntityEvent, allEntities: allEntities)
                             }
                         }
                     }
@@ -151,7 +151,7 @@ struct HomeView: View {
                     .sheet(item: $selected) { item in
                         NavigationStack {
                             VStack {
-                                BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
+                                BookSheetView(book: item, type: .joinEntityEvent, allEntities: allEntities)
                             }
                         }
                     }
@@ -163,7 +163,7 @@ struct HomeView: View {
                 HStack {
                     Text("Favorites")
                     Spacer()
-                    NavigationLink(destination: LibraryView(filter: .favorites, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)) {
+                    NavigationLink(destination: LibraryView(filter: .favorites, isImporting: $isImporting, type: .joinEntityEvent, allEntities: allEntities)) {
                         Label("View all", systemImage: "chevron.right")
                     }
                 }
@@ -180,7 +180,7 @@ struct HomeView: View {
                     .sheet(item: $selected) { item in
                         NavigationStack {
                             VStack {
-                                BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
+                                BookSheetView(book: item, type: .joinEntityEvent, allEntities: allEntities)
                             }
                         }
                     }
@@ -210,7 +210,7 @@ struct HomeView: View {
                     .sheet(item: $selected) { item in
                         NavigationStack {
                             VStack {
-                                BookSheetView(book: item,  type: .bookEvents, allEntities: allEntities)
+                                BookSheetView(book: item,  type: .joinEntityEvent, allEntities: allEntities)
                             }
                         }
                     }

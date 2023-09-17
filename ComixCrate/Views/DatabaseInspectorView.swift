@@ -12,16 +12,18 @@ struct DatabaseInspectorView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Book.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)])
     private var books: FetchedResults<Book>
-    @FetchRequest(entity: BookStoryArcs.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \BookStoryArcs.storyArc, ascending: true)])
-    private var arcs: FetchedResults<BookStoryArcs>
+    @FetchRequest(entity: JoinEntityStoryArc.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \JoinEntityStoryArc.storyArc, ascending: true)])
+    private var arcs: FetchedResults<JoinEntityStoryArc>
     @FetchRequest(entity: Characters.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Characters.name, ascending: true)])
     private var characters: FetchedResults<Characters>
-    @FetchRequest(entity: BookCreatorRole.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \BookCreatorRole.creatorRole, ascending: true)])
-    private var bookCreatorRoles: FetchedResults<BookCreatorRole>
-    @FetchRequest(entity: Locations.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Locations.name, ascending: true)])
-    private var locations: FetchedResults<Locations>
+    @FetchRequest(entity: JoinEntityCreator.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \JoinEntityCreator.creatorRole, ascending: true)])
+    private var bookCreatorRoles: FetchedResults<JoinEntityCreator>
+    @FetchRequest(entity: BookLocations.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \BookLocations.name, ascending: true)])
+    private var locations: FetchedResults<BookLocations>
     @FetchRequest(entity: Teams.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Teams.name, ascending: true)])
     private var teams: FetchedResults<Teams>
+    @FetchRequest(entity: Event.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Event.name, ascending: true)])
+    private var events: FetchedResults<Event>
     
     
     let dateFormatterWithTime: DateFormatter = {
@@ -47,9 +49,9 @@ struct DatabaseInspectorView: View {
                             VStack(alignment: .leading) {
                                 Text("Title: \(book.title ?? "Unknown")")
                                 Text("Issue Number: \(String(book.issueNumber))")
-                                Text("Series: \(book.series?.name ?? "Unknown")")
-                                Text("Story Arcs: \((book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.name }.joined(separator: ", ") ?? "Unknown")")
-                                Text("Events: \((book.event as? Set<BookEvents>)?.compactMap { $0.events?.name }.joined(separator: ", ") ?? "Unknown")")
+                                Text("Series: \(book.bookSeries?.name ?? "Unknown")")
+                                Text("Story Arcs: \((book.arcJoins as? Set<JoinEntityStoryArc>)?.compactMap { $0.storyArc?.name }.joined(separator: ", ") ?? "Unknown")")
+                                Text("Events: \((book.eventJoins as? Set<JoinEntityEvent>)?.compactMap { $0.events?.name }.joined(separator: ", ") ?? "Unknown")")
                                 Text("Publisher: \(book.publisher?.name ?? "Unknown")")
                                 Text("Favorite: \(book.isFavorite ? "Yes" : "No")")
                                 Text("Volume Year: \(String(book.volumeYear))")
@@ -58,7 +60,7 @@ struct DatabaseInspectorView: View {
                                 Text("Cover Date: \(dateFormatterWithoutTime.string(from: book.coverDate ?? Date()))")
                                 Text("Characters: \((book.characters as? Set<Characters>)?.compactMap { $0.name }.joined(separator: ", ") ?? "Unknown")")
                                 Text("Teams: \((book.teams as? Set<Teams>)?.compactMap { $0.name }.joined(separator: ", ") ?? "Unknown")")
-                                Text("Locations: \((book.locations as? Set<Locations>)?.compactMap { $0.name }.joined(separator: ", ") ?? "Unknown")")
+                                Text("Locations: \((book.locations as? Set<BookLocations>)?.compactMap { $0.name }.joined(separator: ", ") ?? "Unknown")")
                                 Text("Personal Rating: \(String(book.personalRating))")
                                 Text("Date Added: \(dateFormatterWithTime.string(from: book.dateAdded ?? Date()))")
                                 Text("Read: \(book.read?.stringValue ?? "N/A")")
@@ -119,7 +121,7 @@ struct DatabaseInspectorView: View {
         .navigationBarTitle("Database Inspector", displayMode: .inline)
     }
     func creatorsForBook(book: Book) -> String {
-        guard let bookCreatorRolesSet = book.bookCreatorRole as? Set<BookCreatorRole> else { return "Unknown" }
+        guard let bookCreatorRolesSet = book.creatorJoins as? Set<JoinEntityCreator> else { return "Unknown" }
         let creatorsList = bookCreatorRolesSet.compactMap { role in
             "\(role.creatorRole?.name ?? "Unknown Role"): \(role.creator?.name ?? "Unknown Creator")"
         }
@@ -130,32 +132,32 @@ struct DatabaseInspectorView: View {
     func sortedBooksForCharacter(character: Characters) -> String {
         guard let booksSet = character.books as? Set<Book> else { return "Unknown" }
         let sortedBooks = booksSet.sorted { (book1, book2) in
-            if book1.series?.name == book2.series?.name {
+            if book1.bookSeries?.name == book2.bookSeries?.name {
                 return book1.issueNumber < book2.issueNumber
             }
-            return (book1.series?.name ?? "") < (book2.series?.name ?? "")
+            return (book1.bookSeries?.name ?? "") < (book2.bookSeries?.name ?? "")
         }
-        return sortedBooks.compactMap { "\($0.series?.name ?? "Unknown") #\($0.issueNumber)" }.joined(separator: ", ")
+        return sortedBooks.compactMap { "\($0.bookSeries?.name ?? "Unknown") #\($0.issueNumber)" }.joined(separator: ", ")
     }
     func sortedBooksForTeam(team: Teams) -> String {
         guard let booksSet = team.books as? Set<Book> else { return "Unknown" }
         let sortedBooks = booksSet.sorted { (book1, book2) in
-            if book1.series?.name == book2.series?.name {
+            if book1.bookSeries?.name == book2.bookSeries?.name {
                 return book1.issueNumber < book2.issueNumber
             }
-            return (book1.series?.name ?? "") < (book2.series?.name ?? "")
+            return (book1.bookSeries?.name ?? "") < (book2.bookSeries?.name ?? "")
         }
-        return sortedBooks.compactMap { "\($0.series?.name ?? "Unknown") #\($0.issueNumber)" }.joined(separator: ", ")
+        return sortedBooks.compactMap { "\($0.bookSeries?.name ?? "Unknown") #\($0.issueNumber)" }.joined(separator: ", ")
     }
-    func sortedBooksForLocation(location: Locations) -> String {
+    func sortedBooksForLocation(location: BookLocations) -> String {
         guard let booksSet = location.books as? Set<Book> else { return "Unknown" }
         let sortedBooks = booksSet.sorted { (book1, book2) in
-            if book1.series?.name == book2.series?.name {
+            if book1.bookSeries?.name == book2.bookSeries?.name {
                 return book1.issueNumber < book2.issueNumber
             }
-            return (book1.series?.name ?? "") < (book2.series?.name ?? "")
+            return (book1.bookSeries?.name ?? "") < (book2.bookSeries?.name ?? "")
         }
-        return sortedBooks.compactMap { "\($0.series?.name ?? "Unknown") #\($0.issueNumber)" }.joined(separator: ", ")
+        return sortedBooks.compactMap { "\($0.bookSeries?.name ?? "Unknown") #\($0.issueNumber)" }.joined(separator: ", ")
     }
     
 }

@@ -75,7 +75,7 @@ class SelectedBookViewModel: ObservableObject {
     
     func updateEditedAttributes(for chip: TempChipData) {
         switch EntityType(rawValue: chip.entity) {
-        case .bookStoryArc:
+        case .joinEntityStoryArc:
             editedStoryArcName = chip.tempValue1
             switch chip.tempValue2 {
             case .string(let stringValue):
@@ -83,7 +83,7 @@ class SelectedBookViewModel: ObservableObject {
             case .int16(let intValue):
                 editedStoryArcPart = "\(intValue)"
             }
-        case .bookEvents:
+        case .joinEntityEvent:
             editedEventName = chip.tempValue1
             switch chip.tempValue2 {
             case .string(let stringValue):

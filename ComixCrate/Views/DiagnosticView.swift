@@ -15,8 +15,8 @@ struct DiagnosticView: View {
 
     
     // FetchRequest for Series
-@FetchRequest(entity: Series.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Series.name, ascending: true)])
-    private var allSeries: FetchedResults<Series>
+@FetchRequest(entity: BookSeries.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \BookSeries.name, ascending: true)])
+    private var allSeries: FetchedResults<BookSeries>
     
     // FetchRequest for Publisher
     @FetchRequest(entity: Publisher.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Publisher.name, ascending: true)])
@@ -38,7 +38,7 @@ struct DiagnosticView: View {
         List {
             Section(header: Text("All Series")) {
                 ForEach(allSeries, id: \.self) { series in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: series, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
+                    NavigationLink(destination: RelatedBooksView(relatedObject: series, type: .joinEntityEvent, allEntities: allEntities, filter: .allBooks)) {
                         Text(series.name ?? "Unknown Series")
                     }
                 }
@@ -49,7 +49,7 @@ struct DiagnosticView: View {
             
             Section(header: Text("All Publishers")) {
                 ForEach(allPublishers, id: \.self) { publisher in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: publisher, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
+                    NavigationLink(destination: RelatedBooksView(relatedObject: publisher, type: .joinEntityEvent, allEntities: allEntities, filter: .allBooks)) {
                         Text(publisher.name ?? "Unknown Publisher")
                     }
                 }
@@ -60,7 +60,7 @@ struct DiagnosticView: View {
             
             Section(header: Text("All Story Arcs")) {
                 ForEach(allStoryArcs, id: \.self) { storyArc in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: storyArc, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
+                    NavigationLink(destination: RelatedBooksView(relatedObject: storyArc, type: .joinEntityEvent, allEntities: allEntities, filter: .allBooks)) {
                         Text(storyArc.name ?? "Unknown Story Arc")
                     }
                 }
@@ -70,7 +70,7 @@ struct DiagnosticView: View {
             }
             Section(header: Text("All Events")) {
                 ForEach(allEvents, id: \.self) { event in
-                    NavigationLink(destination: RelatedBooksView(relatedObject: event, type: .bookEvents, allEntities: allEntities, filter: .allBooks)) {
+                    NavigationLink(destination: RelatedBooksView(relatedObject: event, type: .joinEntityEvent, allEntities: allEntities, filter: .allBooks)) {
                         Text(event.name ?? "Unknown Event")
                     }
                 }

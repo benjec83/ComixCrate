@@ -14,7 +14,7 @@ struct BookRowModel: View {
     // MARK: - Computed Properties
     
     private var seriesName: String? {
-        book.series?.name
+        book.bookSeries?.name
     }
     
     private var publisherName: String? {
@@ -22,7 +22,7 @@ struct BookRowModel: View {
     }
     
     private var storyArcNames: [String] {
-        (book.storyArc as? Set<StoryArc>)?.compactMap { $0.name } ?? []
+        (book.arcJoins as? Set<StoryArc>)?.compactMap { $0.name } ?? []
     }
 
     

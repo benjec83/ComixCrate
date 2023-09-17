@@ -22,7 +22,7 @@ struct BookDetails: View {
     }
     
     private var seriesName: String? {
-        book.series?.name
+        book.bookSeries?.name
     }
     
     var body: some View {
@@ -53,7 +53,7 @@ struct BookDetails: View {
         .navigationBarItems(trailing:
                                 HStack {
             Button {
-                isEditing = true
+                isEditing.toggle()
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
@@ -80,7 +80,7 @@ struct BookDetails: View {
         )
     }
     var bookTitle: String {
-        return "#" + "\(String(book.issueNumber))" + " - " + "\(book.title ?? book.series?.name ?? "")"
+        return "#" + "\(String(book.issueNumber))" + " - " + "\(book.title ?? book.bookSeries!.name ?? "")"
     }
 }
 

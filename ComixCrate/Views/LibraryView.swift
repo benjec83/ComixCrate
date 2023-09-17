@@ -94,7 +94,7 @@ struct LibraryView: View {
         .sheet(item: $selectedBook) { item in
             NavigationStack {
                 VStack {
-                    BookSheetView(book: item, type: .bookEvents, allEntities: allEntities)
+                    BookSheetView(book: item, type: .joinEntityEvent, allEntities: allEntities)
                 }
             }
         }
@@ -342,7 +342,7 @@ struct LibraryView: View {
     
     func deleteSelectedBooks() {
         for book in selectedBooks {
-            deleteRelatedEntitiesIfOrphaned(book: book, in: viewContext)
+//            deleteRelatedEntitiesIfOrphaned(book: book, in: viewContext)
             viewContext.delete(book)
         }
         CoreDataHelper.shared.saveContext(context: viewContext)
@@ -352,36 +352,36 @@ struct LibraryView: View {
     
     func deleteAll() {
         for book in viewModel.books {
-            deleteRelatedEntitiesIfOrphaned(book: book, in: viewContext)
+//            deleteRelatedEntitiesIfOrphaned(book: book, in: viewContext)
             viewContext.delete(book)
         }
         CoreDataHelper.shared.saveContext(context: viewContext)
     }
     
-    func deleteRelatedEntitiesIfOrphaned(book: Book, in context: NSManagedObjectContext) {
-        // Check Series
-        if let series = book.series {
-            checkAndDeleteEntity(entity: series, relatedTo: book, byKey: "series", in: context)
-        }
-        if let storyArcs = book.storyArc as? Set<StoryArc> {
-            for storyArc in storyArcs {
-                checkAndDeleteEntity(entity: storyArc, relatedTo: book, byKey: "storyArc", in: context)
-            }
-        }
-        if let events = book.event as? Set<Event> {
-            for event in events {
-                checkAndDeleteEntity(entity: event, relatedTo: book, byKey: "event", in: context)
-            }
-        }
-        if let publisher = book.publisher {
-            checkAndDeleteEntity(entity: publisher, relatedTo: book, byKey: "publisher", in: context)
-        }
-        // Add similar checks for other relationships like Publisher, Author, etc.
-        // Example:
-        // if let publisher = book.publisher {
-        //     checkAndDeleteEntity(entity: publisher, relatedTo: book, byKey: "publisher", in: context)
-        // }
-    }
+//    func deleteRelatedEntitiesIfOrphaned(book: Book, in context: NSManagedObjectContext) {
+//        // Check Series
+//        if let series = book.bookSeries {
+//            checkAndDeleteEntity(entity: series, relatedTo: book, byKey: "bookSeries", in: context)
+//        }
+//        if let storyArcs = book.arcJoins as? Set<StoryArc> {
+//            for storyArc in storyArcs {
+//                checkAndDeleteEntity(entity: storyArc, relatedTo: book, byKey: "storyArc", in: context)
+//            }
+//        }
+//        if let events = book.eventJoins as? Set<Event> {
+//            for event in events {
+//                checkAndDeleteEntity(entity: event, relatedTo: book, byKey: "event", in: context)
+//            }
+//        }
+//        if let publisher = book.publisher {
+//            checkAndDeleteEntity(entity: publisher, relatedTo: book, byKey: "publisher", in: context)
+//        }
+//        // Add similar checks for other relationships like Publisher, Author, etc.
+//        // Example:
+//        // if let publisher = book.publisher {
+//        //     checkAndDeleteEntity(entity: publisher, relatedTo: book, byKey: "publisher", in: context)
+//        // }
+//    }
     
     func checkAndDeleteEntity<T: NSManagedObject>(entity: T, relatedTo book: Book, byKey key: String, in context: NSManagedObjectContext) {
         let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()

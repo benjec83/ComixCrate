@@ -20,19 +20,19 @@ class ComicDataWriter {
         comicFile.fileName = url.lastPathComponent
         comicFile.filePath = url.path
         
-        let fetchRequest: NSFetchRequest<Series> = Series.fetchRequest()
+        let fetchRequest: NSFetchRequest<BookSeries> = BookSeries.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.series ?? "")
         
         let seriesEntities = try? context.fetch(fetchRequest)
-        var seriesEntity: Series!
+        var seriesEntity: BookSeries!
         if let existingSeries = seriesEntities?.first {
             seriesEntity = existingSeries
         } else {
-            seriesEntity = Series(context: context)
+            seriesEntity = BookSeries(context: context)
             seriesEntity.name = comicInfo.series
         }
         
-        comicFile.series = seriesEntity
+        comicFile.bookSeries = seriesEntity
         
         let publisherFetchRequest: NSFetchRequest<Publisher> = Publisher.fetchRequest()
         publisherFetchRequest.predicate = NSPredicate(format: "name == %@", comicInfo.publisher ?? "")

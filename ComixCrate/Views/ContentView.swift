@@ -45,12 +45,12 @@ struct ContentView: View {
                             Label("Home", systemImage: "house")
                         }
                         NavigationLink {
-                            LibraryView(filter: .allBooks, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)
+                            LibraryView(filter: .allBooks, isImporting: $isImporting, type: .joinEntityEvent, allEntities: allEntities)
                         } label: {
                             Label("Library", systemImage: "books.vertical")
                         }
                         NavigationLink {
-                            LibraryView(filter: .favorites, isImporting: $isImporting, type: .bookEvents, allEntities: allEntities)
+                            LibraryView(filter: .favorites, isImporting: $isImporting, type: .joinEntityEvent, allEntities: allEntities)
                         } label: {
                             Label("Favorites", systemImage: "star")
                         }

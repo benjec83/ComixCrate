@@ -32,11 +32,11 @@ struct EditBookView: View {
     
     @State private var chips: [TempChipData] = []
     private var bookStoryArcNames: [String] {
-        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.name  } ?? []
+        (book.arcJoins as? Set<JoinEntityStoryArc>)?.compactMap { $0.storyArc?.name  } ?? []
     }
     
     private var eventName: [String] {
-        (book.bookEvents as? Set<BookEvents>)?.compactMap { $0.events?.name } ?? []
+        (book.eventJoins as? Set<JoinEntityEvent>)?.compactMap { $0.events?.name } ?? []
     }
     
     @State private var editedTitle: String
@@ -49,7 +49,7 @@ struct EditBookView: View {
     @State private var editedSeriesVolume: String
     @State private var editedSeries: String = ""
     @State private var editedSummary: String = ""
-
+    
     
     
     
@@ -68,22 +68,22 @@ struct EditBookView: View {
         _editedTitle = State(initialValue: book.title ?? "")
         _editedIssueNumber = State(initialValue: "\(book.issueNumber)")
         _editedSummary = State(initialValue: book.summary ?? "")
-        _editedSeries = State(initialValue: book.series?.name ?? "")
+        _editedSeries = State(initialValue: book.bookSeries?.name ?? "")
         _editedReadPercentage = State(initialValue: book.read?.decimalValue ?? Decimal(0))
-        let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.name ?? ""
+        let firstStoryArcName = (book.arcJoins as? Set<StoryArc>)?.first?.name ?? ""
         _editedStoryArcName = State(initialValue: firstStoryArcName)
-        let firstEventName = (book.bookEvents as? Set<Event>)?.first?.name ?? ""
+        let firstEventName = (book.eventJoins as? Set<JoinEntityEvent>)?.first?.events?.name ?? ""
         _editedEventName = State(initialValue: firstEventName)
         _editedSeriesVolume = State(initialValue: "\(book.volumeYear)")
-
+        
         // Populate the chips array with existing story arcs from the book
-        let existingStoryArcs: [TempChipData] = (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap {
+        let existingStoryArcs: [TempChipData] = (book.arcJoins as? Set<JoinEntityStoryArc>)?.compactMap {
             let entityType = String(describing: type(of: $0).self) // This will give "BookStoryArcs"
             return TempChipData(entity: entityType, tempValue1: $0.storyArc?.name ?? "", tempValue2: ValueData.int16($0.storyArcPart))
         } ?? []
         
         // Populate the chips array with existing events from the book
-        let existingEvents: [TempChipData] = (book.bookEvents as? Set<BookEvents>)?.compactMap {
+        let existingEvents: [TempChipData] = (book.eventJoins as? Set<JoinEntityEvent>)?.compactMap {
             let entityType = String(describing: type(of: $0).self) // This will give "BookEvents"
             return TempChipData(entity: entityType, tempValue1: $0.events?.name ?? "", tempValue2: ValueData.int16($0.eventPart))
         } ?? []
@@ -91,7 +91,7 @@ struct EditBookView: View {
         _chips = State(initialValue: existingStoryArcs + existingEvents) // Combine both arrays
         print("Existing story arcs: \(existingStoryArcs)")
         print("Existing events: \(existingEvents)")
-
+        
     }
     
     
@@ -107,8 +107,8 @@ struct EditBookView: View {
             }
         )
     }
-
-
+    
+    
     
     // MARK: - Body
     var body: some View {
@@ -155,7 +155,7 @@ struct EditBookView: View {
                 HStack(spacing: 2) {
                     VStack(alignment: .leading) {
                         Section {
-                            EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookStoryArc, chips: $chips)
+                            EntityChipTextFieldView(book: book, viewModel: viewModel, type: .joinEntityStoryArc, chips: $chips)
                         }header: {
                             Text("Story Arcs")
                                 .multilineTextAlignment(.leading)
@@ -164,7 +164,7 @@ struct EditBookView: View {
                     Spacer(minLength: 10)
                     VStack(alignment: .leading) {
                         Section {
-                            EntityChipTextFieldView(book: book, viewModel: viewModel, type: .bookEvents, chips: $chips)
+                            EntityChipTextFieldView(book: book, viewModel: viewModel, type: .joinEntityEvent, chips: $chips)
                         }header: {
                             Text("Events")
                                 .multilineTextAlignment(.leading)
@@ -184,7 +184,7 @@ struct EditBookView: View {
                 
                 Section {
                     ChipView(viewModel: viewModel, chips: $chips, type: .creator, chipViewHeight: $chipViewHeight)
-
+                    
                     HStack {
                         VStack(alignment: .leading) {
                             Section {
@@ -270,15 +270,15 @@ extension EditBookView {
         book.issueNumber = Int16(editedIssueNumber) ?? 0
         book.read = NSDecimalNumber(decimal: editedReadPercentage)
         book.summary = editedSummary
-        book.series?.name = editedSeries
+        book.bookSeries?.name = editedSeries
         
         // Clear existing associations for the book based on EntityType
-        clearExistingAssociations(for: .bookStoryArc, from: book)
-        print("After clearing story arcs: \(book.bookStoryArcs?.count ?? 0) arcs")
-        clearExistingAssociations(for: .bookEvents, from: book)
-        print("After clearing events: \(book.bookEvents?.count ?? 0) events")
+        clearExistingAssociations(for: .joinEntityStoryArc, from: book)
+        print("After clearing story arcs: \(book.arcJoins?.count ?? 0) arcs")
+        clearExistingAssociations(for: .joinEntityEvent, from: book)
+        print("After clearing events: \(book.eventJoins?.count ?? 0) events")
         clearExistingAssociations(for: .creator, from: book)
-        print("After clearing creators: \(book.bookCreatorRole?.count ?? 0) creators")
+        print("After clearing creators: \(book.creatorJoins?.count ?? 0) creators")
         
         // For each chip in the chips array
         for chip in chips {
@@ -289,43 +289,50 @@ extension EditBookView {
             try viewContext.save()
             // Fetch the book again and print its associated story arcs and events to ensure changes are persisted
             if let savedBook = bookItems.first(where: { $0 == book }) {
-                print("After saving: \(savedBook.bookStoryArcs?.count ?? 0) story arcs")
-                print("After saving: \(savedBook.bookEvents?.count ?? 0) events")
+                print("After saving: \(savedBook.arcJoins?.count ?? 0) story arcs")
+                print("After saving: \(savedBook.eventJoins?.count ?? 0) events")
             }
         } catch {
-            print("Error saving edited book: \(error)")
+            print("Error saving edited book: \(error.localizedDescription)") // Added detailed error message
         }
     }
     
     func clearExistingAssociations(for type: EntityType, from book: Book) {
         switch type {
-        case .bookStoryArc:
-            if let existingBookStoryArcs = book.bookStoryArcs as? Set<BookStoryArcs> {
+        case .joinEntityStoryArc:
+            if let existingBookStoryArcs = book.arcJoins as? Set<JoinEntityStoryArc> {
                 for bookStoryArc in existingBookStoryArcs {
                     viewContext.delete(bookStoryArc)
                 }
+            } else {
+                print("Error: Failed to cast book.arcJoins to Set<JoinEntityStoryArc>") // Added error print statement
             }
-        case .bookEvents:
-            if let existingBookEvents = book.bookEvents as? Set<BookEvents> {
-                for bookEvents in existingBookEvents {
-                    viewContext.delete(bookEvents)
+        case .joinEntityEvent:
+            if let existingJoinEntityEvent = book.eventJoins as? Set<JoinEntityEvent> {
+                for joinEntityEvent in existingJoinEntityEvent {
+                    viewContext.delete(joinEntityEvent)
                 }
-            }        case .creator:
-            if let existingBookCreators = book.bookCreatorRole as? Set<BookCreatorRole> {
+            } else {
+                print("Error: Failed to cast book.eventJoins to Set<JoinEntityEvent>") // Added error print statement
+            }
+        case .creator:
+            if let existingBookCreators = book.creatorJoins as? Set<JoinEntityCreator> {
                 for bookCreator in existingBookCreators {
                     viewContext.delete(bookCreator)
                 }
+            } else {
+                print("Error: Failed to cast book.creatorJoins to Set<JoinEntityCreator>") // Added error print statement
             }
         }
     }
     func saveChip(_ chip: TempChipData) {
         switch EntityType(rawValue: chip.entity) {
-        case .bookStoryArc:
+        case .joinEntityStoryArc:
             saveStoryArcChip(chip)
-            print("After saving story arc chip: \(book.bookStoryArcs?.count ?? 0)") // Added print statement
-        case .bookEvents:
+            print("After saving story arc chip: \(book.arcJoins?.count ?? 0)") // Added print statement
+        case .joinEntityEvent:
             saveEventChip(chip)
-            print("After saving event chip: \(book.bookEvents?.count ?? 0)") // Added print statement
+            print("After saving event chip: \(book.eventJoins?.count ?? 0)") // Added print statement
         case .creator:
             print("save creator chip")
         default:
@@ -355,7 +362,7 @@ extension EditBookView {
         }
         
         // Create a new BookStoryArcs record to associate the book with the story arc
-        let bookStoryArc = BookStoryArcs(context: viewContext)
+        let bookStoryArc = JoinEntityStoryArc(context: viewContext)
         bookStoryArc.book = book
         bookStoryArc.storyArc = storyArc  // Assign the StoryArc object, not the name
         if let validPartNumber = partNumber {
@@ -387,7 +394,7 @@ extension EditBookView {
         }
         
         // Create a new BookEvent record to associate the book with the event
-        let bookEvent = BookEvents(context: viewContext)
+        let bookEvent = JoinEntityEvent(context: viewContext)
         bookEvent.books = book
         bookEvent.events = event
         if let validPartNumber = partNumber {

@@ -11,11 +11,11 @@ struct BookMainDetails: View {
     @ObservedObject var book: Book
     
     private var seriesName: String? {
-        book.series?.name
+        book.bookSeries?.name
     }
     
     private var storyArcNames: [String] {
-        guard let bookStoryArcsSet = book.bookStoryArcs as? Set<BookStoryArcs> else {
+        guard let bookStoryArcsSet = book.arcJoins as? Set<JoinEntityStoryArc> else {
             return []
         }
         

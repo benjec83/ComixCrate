@@ -26,12 +26,20 @@ struct EntityChipTextFieldView: View {
     private var allEvents: FetchedResults<Event>
     
     private var bookStoryArcNames: [String] {
-        (book.bookStoryArcs as? Set<BookStoryArcs>)?.compactMap { $0.storyArc?.name  } ?? []
-    }
-    
-    private var eventName: [String] {
-        (book.bookEvents as? Set<BookEvents>)?.compactMap { $0.events?.name } ?? []
-    }
+            let names = (book.arcJoins as? Set<JoinEntityStoryArc>)?.compactMap { $0.storyArc?.name  } ?? []
+            if names.isEmpty {
+                print("Error: Failed to fetch bookStoryArcNames or no names found.")
+            }
+            return names
+        }
+        
+        private var eventName: [String] {
+            let names = (book.eventJoins as? Set<JoinEntityEvent>)?.compactMap { $0.events?.name } ?? []
+            if names.isEmpty {
+                print("Error: Failed to fetch event names or no names found.")
+            }
+            return names
+        }
     
     //Bindings for EntityTextFieldView
     @State private var attribute1: String = ""
@@ -43,36 +51,49 @@ struct EntityChipTextFieldView: View {
     @State private var editedEventPart: String = ""
     
     init(book: Book, viewModel: SelectedBookViewModel, type: EntityType, chips: Binding<[TempChipData]>) {
-        _book = .constant(book)
-        self.viewModel = viewModel
-        self.type = type
-        let firstStoryArcName = (book.bookStoryArcs as? Set<StoryArc>)?.first?.name ?? ""
-        _editedStoryArcName = State(initialValue: firstStoryArcName)
-        let firstEventName = (book.bookEvents as? Set<Event>)?.first?.name ?? ""
-        _editedEventName = State(initialValue: firstEventName)
-        _chips = chips  // Assign the binding directly
-    }
-    
-    var body: some View {
-        
-        var anyFetchedEntities: AnyFetchedResults {
-            switch type {
-            case .bookStoryArc :
-                return AnyFetchedResults(allStoryArcs)
-            case .creator :
-                // Assuming you have a fetched results for bookCreatorRoles
-                // return AnyFetchedResults(allBookCreatorRoles)
-                fatalError("Fetched results for bookCreatorRoles not implemented yet")
-            case .bookEvents:
-                return AnyFetchedResults(allEvents)
+            _book = .constant(book)
+            self.viewModel = viewModel
+            self.type = type
+            let firstStoryArcName = (book.arcJoins as? Set<StoryArc>)?.first?.name ?? ""
+            if firstStoryArcName.isEmpty {
+                print("Error: Failed to fetch the first story arc name. Init Message")
             }
+            _editedStoryArcName = State(initialValue: firstStoryArcName)
+            let firstEventName = (book.eventJoins as? Set<Event>)?.first?.name ?? ""
+            if firstEventName.isEmpty {
+                print("Error: Failed to fetch the first event name. Init Message")
+            }
+            _editedEventName = State(initialValue: firstEventName)
+            _chips = chips  // Assign the binding directly
         }
+        
+        var body: some View {
+            
+            var anyFetchedEntities: AnyFetchedResults {
+                switch type {
+                case .joinEntityStoryArc :
+                    if allStoryArcs.isEmpty {
+                        print("Error: No story arcs found in fetched results.")
+                    }
+                    return AnyFetchedResults(allStoryArcs)
+                case .creator :
+                    // Assuming you have a fetched results for bookCreatorRoles
+                    // return AnyFetchedResults(allBookCreatorRoles)
+                    fatalError("Fetched results for bookCreatorRoles not implemented yet")
+                case .joinEntityEvent:
+                    if allEvents.isEmpty {
+                        print("Error: No events found in fetched results.")
+                    }
+                    return AnyFetchedResults(allEvents)
+                }
+            }
 
         VStack {
-            ChipView(viewModel: viewModel, chips: $chips, type: type, chipViewHeight: $chipViewHeight)
-            Spacer(minLength: chipViewHeight)
-            EntityInputView(viewModel: viewModel, type: type, chips: $chips, allEntities: anyFetchedEntities)
-                .padding(.top, 25)
+//            ChipView(viewModel: viewModel, chips: $chips, type: type, chipViewHeight: $chipViewHeight)
+//            Spacer(minLength: chipViewHeight)
+////            EntityInputView(viewModel: viewModel, type: type, chips: $chips, allEntities: anyFetchedEntities)
+////                .padding(.top, 25)
+//            EntityTextFieldView(viewModel: viewModel, type: .joinEntityEvent, chips: $chips, allEntities: anyFetchedEntities, placeholder: "Enter item...")
 
         }
         .animation(.easeInOut, value: chips)
