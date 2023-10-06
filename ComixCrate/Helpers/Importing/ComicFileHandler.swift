@@ -11,6 +11,9 @@ import UIKit
 
 class ComicFileHandler {
     
+    static var failedImports: [String] = []
+    
+    
     // MARK: - File Handling
     
     // Check for valid file extension
@@ -42,12 +45,15 @@ class ComicFileHandler {
             try unzipFile(at: url, to: tempDirectory)
             let imageFiles = try fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" })
             if imageFiles.isEmpty {
+                print("Error: No image files found in the unzipped directory.")
                 return false
+            } else {
+                print("Successfully found image files in the unzipped directory.")
             }
         } catch {
+            print("Error: Failed to unzip or read the contents of the directory.")
             return false
         }
-        
         return true
     }
     
@@ -114,212 +120,254 @@ class ComicFileHandler {
         }
     }
     
-    static func handleImportedFile(at url: URL, in context: NSManagedObjectContext) {
-        context.perform {
-            let fileManager = FileManager()
-            let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
+    static private let fileManager = FileManager()
+    
+    static private let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
+    
+    func handleImportedFile(at url: URL, in context: NSManagedObjectContext) throws {
+        print("Starting to handle file: \(url.lastPathComponent)")
+        
+        let tempDirectory = ComicFileHandler.createTempDirectory()
+        defer { ComicFileHandler.cleanupTempDirectory(tempDirectory) }
+        
+        try ComicFileHandler.unzipComicFile(at: url, to: tempDirectory)
+        
+        guard let comicInfo = ComicFileHandler.extractComicInfo(from: tempDirectory) else {
+            throw ComicFileHandlerError.missingComicInfo
+        }
+        
+        try saveComicInfo(comicInfo, from: url, in: context, tempDirectory: tempDirectory)
+        
+        // Remove the temporary directory
+        try? ComicFileHandler.fileManager.removeItem(at: tempDirectory)
+        
+        if let error = handleImportError {
+            throw error
+        }
+    }
+    
+    static private func createTempDirectory() -> URL {
+        let tempDirectory = try! fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(UUID().uuidString)
+        try? fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true, attributes: nil)
+        return tempDirectory
+    }
+    
+    static private func cleanupTempDirectory(_ directory: URL) {
+        try? fileManager.removeItem(at: directory)
+    }
+    
+    static private func unzipComicFile(at url: URL, to destination: URL) throws {
+        try fileManager.unzipItem(at: url, to: destination)
+    }
+    
+    static private func extractComicInfo(from directory: URL) -> ComicInfo? {
+        let comicInfoURL = directory.appendingPathComponent("ComicInfo.xml")
+        guard let data = try? Data(contentsOf: comicInfoURL) else { return nil }
+        return ComicFileHandler.parseComicInfoXML(data: data)
+    }
+    
+    private func saveComicInfo(_ comicInfo: ComicInfo, from url: URL, in context: NSManagedObjectContext, tempDirectory: URL) throws {
+        let comicFile = createComicFileEntity(from: comicInfo, url: url, in: context)
+        associateEntities(with: comicFile, from: comicInfo, in: context)
+        try saveImageFiles(from: tempDirectory, to: comicFile, in: context)
+    }
+    
+    
+    private func createComicFileEntity(from comicInfo: ComicInfo, url: URL, in context: NSManagedObjectContext) -> Book {
+        let comicFile = Book(context: context)
+        comicFile.fileName = url.lastPathComponent
+        comicFile.filePath = url.path
+        
+        // Add attribute values to Book Entity
+        comicFile.title = comicInfo.title
+        comicFile.issueNumber = comicInfo.number ?? 0
+        comicFile.dateAdded = Date()
+        comicFile.summary = comicInfo.summary
+        comicFile.web = comicInfo.web
+        comicFile.volumeYear = comicInfo.volume ?? 0
+        
+        let comicFileHandler = ComicFileHandler()
+        
+        // Add Series to Series Entity
+        comicFile.bookSeries = comicFileHandler.fetchOrCreateEntity(ofType: BookSeries.self, withName: comicInfo.series, in: context)
+        
+        // Add Publisher to Publisher Entity
+        comicFile.publisher = comicFileHandler.fetchOrCreateEntity(ofType: Publisher.self, withName: comicInfo.publisher ?? "", in: context)
+        
+        // Fetch or create Publisher entity
+        let publisherEntity = comicFileHandler.fetchOrCreateEntity(
+            ofType: Publisher.self,
+            withName: comicInfo.publisher ?? "",
+            in: context
+        )
+        
+        var allPublishers = comicFileHandler.fetchPublisher(withName: comicInfo.publisher ?? "", in: context)
+        
+        // Add Cover Date to Book.coverDate
+        
+        if let year = comicInfo.year, let month = comicInfo.month, let day = comicInfo.day {
+            var dateComponents = DateComponents()
+            dateComponents.year = year
+            dateComponents.month = month
+            dateComponents.day = day
             
-            do {
-                if !fileManager.fileExists(atPath: tempDirectory.path) {
-                    try fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true, attributes: nil)
+            let calendar = Calendar.current
+            if let coverDate = calendar.date(from: dateComponents) {
+                comicFile.coverDate = coverDate
+            }
+        }    }
+    
+    private func associateEntities(with comicFile: Book, from comicInfo: ComicInfo, in context: NSManagedObjectContext) {
+        // MARK: Add Characters with Publisher (matched to Publisher Entity)
+        let comicFileHandler = ComicFileHandler()
+        // Fetch or create Characters entities with the associated publisher
+        let charactersEntities = comicFileHandler.fetchOrCreateEntities(
+            ofType: Characters.self,
+            withNames: comicInfo.characters ?? [],
+            publisher: publisherEntity,
+            in: context
+        ) { entity, publisher in
+            if let charactersEntity = entity as? Characters {
+                charactersEntity.publisher = publisher
+            }
+        }
+        
+        // Associate characters with the book
+        charactersEntities.forEach { character in
+            character.addToBooks(comicFile)
+            comicFile.addToCharacters(character)
+        }
+        
+        // MARK: Add Teams with Publisher (matched to Publisher Entity)
+        // Fetch or create Teams entities with the associated publisher
+        let teamsEntities = comicFileHandler.fetchOrCreateEntities(
+            ofType: Teams.self,
+            withNames: comicInfo.teams ?? [],
+            publisher: publisherEntity,
+            in: context
+        ) { entity, publisher in
+            if let teamsEntity = entity as? Teams {
+                teamsEntity.publisher = publisher
+            }
+        }
+        
+        // Associate teams with the book
+        teamsEntities.forEach { team in
+            comicFile.addToTeams(team)
+        }
+        
+        // MARK: Add Locations with Publisher (matched to Publisher Entity)
+        // Fetch or create Locations entities with the associated publisher
+        let locationsEntities = comicFileHandler.fetchOrCreateEntities(
+            ofType: BookLocations.self,
+            withNames: comicInfo.locations ?? [],
+            publisher: publisherEntity,
+            in: context
+        ) { entity, publisher in
+            if let locationsEntity = entity as? BookLocations {
+                locationsEntity.publisher = publisher
+            }
+        }
+        
+        // Associate teams with the book
+        locationsEntities.forEach { location in
+            comicFile.addToLocations(location)
+        }
+        
+        // MARK: Add CreatorRoles
+        
+        // Fetch or create CreatorRoles entities
+        let creatorRolesEntities = comicFileHandler.fetchOrCreateEntities(
+            ofType: CreatorRole.self,
+            withNames: ["Writer", "Penciller", "Inker", "Colorist", "Letterer", "Cover Artist", "Editor"],
+            publisher: publisherEntity,
+            in: context
+        )
+        
+        // Fetch or create Creators entities
+        let creatorNames = [comicInfo.writer, comicInfo.penciller, comicInfo.inker, comicInfo.colorist, comicInfo.letterer, comicInfo.coverArtist, comicInfo.editor]
+            .compactMap { $0 }
+            .flatMap { $0 }
+        
+        let creatorsEntities = comicFileHandler.fetchOrCreateEntities(
+            ofType: Creator.self,
+            withNames: creatorNames,
+            publisher: publisherEntity,
+            in: context
+        )
+        
+        // Associate creators with roles and the book
+        for (roleName, creators) in [
+            ("Writer", comicInfo.writer),
+            ("Penciller", comicInfo.penciller),
+            ("Inker", comicInfo.inker),
+            ("Colorist", comicInfo.colorist),
+            ("Letterer", comicInfo.letterer),
+            ("Cover Artist", comicInfo.coverArtist),
+            ("Editor", comicInfo.editor)
+        ] {
+            if let roleEntity = creatorRolesEntities.first(where: { $0.name == roleName }) {
+                for creatorName in creators ?? [] {
+                    if let creatorEntity = creatorsEntities.first(where: { $0.name == creatorName }) {
+                        let bookCreatorRole = JoinEntityCreator(context: context)
+                        bookCreatorRole.book = comicFile
+                        bookCreatorRole.creator = creatorEntity
+                        bookCreatorRole.creatorRole = roleEntity
+                        comicFile.addToCreatorJoins(bookCreatorRole)
+                    }
                 }
-                
-                try fileManager.unzipItem(at: url, to: tempDirectory)
-                
-                let comicInfoURL = tempDirectory.appendingPathComponent("ComicInfo.xml")
-                if fileManager.fileExists(atPath: comicInfoURL.path) {
-                    if let data = try? Data(contentsOf: comicInfoURL), let comicInfo = parseComicInfoXML(data: data) {
-                        
-                        let comicFile = Book(context: context)
-                        comicFile.fileName = url.lastPathComponent
-                        comicFile.filePath = url.path
-                        
-                        // Add attribute values to Book Entity
-                        comicFile.title = comicInfo.title
-                        comicFile.issueNumber = comicInfo.number ?? 0
-                        comicFile.dateAdded = Date()
-                        comicFile.summary = comicInfo.summary
-                        comicFile.web = comicInfo.web
-                        
-                        let comicFileHandler = ComicFileHandler()
-                        
-                        // Add Series to Series Entity
-                        comicFile.bookSeries = comicFileHandler.fetchOrCreateEntity(ofType: BookSeries.self, withName: comicInfo.series, in: context)
-                        
-                        // Add Publisher to Publisher Entity
-                        comicFile.publisher = comicFileHandler.fetchOrCreateEntity(ofType: Publisher.self, withName: comicInfo.publisher ?? "", in: context)
-                        
-                        // Fetch or create Publisher entity
-                        let publisherEntity = comicFileHandler.fetchOrCreateEntity(
-                            ofType: Publisher.self,
-                            withName: comicInfo.publisher ?? "",
-                            in: context
-                        )
-                        
-                        var allPublishers = comicFileHandler.fetchPublisher(withName: comicInfo.publisher ?? "", in: context)
-                        
-                        // Add Cover Date to Book.coverDate
-                        
-                        if let year = comicInfo.year, let month = comicInfo.month, let day = comicInfo.day {
-                            var dateComponents = DateComponents()
-                            dateComponents.year = year
-                            dateComponents.month = month
-                            dateComponents.day = day
-                            
-                            let calendar = Calendar.current
-                            if let coverDate = calendar.date(from: dateComponents) {
-                                comicFile.coverDate = coverDate
-                            }
-                        }
-                        
-                        // MARK: Add Characters with Publisher (matched to Publisher Entity)
-                        // Fetch or create Characters entities with the associated publisher
-                        let charactersEntities = comicFileHandler.fetchOrCreateEntities(
-                            ofType: Characters.self,
-                            withNames: comicInfo.characters ?? [],
-                            publisher: publisherEntity,
-                            in: context
-                        ) { entity, publisher in
-                            if let charactersEntity = entity as? Characters {
-                                charactersEntity.publisher = publisher
-                            }
-                        }
-                        
-                        // Associate characters with the book
-                        charactersEntities.forEach { character in
-                            character.addToBooks(comicFile)
-                            comicFile.addToCharacters(character)
-                        }
-                        
-                        // MARK: Add Teams with Publisher (matched to Publisher Entity)
-                        // Fetch or create Teams entities with the associated publisher
-                        let teamsEntities = comicFileHandler.fetchOrCreateEntities(
-                            ofType: Teams.self,
-                            withNames: comicInfo.teams ?? [],
-                            publisher: publisherEntity,
-                            in: context
-                        ) { entity, publisher in
-                            if let teamsEntity = entity as? Teams {
-                                teamsEntity.publisher = publisher
-                            }
-                        }
-                        
-                        // Associate teams with the book
-                        teamsEntities.forEach { team in
-                            comicFile.addToTeams(team)
-                        }
-                        
-                        // MARK: Add Locations with Publisher (matched to Publisher Entity)
-                        // Fetch or create Locations entities with the associated publisher
-                        let locationsEntities = comicFileHandler.fetchOrCreateEntities(
-                            ofType: BookLocations.self,
-                            withNames: comicInfo.locations ?? [],
-                            publisher: publisherEntity,
-                            in: context
-                        ) { entity, publisher in
-                            if let locationsEntity = entity as? BookLocations {
-                                locationsEntity.publisher = publisher
-                            }
-                        }
-                        
-                        // Associate teams with the book
-                        locationsEntities.forEach { location in
-                            comicFile.addToLocations(location)
-                        }
-                        
-                        // MARK: Add CreatorRoles
-                        
-                        // Fetch or create CreatorRoles entities
-                        let creatorRolesEntities = comicFileHandler.fetchOrCreateEntities(
-                            ofType: CreatorRole.self,
-                            withNames: ["Writer", "Penciller", "Inker", "Colorist", "Letterer", "Cover Artist", "Editor"],
-                            publisher: publisherEntity,
-                            in: context
-                        )
-                        
-                        // Fetch or create Creators entities
-                        let creatorNames = [comicInfo.writer, comicInfo.penciller, comicInfo.inker, comicInfo.colorist, comicInfo.letterer, comicInfo.coverArtist, comicInfo.editor]
-                            .compactMap { $0 }
-                            .flatMap { $0 }
-                        
-                        let creatorsEntities = comicFileHandler.fetchOrCreateEntities(
-                            ofType: Creator.self,
-                            withNames: creatorNames,
-                            publisher: publisherEntity,
-                            in: context
-                        )
-                        
-                        // Associate creators with roles and the book
-                        for (roleName, creators) in [
-                            ("Writer", comicInfo.writer),
-                            ("Penciller", comicInfo.penciller),
-                            ("Inker", comicInfo.inker),
-                            ("Colorist", comicInfo.colorist),
-                            ("Letterer", comicInfo.letterer),
-                            ("Cover Artist", comicInfo.coverArtist),
-                            ("Editor", comicInfo.editor)
-                        ] {
-                            if let roleEntity = creatorRolesEntities.first(where: { $0.name == roleName }) {
-                                for creatorName in creators ?? [] {
-                                    if let creatorEntity = creatorsEntities.first(where: { $0.name == creatorName }) {
-                                        let bookCreatorRole = JoinEntityCreator(context: context)
-                                        bookCreatorRole.book = comicFile
-                                        bookCreatorRole.creator = creatorEntity
-                                        bookCreatorRole.creatorRole = roleEntity
-                                        comicFile.addToCreatorJoins(bookCreatorRole)
-                                    }
-                                }
-                            }
-                        }
-                        
-                        if let imageFiles = try? fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
-                            
-                            for imageURL in imageFiles {
-                                if let originalImage = UIImage(contentsOfFile: imageURL.path),
-                                   let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
-                                   let imageData = resizedImage.jpegData(compressionQuality: 1) {
-                                    
-                                    let uniqueFilename = "\(UUID().uuidString).\(imageURL.pathExtension)"
-                                    let destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
-                                    
-                                    try? imageData.write(to: destinationPath)
-                                    
-                                    if comicFile.thumbnailPath == nil {
-                                        comicFile.thumbnailPath = uniqueFilename
-                                    }
-                                }
-                            }
-                            
-                            DispatchQueue.main.async {
-                                do {
-                                    try context.save()
-                                    context.reset()
-                                } catch let saveError {
-                                    print("Failed to save context: \(saveError)")
-                                }
-                            }
-                        }
-                        
-                    } else {
-                        print("Failed to read or parse ComicInfo.xml")
+            }
+        }
+    }
+    
+    private func saveImageFiles(from url: URL, to comicFile: Book, in context: NSManagedObjectContext) throws {
+        if let imageFiles = try? ComicFileHandler.fileManager.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil).filter({ $0.pathExtension.lowercased() == "jpg" || $0.pathExtension.lowercased() == "png" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            print("Successfully fetched image files from the unzipped directory.")
+            
+            for imageURL in imageFiles {
+                if let originalImage = UIImage(contentsOfFile: imageURL.path),
+                   let resizedImage = resizeImage(image: originalImage, targetSize: CGSize(width: 180, height: 266)),
+                   let imageData = resizedImage.jpegData(compressionQuality: 1) {
+                    
+                    let uniqueFilename = "\(UUID().uuidString).\(imageURL.pathExtension)"
+                    let destinationPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(uniqueFilename)
+                    
+                    do {
+                        try imageData.write(to: destinationPath)
+                        print("Successfully saved image data to \(destinationPath).")
+                    } catch {
+                        print("Error saving thumbnail to path: \(destinationPath). Error: \(error.localizedDescription)")
+                    }
+                    
+                    if comicFile.thumbnailPath == nil {
+                        comicFile.thumbnailPath = uniqueFilename
+                        print("Saved thumbnail with filename: \(uniqueFilename) for book: \(comicFile.title ?? "Unknown Title")")
                     }
                 } else {
-                    throw NSError(domain: "ComicFileHandlerError", code: 1001, userInfo: [NSLocalizedDescriptionKey: "ComicInfo.xml does not exist at path: \(comicInfoURL.path)"])
-                    
+                    print("Error: Failed to process image at \(imageURL.path).")
                 }
-            } catch let error as ZIPFoundation.Archive.ArchiveError {
-                print("ZIPFoundation error: \(error.localizedDescription)")
-            } catch {
-                print("Unknown error: \(error.localizedDescription)")
             }
             
-            try? fileManager.removeItem(at: tempDirectory)
+            DispatchQueue.main.async {
+                do {
+                    try context.save()
+                    print("Saved book details to CoreData for book: \(comicFile.title ?? "Unknown Title")")
+                    context.reset()
+                    print("\(url.lastPathComponent) imported successfully.")
+                } catch let saveError {
+                    print("Failed to save context: \(saveError)")
+                }
+            }
+            
+        } else {
+            print("Error: Failed to fetch image files from the unzipped directory.")
         }
+        
     }
     
     // MARK: - XML Parsing
     
-    private static func parseComicInfoXML(data: Data) -> ComicInfo? {
+    static func parseComicInfoXML(data: Data) -> ComicInfo? {
         let parser = XMLParser(data: data)
         let delegate = ComicInfoXMLParserDelegate()
         parser.delegate = delegate
@@ -337,6 +385,7 @@ struct ComicInfo {
     var summary: String?
     var publisher: String?
     var title: String?
+    var volume: Int16?
     var coverImageName: String?
     var year: Int?
     var month: Int?
@@ -378,6 +427,10 @@ class ComicInfoXMLParserDelegate: NSObject, XMLParserDelegate {
                 comicInfo.number = number
             }
         case "Volume":
+            if let volume = Int16(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
+                comicInfo.volume = volume
+            }
+        case "Year":
             if let year = Int(currentText.trimmingCharacters(in: .whitespacesAndNewlines)) {
                 comicInfo.year = year
             }

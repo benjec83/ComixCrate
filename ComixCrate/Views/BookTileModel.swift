@@ -58,6 +58,8 @@ struct BookTileModel: View {
         HStack(alignment: .center) {
             Spacer()
             ThumbnailProvider(book: book)
+                .frame(maxHeight: 266)
+                .scaledToFit()
             Spacer()
         }
         .shadow(radius: 1)

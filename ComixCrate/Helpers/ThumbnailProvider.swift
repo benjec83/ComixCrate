@@ -17,6 +17,7 @@ struct ThumbnailProvider: View {
     static let highQualityImageCache = LRUCache<String, UIImage>(capacity: 20)
 
     init(book: Book, isHighQuality: Bool = false, shouldCacheHighQuality: Binding<Bool> = .constant(false)) {
+        print("ThumbnailProvider: Initializing for book: \(book.title ?? "Unknown Title")")
         self.book = book
         self.isHighQuality = isHighQuality
         self._shouldCacheHighQuality = shouldCacheHighQuality
@@ -24,49 +25,81 @@ struct ThumbnailProvider: View {
     }
 
     var body: some View {
+        
         thumbnailImage
-            .onAppear(perform: cacheThumbnailImageIfNeeded)
+            .onAppear(perform: {
+                print("ThumbnailProvider: Executing body for book: \(book.title ?? "Unknown Title")")
+                cacheThumbnailImageIfNeeded()
+            })
     }
 
     private var thumbnailImage: some View {
-        let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let fullThumbnailPath = basePath.appendingPathComponent(book.thumbnailPath ?? "").path
-
-        if isHighQuality {
-            if let cachedImage = ThumbnailProvider.highQualityImageCache.get(fullThumbnailPath) {
-                print("ThumbnailProvider: Retrieved high-quality image from LRU cache for path: \(fullThumbnailPath)")
-                return Image(uiImage: cachedImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            } else if let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
-                print("ThumbnailProvider: Retrieved high-quality image from file system for path: \(fullThumbnailPath)")
-                ThumbnailProvider.highQualityImageCache.set(fullThumbnailPath, value: uiImage)
-                return Image(uiImage: uiImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            } else {
-                // Handle error situation
-                print("Error: Failed to load thumbnail from path: \(fullThumbnailPath)")
-                // Consider showing a placeholder image or an error image
+        if let thumbnailPath = book.thumbnailPath {
+            let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            print("ThumbnailProvider: Base path is: \(basePath)")
+            
+            if book.thumbnailPath == nil {
+                print("Warning: thumbnailPath is nil for book: \(book.title ?? "Unknown Title")")
             }
-        } else if let cachedImage = ImageCache.shared.image(forKey: fullThumbnailPath) {
-            print("ThumbnailProvider: Retrieved thumbnail from cache for path: \(fullThumbnailPath)")
-            return Image(uiImage: cachedImage)
+            
+            let fullThumbnailPath = basePath.appendingPathComponent(thumbnailPath).path
+            print("ThumbnailProvider: Full thumbnail path is: \(fullThumbnailPath)")
+            print("Attempting to display thumbnail from path: \(fullThumbnailPath) for book: \(book.title ?? "Unknown Title")")
+            
+            let fileExists = FileManager.default.fileExists(atPath: fullThumbnailPath)
+            print("ThumbnailProvider: Does file exist at path \(fullThumbnailPath)? \(fileExists)")
+            if !fileExists {
+                print("ThumbnailProvider: File does not exist. Possible reasons: Incorrect path, file not yet created, file deleted, or file access issues.")
+            }
+            
+            if isHighQuality {
+                let isCached = ThumbnailProvider.highQualityImageCache.get(fullThumbnailPath)
+                print("ThumbnailProvider: Is image cached for path \(fullThumbnailPath)? \(isCached)")
+                
+                if let cachedImage = ThumbnailProvider.highQualityImageCache.get(fullThumbnailPath) {
+                    print("ThumbnailProvider: Retrieved high-quality image from LRU cache for path: \(fullThumbnailPath) for book: \(book.fileName ?? "Unknown File")")
+                    return AnyView(Image(uiImage: cachedImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit))
+                } else if let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
+                    print("ThumbnailProvider: Successfully initialized UIImage from path: \(fullThumbnailPath)")
+                    print("ThumbnailProvider: Retrieved high-quality image from file system for path: \(fullThumbnailPath) for book: \(book.fileName ?? "Unknown File")")
+                    ThumbnailProvider.highQualityImageCache.set(fullThumbnailPath, value: uiImage)
+                    print("ThumbnailProvider: Inserted image into cache for path: \(fullThumbnailPath)")
+                    return AnyView(Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit))
+                } else {
+                    print("ThumbnailProvider: Failed to initialize UIImage from path: \(fullThumbnailPath)")
+                    print("Error: Failed to load thumbnail from path: \(fullThumbnailPath) for book: \(book.fileName ?? "Unknown File")")
+                    print("ThumbnailProvider: Image initialization failed. Possible reasons: Corrupted file, unsupported format, or file access issues.")
+                }
+            } else {
+                if let cachedImage = ImageCache.shared.image(forKey: fullThumbnailPath) {
+                    print("ThumbnailProvider: Successfully retrieved image from shared cache for path: \(fullThumbnailPath)")
+                    return AnyView(Image(uiImage: cachedImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit))
+                } else if let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
+                    print("ThumbnailProvider: Successfully initialized UIImage from path: \(fullThumbnailPath)")
+                    return AnyView(Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit))
+                } else {
+                    print("ThumbnailProvider: Failed to initialize UIImage from path: \(fullThumbnailPath)")
+                }
+            }
+            
+            print("ThumbnailProvider: Failed to load UIImage for book: \(book.fileName ?? "Unknown File") from path: \(fullThumbnailPath). Using placeholder image.")
+            return AnyView(Image("placeholderCover")
                 .resizable()
-                .aspectRatio(contentMode: .fit)
-        } else if let uiImage = UIImage(contentsOfFile: fullThumbnailPath) {
-            print("ThumbnailProvider: Retrieved thumbnail from file system for path: \(fullThumbnailPath)")
-            return Image(uiImage: uiImage)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+                .aspectRatio(contentMode: .fit))
+        } else {
+            print("ThumbnailProvider: thumbnailPath is nil. Exiting early.")
+            return AnyView(Image("placeholderCover")) // or another appropriate fallback
         }
-
-        print("ThumbnailProvider: Failed to load UIImage from path: \(fullThumbnailPath). Using placeholder image.")
-        // Use a placeholder image
-        return Image("placeholderCover")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
     }
+
 
     private func cacheThumbnailImageIfNeeded() {
         let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
