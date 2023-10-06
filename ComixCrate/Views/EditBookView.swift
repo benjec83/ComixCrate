@@ -50,9 +50,6 @@ struct EditBookView: View {
     @State private var editedSeries: String = ""
     @State private var editedSummary: String = ""
     
-    
-    
-    
     @State private var chipViewHeight: CGFloat = 10  // Initial value, can be adjusted
     
     var onDelete: (() -> Void)? = nil

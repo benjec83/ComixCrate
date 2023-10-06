@@ -16,6 +16,9 @@ struct LibraryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var viewModel: LibraryViewModel
     
+    let comicFileHandler = ComicFileHandler()
+
+    
     @FetchRequest(
         entity: Book.entity(),
         sortDescriptors: [NSSortDescriptor(keyPath: \Book.title, ascending: true)]
@@ -29,6 +32,8 @@ struct LibraryView: View {
     @State private var isSelecting: Bool = false
     @State private var selectedBooks: Set<Book> = []
     @State private var showingAlert: Bool = false
+    @State private var failedFiles = ""
+
     @State private var activeAlert: ActiveAlert = .deleteSelected
     
     // Progress View properties
@@ -36,6 +41,8 @@ struct LibraryView: View {
     @State private var importProgress: Double = 0.0
     @State private var currentImportingFilename: String = ""
     @EnvironmentObject var importingState: ImportingState
+    @State private var importCompleted: Bool = false
+
     
     
     private let spacing: CGFloat = 10
@@ -43,7 +50,7 @@ struct LibraryView: View {
         [GridItem(.adaptive(minimum: 180, maximum: 180))]
     }
     
-    enum ActiveAlert { case deleteSelected, deleteAll }
+    enum ActiveAlert { case deleteSelected, deleteAll, importFailed }
     
     private func navigationTitle(for filter: LibraryFilter) -> String {
         switch filter {
@@ -89,8 +96,14 @@ struct LibraryView: View {
                 return deletionAlert(title: "Delete Selected Books", message: "Are you sure you want to delete the selected books?", action: deleteSelectedBooks)
             case .deleteAll:
                 return deletionAlert(title: "Delete All Books", message: "Are you sure you want to delete all books?", action: deleteAll)
+            case .importFailed:
+                return Alert(title: Text("Import Failed"), message: Text("Failed to import the following files: \(failedFiles)"), dismissButton: .default(Text("OK")) {
+                    self.showingAlert = false
+                    self.importCompleted = false
+                })
             }
         }
+
         .sheet(item: $selectedBook) { item in
             NavigationStack {
                 VStack {
@@ -281,21 +294,23 @@ struct LibraryView: View {
     private func handleImportedFiles(urls: [URL]) {
         importingState.isImporting = true
         let totalFiles = Double(urls.count)
-        
+        var failedImports: [String] = []
+
         DispatchQueue.global(qos: .userInitiated).async {
             for (index, url) in urls.enumerated() {
                 let filename = url.lastPathComponent
+                    
                 
-                do {
-                    try ComicFileHandler.handleImportedFile(at: url, in: self.viewContext)
-                } catch {
-                    print("Error handling imported file: \(error)")
-                    // Handle the error or break out of the loop if necessary
-                    continue
-                }
-                
+            do {
+                try comicFileHandler.handleImportedFile(at: url, in: self.viewContext)
+            } catch {
+                print("Error handling imported file: \(error)")
+                failedImports.append(filename)
+                continue
+            }
+                    
                 let currentProgress = Double(index + 1) / totalFiles
-                
+                    
                 DispatchQueue.main.async {
                     importingState.importProgress = currentProgress
                     importingState.currentImportingFilename = filename
@@ -303,16 +318,26 @@ struct LibraryView: View {
                     importingState.totalBooks = urls.count
                 }
             }
-            
+                
             DispatchQueue.main.async {
                 importingState.isImporting = false
+                importCompleted = true
+                print("importCompleted = \(importCompleted)")
+                if !failedImports.isEmpty {
+                    self.failedFiles = failedImports.joined(separator: ", ")
+                    print("Failed Filed: \(failedFiles)")
+                    self.activeAlert = .importFailed
+                    print("Active Alert = \(activeAlert)")
+                    print("Before setting showingAlert")
+                    self.showingAlert = true
+                    print("After setting showingAlert")
+                    print("showingAlert = \(showingAlert)")
+                }
             }
+
         }
-        
     }
-    
-    
-    
+
     private func handleBookSelection(book: Book) {
         if isSelecting {
             toggleSelection(for: book)
